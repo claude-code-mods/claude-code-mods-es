@@ -25,8 +25,8 @@
   "userConfig": {
     "usageBand": {
       "type": "boolean",
-      "title": "用量状态带",
-      "description": "在提示行上方显示用量：shunt 池的用量（每分钟和每轮结束后刷新），或不在 shunt 上时显示会话自身的速率限制。关闭后 mod 不进行任何轮询，/shunt:usage 仍会回答。",
+      "title": "Banda de uso",
+      "description": "Muestra el uso sobre el aviso: el de la reserva de shunt, actualizado cada minuto y tras cada turno, o los propios límites de velocidad de la sesión fuera de shunt. Off, el mod no sondea nada y /shunt:usage sigue respondiendo.",
       "default": true
     }
   }

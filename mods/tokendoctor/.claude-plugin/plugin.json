@@ -20,14 +20,14 @@
   "userConfig": {
     "slide": {
       "type": "boolean",
-      "title": "滑动窗口，而不是压缩",
-      "description": "在 Claude Code 本该总结对话的地方，改为省略旧的工具输出（它们可以重新读取）：不发起总结请求，每条提示和回答都逐字保留。/compact 仍然会总结。",
+      "title": "Deslizar la ventana en lugar de compactar",
+      "description": "Donde Claude Code resumiría la conversación, omite en su lugar las salidas antiguas de herramientas (pueden volverse a leer): sin solicitud de resumen, cada aviso y respuesta se conservan palabra por palabra. /compact sigue resumiendo.",
       "default": false
     },
     "slideTo": {
       "type": "number",
-      "title": "滑到（Claude Code 压缩点的百分比）",
-      "description": "一次滑动把上下文释放到多低，取 Claude Code 压缩点的百分比（20 到 90）。数值越低，留下的内容越少，距离下一次滑动可进行的轮次越多。",
+      "title": "Deslizar hasta (% del punto en que Claude Code compacta)",
+      "description": "Cuánto libera un deslizamiento del contexto, como porcentaje del punto en que Claude Code compacta (20 a 90). Un valor más bajo deja menos atrás y permite más turnos antes del siguiente deslizamiento.",
       "default": 25
     }
   }

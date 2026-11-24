@@ -16,8 +16,8 @@
   "userConfig": {
     "agentTool": {
       "type": "boolean",
-      "title": "为代理提供在 Claude Code 中打开/关闭 terminal-browser 的工具",
-      "description": "添加一个可供模型调用的工具，用于在浏览器面板中显示页面。默认关闭。",
+      "title": "Dar al agente una herramienta para abrir/cerrar terminal-browser dentro de Claude Code",
+      "description": "Añade una herramienta de apertura y cierre que el modelo puede llamar para mostrar una página en el panel del navegador. Desactivada por defecto.",
       "default": false
     }
   }

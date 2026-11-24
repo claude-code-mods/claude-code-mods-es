@@ -21,28 +21,28 @@
   "hooks": "./hooks/hooks.json",
   "userConfig": {
     "sidebar": {
-      "title": "台账仪表盘",
+      "title": "Panel del registro",
       "type": "boolean",
       "default": true,
-      "description": "在对话记录旁的侧边面板中显示 .story/ 台账。默认开启；可用 /plugin configure storybloq 关闭。没有 .story/ 目录的项目无论开关都不会显示（T-508、T-516）。"
+      "description": "Dibuja el registro .story/ en un panel junto a la transcripción. Activado por defecto; desactívalo con /plugin configure storybloq. Los proyectos sin directorio .story/ no muestran nada de todos modos (T-508, T-516)."
     },
     "startupLogo": {
-      "title": "Storyfield 启动标志",
+      "title": "Logo de inicio de Storyfield",
       "type": "boolean",
       "default": true,
-      "description": "在仪表盘前短暂显示铜色点波标志。关闭后直接显示看板。"
+      "description": "Muestra un breve logo de onda de puntos en cobre antes del panel. Desactívalo para mostrar el tablero de inmediato."
     },
     "motion": {
-      "title": "仪表盘动画",
+      "title": "Animación del panel",
       "type": "boolean",
       "default": true,
-      "description": "为启动、阶段进度、故事更新、活动和上下文计量器添加动画。关闭后仪表盘保持静态，但仍显示当前状态与活动。"
+      "description": "Anima el inicio, el progreso de fases, las actualizaciones de historias, la actividad y el medidor de contexto. Desactívalo para un panel estático que aún muestra el estado y la actividad actuales."
     },
     "changeHighlights": {
-      "title": "故事状态高亮",
+      "title": "Resaltados del estado de historias",
       "type": "boolean",
       "default": true,
-      "description": "短暂高亮发生变化的故事和目标计数，并在障碍解除时显示“就绪”。需要开启仪表盘动画。"
+      "description": "Resalta brevemente las historias cambiadas y los recuentos de destino, y muestra Ready cuando se resuelve un bloqueo. Requiere Dashboard motion."
     }
   },
   "metadata": {

@@ -1,10 +1,10 @@
-# Operator Memory pour Claude Code
+# Operator Memory para Claude Code
 
-Operator Memory donne à Claude Code un contexte projet et utilisateur durable, maintenu par les agents sous forme de Markdown lisible.
+Operator Memory ofrece a Claude Code un contexto duradero de proyecto y usuario, mantenido por los agentes en Markdown legible.
 
 ## Installation
 
-Nécessite Claude Code `v2.1.287` ou plus récent et Operator Helper dans le `PATH`.
+Requiere Claude Code `v2.1.287` o posterior y Operator Helper en el `PATH`.
 
 ```sh
 operator-helper install claude-code

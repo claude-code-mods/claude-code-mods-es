@@ -26,7 +26,7 @@
   "userConfig": {
     "language": {
       "type": "string",
-      "title": "语言",
+      "title": "Idioma",
       "options": [
         "en",
         "ru",
@@ -37,195 +37,195 @@
         "pt"
       ],
       "default": "en",
-      "description": "地图上标签的语言。"
+      "description": "El idioma de las etiquetas del mapa."
     },
     "coreName": {
       "type": "string",
-      "title": "中心名称",
+      "title": "Nombre en el centro",
       "default": "CLAUDE",
-      "description": "地图中央圆圈显示的文字，最多十个字符。"
+      "description": "Lo que dice el círculo en el centro del mapa, hasta diez caracteres."
     },
     "memoryServers": {
       "type": "string",
       "multiple": true,
-      "title": "记忆服务器",
+      "title": "Servidores de memoria",
       "default": [
         "memory"
       ],
-      "description": "工具会点亮“记忆”站的 MCP 服务器。"
+      "description": "Servidores MCP cuyas herramientas iluminan la estación Memory."
     },
     "memoryCommands": {
       "type": "string",
       "multiple": true,
-      "title": "记忆命令",
+      "title": "Comandos de memoria",
       "default": [],
-      "description": "会点亮“记忆”站的 Shell 命令或脚本。名称本身是命令，或以命令加连字符、下划线、句点开头，都算匹配。"
+      "description": "Comandos o scripts de shell que iluminan la estación Memory. Un nombre cuenta cuando es el propio comando o empieza por él seguido de un guion, un guion bajo o un punto."
     },
     "memorySubcommands": {
       "type": "string",
       "multiple": true,
-      "title": "记忆子命令",
+      "title": "Subcomandos de memoria",
       "default": [],
-      "description": "记忆命令之后可以显示在地图上的词，如 add 或 search。未设置时，记忆命令只显示自身名称，因为其后的词可能是内容。"
+      "description": "Palabras después de un comando de memoria que el mapa puede mostrar, como add o search. Sin ellas, un comando de memoria va por su propio nombre, porque la palabra siguiente puede ser contenido."
     },
     "memoryPaths": {
       "type": "string",
       "multiple": true,
-      "title": "记忆路径",
+      "title": "Rutas de memoria",
       "default": [],
-      "description": "使文件成为记忆的路径片段。Claude Code 自带的记忆文件夹始终计入。"
+      "description": "Partes de una ruta que hacen que un archivo sea memoria. La carpeta de memoria propia de Claude Code siempre cuenta."
     },
     "memoryLabels": {
       "type": "string",
       "multiple": true,
-      "title": "记忆标签",
+      "title": "Etiquetas de memoria",
       "default": [],
-      "description": "记忆工具的短名称，每个写成 tool=name。未设置的工具使用其自身名称。"
+      "description": "Nombres cortos para herramientas de memoria, cada uno escrito como tool=name. Una herramienta sin etiqueta va por su propio nombre."
     },
     "serverStations": {
       "type": "string",
       "multiple": true,
-      "title": "服务器所属站点",
+      "title": "Servidores en una estación",
       "default": [],
-      "description": "将 MCP 服务器的工具放到地图的某个站点上，每个写成 server=station。站点包括 files、shell、web、browser、agents、skills 和 you。记忆使用 memoryServers；若服务器同时出现在两处，以记忆为准。未配置或站点未知的服务器按模组默认方式放置。"
+      "description": "Coloca las herramientas de un servidor MCP en una estación del mapa, cada una escrita como server=station. Las estaciones son files, shell, web, browser, agents, skills y you. Memory conserva memoryServers, que prevalece si un servidor está en ambas. Un servidor sin entrada, o con una estación desconocida, va donde el mod lo coloque."
     },
     "hookRecords": {
       "type": "boolean",
-      "title": "钩子添加编号记录",
+      "title": "Los hooks añaden registros numerados",
       "default": false,
-      "description": "如果你的某个钩子会添加类似 [#123] 的编号记忆记录，请开启此项：地图会在“记忆”站按编号显示这些记录。任何钩子文本中的此类编号都会被计入，不限于记忆钩子。"
+      "description": "Actívalo si alguno de tus hooks añade registros de memoria numerados como [#123]: el mapa los muestra entonces en la estación Memory solo por número. Cuenta esos números en el texto de cualquier hook, no solo de uno de memoria."
     },
     "hookReasons": {
       "type": "boolean",
-      "title": "显示钩子拒绝的原因",
+      "title": "Mostrar por qué un hook rechazó algo",
       "default": false,
-      "description": "显示钩子拒绝理由的第一行，最多 72 个字符。关闭时，地图只显示哪个工具被阻止：拒绝理由中可能引用钩子发现的内容。"
+      "description": "Muestra la primera línea del rechazo de un hook, hasta 72 caracteres. Desactivado, el mapa solo indica qué herramienta se detuvo: un rechazo puede citar lo que el hook encontró."
     },
     "guardedHooks": {
       "type": "boolean",
-      "title": "守卫会跳过的钩子",
+      "title": "Hooks que una guardia omite",
       "default": true,
-      "description": "在 Team 或 Enterprise 账户下，如果记录中不断出现 lot-map 钩子被跳过的提示，请关闭此项。关闭后，地图将不再显示“钩子”站、钩子添加的记录、手输斜杠命令所在行以及压缩标记；其余功能保持不变。"
+      "description": "Desactívalo en un inicio de sesión de Team o Enterprise donde la transcripción recibe avisos de que se omitió un hook de lot-map. El mapa pierde entonces la estación Hooks, los registros añadidos por un hook, la fila de un comando slash escrito y la marca de una compactación; todo lo demás se mantiene."
     },
     "openAtStart": {
       "type": "boolean",
-      "title": "会话开始时打开面板",
+      "title": "Abre el panel cuando se inicia una sesión",
       "default": true,
-      "description": "关闭后，面板会一直保持关闭，直到你输入 /lot-map。地图仍会从会话的第一次调用开始记录，因此打开时内容是完整的。"
+      "description": "Desactivado, el panel permanece cerrado hasta que escribas /lot-map. El mapa se mantiene desde la primera llamada de la sesión, así que está completo cuando lo abres."
     },
     "subagentNames": {
       "type": "boolean",
-      "title": "在行中显示子代理名称",
+      "title": "Nombrar subagentes en las filas",
       "default": false,
-      "description": "子代理的模型步骤会显示它是哪个子代理，取启动时的前几个词，最多 40 个字符。关闭时只显示它是子代理。"
+      "description": "El paso de modelo de un subagente indica qué subagente es, con las pocas palabras con las que se inició, hasta 40 caracteres. Desactivado, solo indica que es un subagente."
     },
     "contextCost": {
       "type": "boolean",
-      "title": "每次调用增加的上下文量",
+      "title": "Lo que cada llamada añade al contexto",
       "default": false,
-      "description": "每一行大致显示该调用的回复使上下文增长了多少 token，地图会在每个站点的计数后加上合计。这是估算值：一个模型步骤的增长量（其中也包含模型自己的输出、钩子添加的内容，以及回合开始时共享给该步骤各次调用的消息）。显示会滞后一步，回合最后一步的调用不显示。"
+      "description": "Cada fila indica aproximadamente cuántos tokens creció el contexto con la respuesta de su llamada, y el mapa suma el total de cada estación a su recuento. Es una estimación: el crecimiento de un paso del modelo, que también incluye las palabras del propio modelo, lo que añadieron los hooks y, al inicio de un turno, el mensaje, repartido entre las llamadas de ese paso. Se muestra un paso más tarde, y una llamada cuyo paso fue el último de un turno no recibe nada."
     },
     "contextWindow": {
       "type": "string",
-      "title": "环形进度的参照范围",
+      "title": "Qué mide el anillo",
       "options": [
         "model",
         "compaction"
       ],
       "default": "model",
-      "description": "中央圆环及其百分比衡量上下文的基准：model 表示模型的完整窗口，与状态行相同；compaction 表示自动压缩窗口（例如通过 autoCompactWindow 设置的窗口），它小于模型窗口。若未设置或关闭自动压缩，compaction 显示与 model 相同。"
+      "description": "Con qué mide el contexto el anillo alrededor del centro y su porcentaje: model, la ventana completa del modelo, como hace la línea de estado; o compaction, la ventana de auto-compactación, como una configurada con autoCompactWindow, que es más pequeña que la del modelo. Sin una, o con la auto-compactación desactivada, compaction muestra lo mismo que model."
     },
     "theme": {
       "type": "string",
-      "title": "配色",
+      "title": "Colores",
       "options": [
         "auto",
         "dark",
         "light"
       ],
       "default": "auto",
-      "description": "地图的配色：dark（深色）、light（浅色）或 auto（自动，深色界面用深色，浅色界面用浅色）。"
+      "description": "Los colores del mapa: dark, light o auto, que es oscuro sobre una superficie oscura y claro sobre una clara."
     },
     "background": {
       "type": "string",
-      "title": "背景",
+      "title": "Fondo",
       "options": [
         "solid",
         "transparent"
       ],
       "default": "solid",
-      "description": "地图自身的背景，或 transparent（透明），让下方面板透出来。"
+      "description": "El fondo propio del mapa, o transparent, que deja ver el panel detrás."
     },
     "paneBackground": {
       "type": "string",
-      "title": "面板背景",
+      "title": "Fondo del panel",
       "default": "theme",
-      "description": "面板的绘制方式：theme 为 Claude Code 自带样式；transparent 让下方终端透出；或使用 #rrggbb 格式的颜色。"
+      "description": "Con qué se pinta el panel: theme, el propio de Claude Code; transparent, que deja ver el terminal detrás; o un color escrito como #rrggbb."
     },
     "colors": {
       "type": "string",
       "multiple": true,
-      "title": "自定义颜色",
+      "title": "Colores propios",
       "default": [],
-      "description": "替换地图自身配色的颜色，每个写成 name=#rrggbb。可用名称：background、node、line、spoke、text、label、faint、accent、active、error、memory、memoryActive、route。使用时请将 theme 设为 dark 或 light。"
+      "description": "Colores que sustituyen los propios del mapa, cada uno escrito como name=#rrggbb. Nombres: background, node, line, spoke, text, label, faint, accent, active, error, memory, memoryActive, route. Usa con ellos theme en dark o light."
     },
     "layout": {
       "type": "string",
-      "title": "布局",
+      "title": "Diseño",
       "options": [
         "you-top",
         "you-bottom"
       ],
       "default": "you-top",
-      "description": "你在地图上的位置：顶部，或底部（此时网络和浏览器位于顶部）。"
+      "description": "Dónde estás en el mapa: arriba, o abajo con la red y el navegador arriba."
     },
     "motion": {
       "type": "string",
-      "title": "动画",
+      "title": "Animación",
       "options": [
         "full",
         "reduced"
       ],
       "default": "full",
-      "description": "设为 reduced 时，地图上的元素不会飞散或旋转：调用只点亮其站点和连线，变化仅以淡入淡出呈现。"
+      "description": "Con reduced, nada en el mapa vuela, se reparte ni gira: una llamada ilumina su estación y su radio, y lo que cambia solo se desvanece."
     },
     "textSize": {
       "type": "string",
-      "title": "文字大小",
+      "title": "Tamaño del texto",
       "options": [
         "caption",
         "footnote",
         "body"
       ],
       "default": "footnote",
-      "description": "地图下方各行的字号：caption 较小，body 较大。终端只有一种字号，会忽略此设置。"
+      "description": "El tamaño de las filas bajo el mapa: caption es más pequeño, body más grande. Un terminal tiene un solo tamaño y lo ignora."
     },
     "logRows": {
       "type": "string",
-      "title": "地图下方的行数",
+      "title": "Filas bajo el mapa",
       "options": [
         "16",
         "fill"
       ],
       "default": "16",
-      "description": "地图下方列表显示的行数：16，或 fill（填满面板在地图下方的空间，且不少于 16 行）。fill 适用于桌面应用的停靠面板；终端、编辑器和移动端应用仍显示 16 行。"
+      "description": "Cuántas filas muestra la lista bajo el mapa: 16, o fill, tantas como quepan en el panel debajo del mapa, nunca menos de 16. Fill es para el panel acoplado de la aplicación de escritorio; un terminal, el editor y la aplicación móvil mantienen 16."
     },
     "terminalView": {
       "type": "string",
-      "title": "终端视图",
+      "title": "Vista de terminal",
       "options": [
         "text",
         "picture",
         "braille"
       ],
       "default": "text",
-      "description": "地图在终端中的呈现方式：text 仅显示各行；picture 在行之上显示由模组绘制的地图图片，适用于支持图片的终端，如 kitty、Ghostty 或 3.7.8 及以上版本的 iTerm2，早期 iTerm2 不支持（它会保留每一帧）；braille 则用盲文点和字母在行之上显示地图，适用于字体支持盲文的任意终端，如 Windows Terminal。"
+      "description": "Cómo se ve el mapa en un terminal: text, solo las filas; picture, el propio mapa sobre ellas, dibujado por el mod, en un terminal que muestre imágenes como kitty, Ghostty o iTerm2 desde 3.7.8, no en un iTerm2 anterior, que conserva cada fotograma en memoria; o braille, el mapa sobre ellas en puntos y letras braille, en cualquier terminal cuya fuente tenga braille, como Windows Terminal."
     },
     "cellShape": {
       "type": "number",
-      "title": "终端单元格形状",
+      "title": "Forma de celda del terminal",
       "default": 2.4,
-      "description": "用于终端图片：终端单元格的高宽比，使图片填满其区域。iTerm2 的 Monaco 12 约为 2.4，kitty 的 Menlo 约为 2。如果地图下方留白或看起来被纵向拉长，请调大；如果留白在右侧或地图看起来被压扁，请调小。范围 1.2 到 4。"
+      "description": "Para la imagen de terminal: cuántas veces más alta es una celda del terminal que ancha, para que la imagen llene su caja. Unas 2,4 para Monaco 12 de iTerm2, unas 2 para Menlo en kitty. Auméntalo si el mapa deja una banda vacía debajo o se ve estirado en alto; redúcelo si la banda queda a la derecha o el mapa se ve aplastado. De 1,2 a 4."
     }
   }
 }

@@ -6,56 +6,56 @@
   "userConfig": {
     "apiKey": {
       "type": "string",
-      "title": "TypeSafe API 密钥",
-      "description": "TypeSafe API 密钥。留空则使用 TYPESAFE_API_KEY。",
+      "title": "Clave API de TypeSafe",
+      "description": "Clave API de TypeSafe. Déjala sin configurar para usar TYPESAFE_API_KEY.",
       "sensitive": true
     },
     "keepThreshold": {
       "type": "number",
-      "title": "保留阈值",
-      "description": "工具调用或工具结果仍被需要的最小 Jev 概率；低于该值则删除此项。",
+      "title": "Umbral de conservación",
+      "description": "Probabilidad mínima de que Jev considere que una llamada o un resultado de herramienta sigue siendo necesario; por debajo de ella, el elemento se elimina.",
       "default": 0.5
     },
     "preserveRecentMessages": {
       "type": "number",
-      "title": "保留的最近消息数",
-      "description": "从压缩中固定保留的最新消息条数。",
+      "title": "Mensajes recientes a conservar",
+      "description": "Número de mensajes más recientes fijados durante la compactación.",
       "default": 6
     },
     "compactAtPercent": {
       "type": "number",
-      "title": "压缩百分比",
-      "description": "turn.complete 请求压缩时的上下文百分比。",
+      "title": "Porcentaje de compactación",
+      "description": "Porcentaje del contexto con el que turn.complete solicita la compactación.",
       "default": 60
     },
     "minReductionRatio": {
       "type": "number",
-      "title": "最小缩减比例",
-      "description": "替换历史记录所需的最小预计字符缩减量。",
+      "title": "Ratio mínimo de reducción",
+      "description": "Reducción mínima estimada de caracteres necesaria para reemplazar el historial.",
       "default": 0.25
     },
     "maxStateTokens": {
       "type": "number",
-      "title": "最大 Jev 状态 token 数",
-      "description": "每次 Jev 请求所发送的会话状态的预估 token 预算。",
+      "title": "Máximo de tokens de estado de Jev",
+      "description": "Presupuesto estimado de tokens para el estado de la conversación enviado con cada solicitud a Jev.",
       "default": 25000
     },
     "maxRequestTokens": {
       "type": "number",
-      "title": "最大 Jev 请求 token 数",
-      "description": "单次 Jev 请求中状态加问题的预估 token 预算。",
+      "title": "Máximo de tokens por solicitud a Jev",
+      "description": "Presupuesto estimado de tokens para el estado más las preguntas en una solicitud a Jev.",
       "default": 30000
     },
     "truncateHeadChars": {
       "type": "number",
-      "title": "截断的工具结果开头",
-      "description": "当 Jev 判定工具结果的完整输出不再需要时保留的开头字符数；0 表示只保留说明。",
+      "title": "Inicio truncado del resultado de herramienta",
+      "description": "Número de caracteres de un resultado de herramienta que se conservan cuando Jev decide que su salida completa ya no es necesaria; 0 conserva solo la nota.",
       "default": 300
     },
     "model": {
       "type": "string",
-      "title": "Jev 模型",
-      "description": "TypeSafe Jev 模型名称。",
+      "title": "Modelo Jev",
+      "description": "Nombre del modelo Jev de TypeSafe.",
       "default": "jev-latest"
     }
   }

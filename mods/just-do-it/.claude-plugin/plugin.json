@@ -6,8 +6,8 @@
   "userConfig": {
     "fleetConfigPath": {
       "type": "file",
-      "title": "机群配置",
-      "description": "私有集群配置的可选绝对路径。留空则禁用集群检查。",
+      "title": "Configuración de flota",
+      "description": "Ruta absoluta opcional a una configuración privada de flota. Vacía desactiva la inspección de flota.",
       "required": false,
       "default": ""
     }

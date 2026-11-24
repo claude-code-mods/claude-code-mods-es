@@ -28,14 +28,14 @@
   "userConfig": {
     "economyModel": {
       "type": "string",
-      "title": "经济型模型别名",
-      "description": "该模组自身派发任务时，经济型类别解析到的模型别名（见 model-classes.md）。模型阵容变化时请更新此项。",
+      "title": "Alias del modelo económico",
+      "description": "El alias de modelo al que resuelve la clase económica para los propios envíos del mod (model-classes.md). Cámbialo cuando cambie la alineación.",
       "default": "sonnet"
     },
     "frontierModels": {
       "type": "string",
-      "title": "前沿模型别名",
-      "description": "以逗号分隔的别名（或 id 片段），用于循环守卫判断前沿模型类别。",
+      "title": "Alias de modelos de vanguardia",
+      "description": "Alias separados por comas (o fragmentos de id) que cuentan como clase de vanguardia para la protección de bucles.",
       "default": "fable"
     }
   }
