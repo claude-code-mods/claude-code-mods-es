@@ -145,7 +145,7 @@ export type Change = 'new' | 'mod' | 'del'
 
 export function parseBranch(record: string): Branch {
   const body = record.replace(/^## /, '')
-  if (body.startsWith('HEAD (no branch)')) return { head: 'detached', upstream: '', ahead: 0, behind: 0 }
+  if (body.startsWith('HEAD (sin rama)')) return { head: 'detached', upstream: '', ahead: 0, behind: 0 }
   const head = body.match(/^(?:No commits yet on |Initial commit on )?(.+?)(?:\.\.\.|\s|$)/)?.[1] ?? body
   const upstream = body.match(/\.\.\.(\S+)/)?.[1] ?? ''
   const ahead = Number(body.match(/ahead (\d+)/)?.[1] ?? 0)
@@ -404,12 +404,12 @@ export function stamp(ms: number, format: DateFormat = 'year-month-day', clock: 
   return `${day} ${time}`
 }
 
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+const MONTHS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
 
 export function age(ms: number, now: number): string {
   if (!ms) return ''
   const s = (now - ms) / 1000
-  if (s < 60 && s > -60) return 'now'
+  if (s < 60 && s > -60) return 'ahora'
   if (s > 0 && s < 3600) return `${Math.floor(s / 60)}m`
   if (s > 0 && s < 86_400) return `${Math.floor(s / 3600)}h`
   if (s > 0 && s < 7 * 86_400) return `${Math.floor(s / 86_400)}d`

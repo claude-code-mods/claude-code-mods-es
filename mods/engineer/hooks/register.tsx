@@ -219,17 +219,17 @@ export const register: Register = (on, options) => {
     if (actions.length === 0) return next(e)
     // The one carve-out: verify:auto may merge its own PR when the bar is green.
     if (actions.every(a => a.endsWith('(current branch)')) && (await mergeReady($))) return next(e)
-    return { decision: 'ask', reason: `DAE: ${actions.join(' + ')} needs an explicit OK. ${EXTERNAL_RULE}` }
-  }).catch(() => ({ decision: 'deny', reason: `DAE: the PR-merge guard failed. ${EXTERNAL_RULE}` }))
+    return { decision: 'ask', reason: `DAE: ${actions.join(' + ')} requiere un OK explícito. ${EXTERNAL_RULE}` }
+  }).catch(() => ({ decision: 'deny', reason: `DAE: falló la compuerta de fusión de PR. ${EXTERNAL_RULE}` }))
 
   on('tool.call', { tool: ['Write', 'Edit', 'NotebookEdit'] }, async ($, e, next) => {
     if (e.agentId === undefined) return next(e)
     const row = (await read($, agents)).find(a => a.id === e.agentId)
     if (row === undefined || !isVerifier(row.role)) return next(e)
     const path = 'file_path' in e ? e.file_path : e.notebook_path
-    return scope.handoffFeature(path) !== undefined ? next(e) : { deny: `DAE: the verifier may not edit ${path}. ${VERIFIER_RULE}` }
+    return scope.handoffFeature(path) !== undefined ? next(e) : { deny: `DAE: el verificador no puede editar ${path}. ${VERIFIER_RULE}` }
   }).catch(($, e, next) =>
-    next.called || e.agentId === undefined ? next(e) : { deny: `DAE: the verifier guard failed. ${VERIFIER_RULE}` })
+    next.called || e.agentId === undefined ? next(e) : { deny: `DAE: falló la compuerta del verificador. ${VERIFIER_RULE}` })
 
   on('agent.spawn', async ($, e, next) => {
     if (e.resume !== undefined) return next(e)
@@ -248,7 +248,7 @@ export const register: Register = (on, options) => {
     ticker ??= $.clock.every(5000, () => $.ui.invalidate('ui.render')) // elapsed time in the pane
     await updateStatus($)
     return ran
-  }).catch(($, e, next) => (next.called ? next(e) : { deny: 'DAE: the dispatch guard failed (model-classes.md, gauntlet.md).' }))
+  }).catch(($, e, next) => (next.called ? next(e) : { deny: 'DAE: falló la compuerta de despacho (model-classes.md, gauntlet.md).' }))
 
   // --- 4/5/6. agent ends: pane, toast + sound, cost ledger ---------------------
 

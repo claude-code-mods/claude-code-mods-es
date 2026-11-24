@@ -3,7 +3,7 @@ import { capitalized } from './press-labels'
 import type { BannerTone } from './tones'
 
 export function groupEmptyText(title: string): string {
-  return `No open ${title.toLowerCase()}`
+  return `No hay ninguna abierta: ${title.toLowerCase()}`
 }
 
 /** The message Resume sends after an API error stopped a turn. */
@@ -17,30 +17,30 @@ export function isResumable(stop: Stop): boolean {
 export function stopText(stop: Stop): string {
   switch (stop.kind) {
     case 'sign-in':
-      return 'sign-in expired'
+      return 'sesión caducada'
     case 'billing':
-      return 'billing problem'
+      return 'problema de facturación'
     case 'usage-limit':
-      return 'usage limit reached'
+      return 'límite de uso alcanzado'
     default:
       return stop.detail === 'rate_limit'
-        ? 'the API is limiting requests'
+        ? 'la API está limitando las solicitudes'
         : stop.detail === 'overloaded'
-          ? 'the API is overloaded'
-          : `API error (${stop.detail})`
+          ? 'la API está sobrecargada'
+          : `Error de API (${stop.detail})`
   }
 }
 
 export function stopFix(stop: Stop): string {
   switch (stop.kind) {
     case 'sign-in':
-      return 'Run /login, then send a message to resume.'
+      return 'Ejecuta /login y envía un mensaje para reanudar.'
     case 'billing':
-      return 'Check billing in the Claude console, then resume.'
+      return 'Revisa la facturación en la consola de Claude y luego reanuda.'
     case 'usage-limit':
-      return stop.resets ? `Resume after ${stop.resets}.` : 'Resume when the limit resets.'
+      return stop.resets ? `Reanuda después de ${stop.resets}.` : 'Reanuda cuando se reinicie el límite.'
     default:
-      return 'Send a message to resume.'
+      return 'Envía un mensaje para reanudar.'
   }
 }
 
@@ -131,8 +131,8 @@ export function tabBarBanners(
   ]
 }
 
-export const DEMO_NOTICE = 'Sample entries. Buttons here send nothing.'
-export const READING_TEXT = 'Reading the inbox…'
+export const DEMO_NOTICE = 'Entradas de ejemplo. Los botones de aquí no envían nada.'
+export const READING_TEXT = 'Leyendo la bandeja de entrada…'
 
 /**
  * A checkout that follows the `next` branch can hold this file in each folder a host installs or loads: the repo root,
@@ -145,7 +145,7 @@ export function versionLabel(version: string, isNextBuild: boolean): string {
 }
 
 /** What the band and an empty Asks tab read when nothing waits on the person. */
-export const NOTHING_NEEDED_TEXT = 'Nothing needed'
+export const NOTHING_NEEDED_TEXT = 'Nada necesario'
 
 /** What the band, the Herdr line and an empty tab read in place of "Nothing needed" while rows may be missing. */
-export const MAYBE_STALE_TEXT = 'May be out of date'
+export const MAYBE_STALE_TEXT = 'Puede estar desactualizado'

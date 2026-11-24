@@ -619,7 +619,7 @@ async function changeSession(
     if (!isTurnOnly && (await read($, UNREADABLE)) !== owner.id) await save(saveEngine($), owner, written)
     return { before, after: written, isDrawn: isCurrent(owner) }
   }
-  throw new Error('The session kept changing under this write.')
+  throw new Error('La sesión siguió cambiando durante esta escritura.')
 }
 
 function historyEngine($: EngineInterface): HistoryEngine {
@@ -701,7 +701,7 @@ async function perform(
  * the mod's `session.append` handler sees, and another plugin may rewrite it.
  */
 async function deliver($: EngineInterface, owner: Owner, text: string, deliveryId: string): Promise<SendOutcome> {
-  if (!isCurrent(owner)) return { state: 'rejected', reason: 'the conversation changed first' }
+  if (!isCurrent(owner)) return { state: 'rejected', reason: 'la conversación cambió primero' }
   const since = stored.count
   type Submitted = { entered: string } | { notSent: string }
   const sent = await $.prompt.submit({ text, asUser: true }).then(
@@ -709,7 +709,7 @@ async function deliver($: EngineInterface, owner: Owner, text: string, deliveryI
     (err: unknown): Submitted =>
       (stored.at.get(text) ?? 0) > since
         ? { entered: text }
-        : { notSent: (err instanceof Error ? err.message : String(err)) || 'the session refused it' },
+        : { notSent: (err instanceof Error ? err.message : String(err)) || 'la sesión lo rechazó' },
   )
   if ('notSent' in sent) return { state: 'rejected', reason: sent.notSent }
   const entered = sent.entered
@@ -1658,7 +1658,7 @@ async function closeTasksRunBy($: EngineInterface, command: string) {
   if (ran.length === 0) return
   const now = await $.clock.now()
   await commitLedger($, l =>
-    ran.reduce((after, item) => closeItem(after, item.id, { how: 'done', outcome: 'you ran it' }, now), l),
+    ran.reduce((after, item) => closeItem(after, item.id, { how: 'done', outcome: 'tú lo ejecutaste' }, now), l),
   )
 }
 
@@ -2490,7 +2490,7 @@ export const register: Register = on => {
     }
     if (e.tool === 'AskUserQuestion') {
       const questions = (Array.isArray(input.questions) ? input.questions : []) as { question?: unknown }[]
-      const question = typeof questions[0]?.question === 'string' ? questions[0].question : 'A question'
+      const question = typeof questions[0]?.question === 'string' ? questions[0].question : 'Una pregunta'
       await openDialog($, { kind: 'question', text: question, key })
       const ran = await run()
       const outcome = dialogOutcome(ran)
@@ -2684,17 +2684,17 @@ export const register: Register = on => {
     const isShown = (await read($, DEMO)) !== null
     const args = e.args.trim().split(/\s+/).join(' ')
     if (args === 'herdr') return { text: await askHerdrModAgain(herdrCalls($), () => showInbox($, null)) }
-    if (args === 'demo' || args === 'demo recording') await setDemo($, !isShown, args === 'demo recording')
+    if (args === 'demo' || args === 'grabación de demo') await setDemo($, !isShown, args === 'demo recording')
     else if ((await read($, TAB)) === 'prs') await findPrs($)
     const [isDemo, isDemoRecording] = await Promise.all([read($, DEMO).then(d => d !== null), read($, DEMO_RECORDING)])
     const note = await showInbox($, args || isDemo ? null : openInHerdr(herdrCalls($)))
 
     return {
       text: !isDemo
-        ? (note ?? 'Opened the inbox.')
+        ? (note ?? 'Bandeja de entrada abierta.')
         : isDemoRecording
-          ? 'Showing sample entries without their notices, for a recording. Run /inbox demo to go back.'
-          : 'Showing sample entries in the inbox. Run /inbox demo again to go back.',
+          ? 'Mostrando entradas de ejemplo sin sus avisos, para una grabación. Ejecuta /inbox demo para volver.'
+          : 'Mostrando entradas de ejemplo en la bandeja. Ejecuta /inbox demo de nuevo para volver.',
     }
   })
 
@@ -2837,8 +2837,8 @@ export const register: Register = on => {
             )}
           </Text>
         </Box>
-        {showsDemoNotices ? <Button key="hide-demo" label="Hide demo" onPress={() => void setDemo($, false)} /> : null}
-        <Button key="open-inbox" label="Open inbox" onPress={() => void openInbox($, isDemo)} />
+        {showsDemoNotices ? <Button key="hide-demo" label="Ocultar demo" onPress={() => void setDemo($, false)} /> : null}
+        <Button key="open-inbox" label="Abrir la bandeja" onPress={() => void openInbox($, isDemo)} />
       </Box>
     )
     if (!stop)
@@ -2852,7 +2852,7 @@ export const register: Register = on => {
     // An API error resumes from
     // [Resume], which keeps its key while it sends, so the desktop app keeps the band's focus.
     const canResume = isResumable(stop)
-    const notSent = canResume && sessionState.resuming?.is === 'refused' ? `Not sent: ${sessionState.resuming.why}` : ''
+    const notSent = canResume && sessionState.resuming?.is === 'refused' ? `No enviado: ${sessionState.resuming.why}` : ''
     const isNotSentOwnRow = notSent !== '' && e.surface === 'desktop' && e.props.maxRows > 2
     const fix = canResume ? '' : stopFix(stop)
     const inlineNotSent = isNotSentOwnRow ? '' : notSent

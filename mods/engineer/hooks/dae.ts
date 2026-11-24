@@ -35,12 +35,12 @@ const CAP = /\bmax_rounds\b\s*[:=]?\s*\d+/i
 export function dispatchDeny(prompt: string, model: string | undefined, frontier: RegExp): string | undefined {
   if (!LOOP.test(prompt)) return undefined
   if (model !== undefined && frontier.test(model)) {
-    return `DAE: frontier-class model "${model}" on a looping dispatch. ` +
-      'model-classes.md: "Never put `frontier` in an agentic harness." Use `inherit` (omit model) or `economy`.'
+    return `DAE: modelo de clase frontier «${model}» en un despacho en bucle. ` +
+      'model-classes.md: «Nunca pongas `frontier` en un arnés agéntico». Usa `inherit` (omite el modelo) o `economy`.'
   }
   if (!CAP.test(prompt)) {
-    return 'DAE: loop dispatch with no cap. A loop declares `max_rounds: <N>` and a no-progress stop ' +
-      '(gauntlet.md: "default 5, never unbounded"; coordinator.md "Loop caps"). Add it to the brief.'
+    return 'DAE: despacho en bucle sin límite. Un bucle declara `max_rounds: <N>` y una parada por falta de progreso ' +
+      '(gauntlet.md: «predeterminado 5, nunca ilimitado»; coordinator.md «Límites de bucle»). Añádelo al encargo.'
   }
   return undefined
 }
@@ -77,15 +77,15 @@ export const prMerges = (command: string): string[] =>
     const m = /\bgh\s+pr\s+merge\b(.*)$/.exec(part)
     if (!m) return []
     const isCurrent = m[1].trim().split(/\s+/).filter(Boolean).every(a => MERGE_FLAGS.test(a))
-    return [`PR merge${isCurrent ? ' (current branch)' : ''}`]
+    return [`Fusión de PR${isCurrent ? ' (rama actual)' : ''}`]
   })
 
 export const EXTERNAL_RULE =
-  'handoff-dispatch.md, "External-write gate": merging a PR needs explicit human authorization every ' +
-  'time, regardless of autonomy.'
+  'handoff-dispatch.md, «Puerta de escritura externa»: fusionar una PR requiere autorización humana explícita cada ' +
+  'vez, independientemente del nivel de autonomía.'
 
 export const VERIFIER_RULE =
-  'agents/verifier.md: the verifier must not modify code, tests or specs; the only file it writes is ' +
-  'the CP7 handoff (charter §6, Principle 7: verifier ≠ implementer).'
+  'agents/verifier.md: el verificador no debe modificar código, pruebas ni especificaciones; el único archivo que escribe es ' +
+  'la entrega de CP7 (estatuto §6, Principio 7: verificador ≠ implementador).'
 
 export const kTok = (n: number): string => (n >= 1000 ? `${Math.round(n / 1000)}k` : `${n}`)

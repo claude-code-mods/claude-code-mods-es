@@ -391,13 +391,13 @@ export const register: Register = (on) => {
       await $.fs.write(preferencePath ?? "", serializeCalmPreference(active));
     } catch (error) {
       const reason = error instanceof Error ? error.message : String(error);
-      $.ui.toast(`Calm unchanged: could not save ${preferencePath ?? "the preference"} (${reason})`);
+      $.ui.toast(`Calm sin cambios: no se pudo guardar ${preferencePath ?? "la preferencia"} (${reason})`);
       return {};
     }
     calm = active;
     if (!calm) sites.clear();
     invalidateDrawings($);
-    $.ui.toast(active ? "Calm on" : "Calm off");
+    $.ui.toast(active ? "Calm activado" : "Calm desactivado");
     // No `text`: the toggle leaves no output row in the transcript, as on Pi.
     return {};
   });

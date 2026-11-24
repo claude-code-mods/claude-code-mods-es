@@ -46,9 +46,9 @@ export function isBlockPressShown(pr: PrView, lastActions: Record<string, LastAc
   return !blockingChecks(pr).some(c => isSamePress(lastActions[prCheckId(pr, c)]?.result))
 }
 
-export const GH_MISSING_TEXT = 'The inbox could not find gh. It needs gh to read your PRs.'
+export const GH_MISSING_TEXT = 'La bandeja no encontró gh. Necesita gh para leer tus PR.'
 
-export const GH_SIGNED_OUT_TEXT = 'gh is not signed in to GitHub. Run gh auth login so the inbox can read your PRs.'
+export const GH_SIGNED_OUT_TEXT = 'gh no ha iniciado sesión en GitHub. Ejecuta gh auth login para que la bandeja pueda leer tus PR.'
 
 /**
  * Why the PRs cannot be read, as the PRs tab says it once at the top, or null when nothing stops it. A missing gh
@@ -69,7 +69,7 @@ export function ghNoticeOf(gh: {
 
 /** The line a PR block shows when its last refresh failed. */
 export function prRefreshFailedText(error: string): string {
-  return `Last refresh failed: ${error}`
+  return `La última actualización falló: ${error}`
 }
 
 /** The row ids of the tab's own presses. Each starts with `pr:`, as a PR's mark id does, so no host takes it for an Asks row. */
@@ -77,7 +77,7 @@ export const RANK_AGAIN_ID = 'pr:order'
 export const PR_REFRESH_ID = 'pr:refresh'
 export const CLEAR_FINISHED_ID = 'pr:finished'
 
-export const PR_GROUP_TITLES = { threads: 'Review threads', checks: 'Failing checks', cancelled: 'Cancelled checks' }
+export const PR_GROUP_TITLES = { threads: 'Hilos de revisión', checks: 'Comprobaciones fallidas', cancelled: 'Comprobaciones canceladas' }
 
 /** A PR block's rows by group, and all of them in drawn order. A settled block draws none. */
 export function prBlockRows<R>(
@@ -122,13 +122,13 @@ export function threadRowText(pr: PrView, t: PrThread, lastActions: Record<strin
     fold:
       isSent || isChanged
         ? t.isLinesChanged
-          ? { note: `Lines changed since this comment${DOT}still open on GitHub` }
+          ? { note: `Líneas cambiadas desde este comentario${DOT}aún abiertas en GitHub` }
           : {}
         : null,
     title: clipLabel(commentParts(t.body).head, THREAD_TITLE_CHARS),
     meta: [
       threadWhere(t, baseName(t.path)),
-      isChanged ? 'Lines changed' : '',
+      isChanged ? 'Líneas cambiadas' : '',
       t.reply ? `@${t.reply.author}: ${commentLine(t.reply.body)}` : `@${t.author}`,
     ]
       .filter(Boolean)
@@ -159,7 +159,7 @@ export function checkRowText(
     lead: c.workflow || null,
     title: c.name,
     meta: checkRunText(c),
-    fold: sibling ? { note: `Stopped when ${checkKey(sibling)} failed. Fixing that one runs this again.` } : null,
+    fold: sibling ? { note: `Se detuvo cuando falló ${checkKey(sibling)}. Corregir ese vuelve a ejecutar esto.` } : null,
   }
 }
 

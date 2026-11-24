@@ -77,10 +77,10 @@ function parse(src: string, ci: boolean): Node {
     if (range) i += 1
     else if (c === '{') range = bound()
     if (!range) return n
-    if (n.t === 'bol' || n.t === 'eol') throw new Unsupported('quantified anchor')
+    if (n.t === 'bol' || n.t === 'eol') throw new Unsupported('ancla cuantificada')
     if (peek() === '?') i += 1
     const after = peek()
-    if (after === '*' || after === '+' || after === '?' || (after === '{' && /^\{\d+(,\d*)?\}/.test(src.slice(i)))) throw new Unsupported('nothing to repeat')
+    if (after === '*' || after === '+' || after === '?' || (after === '{' && /^\{\d+(,\d*)?\}/.test(src.slice(i)))) throw new Unsupported('nada que repetir')
     return { t: 'rep', n, min: range[0], max: range[1] }
   }
   const klass = (): Node => {
@@ -131,8 +131,8 @@ function parse(src: string, ci: boolean): Node {
     }
     if (c === ')') throw new Unsupported('paren')
     if (c === '[') return klass()
-    if (c === '*' || c === '+' || c === '?') throw new Unsupported('nothing to repeat')
-    if (c === '{' && bound()) throw new Unsupported('nothing to repeat')
+    if (c === '*' || c === '+' || c === '?') throw new Unsupported('nada que repetir')
+    if (c === '{' && bound()) throw new Unsupported('nada que repetir')
     i += 1
     if (c === '^') return { t: 'bol' }
     if (c === '$') return { t: 'eol' }
@@ -156,14 +156,14 @@ function parse(src: string, ci: boolean): Node {
 function compile(node: Node): Op[] {
   const prog: Op[] = []
   const emit = (op: Op) => {
-    if (prog.length >= MAX_PROGRAM) throw new Unsupported('too large')
+    if (prog.length >= MAX_PROGRAM) throw new Unsupported('demasiado grande')
     prog.push(op)
     return prog.length - 1
   }
   let work = 0
   const empty = (n: Node): boolean => n.t === 'cat' ? n.a.every(empty) : n.t === 'alt' ? n.a.every(empty) : n.t === 'rep' ? n.max === 0 || empty(n.n) : false
   const gen = (n: Node): void => {
-    if (++work > MAX_WORK) throw new Unsupported('too complex')
+    if (++work > MAX_WORK) throw new Unsupported('demasiado complejo')
     if (n.t === 'rep' && (n.max === 0 || (empty(n.n) && n.n.t !== 'bol' && n.n.t !== 'eol'))) return
     if (n.t === 'char') emit({ op: 'char', test: n.test })
     else if (n.t === 'bol') emit({ op: 'bol' })

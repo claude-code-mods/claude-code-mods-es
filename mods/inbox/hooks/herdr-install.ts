@@ -212,12 +212,12 @@ export async function keepHerdrModCurrent(
   now: number,
 ): Promise<HerdrModResult> {
   const bundled = await bundledMod(files.read, bundledFolder)
-  if (!bundled) return { is: 'failed', text: `Could not read the inbox mod for Herdr in ${bundledFolder}.` }
+  if (!bundled) return { is: 'failed', text: `No se pudo leer el mod de la bandeja para Herdr en ${bundledFolder}.` }
   const step = await Promise.all([installedMod(files, appHome), savedAnswer(files, appHome)])
     .then(([installed, answer]) => modStep(installed, answer, bundled, now))
     .catch((err: unknown) => new Error(message(err)))
   if (step instanceof Error)
-    return { is: 'failed', text: `Could not read the Herdr app's mods folder. ${step.message}` }
+    return { is: 'failed', text: `No se pudo leer la carpeta de mods de la app Herdr. ${step.message}` }
   if (step === null) return { is: 'current' }
   if (step === 'ask') return { is: 'ask' }
   try {
@@ -226,12 +226,12 @@ export async function keepHerdrModCurrent(
 
     return { is: step === 'install' ? 'installed' : 'updated' }
   } catch (err) {
-    return { is: 'failed', text: `Could not ${step} the inbox mod in Herdr. ${message(err)}` }
+    return { is: 'failed', text: `No se pudo ${step} el mod de la bandeja en Herdr. ${message(err)}` }
   }
 }
 
 export const NEWER_ANSWER_TEXT =
-  'A newer build of the inbox saved the answer about its Herdr mod. Update the inbox here to answer again.'
+  'Una compilación más reciente de la bandeja guardó la respuesta sobre su mod de Herdr. Actualiza la bandeja aquí para responder de nuevo.'
 
 /**
  * Saves the person's answer to whether hosts may install the mod, and installs it after a yes. A no stays until the
@@ -248,7 +248,7 @@ export async function answerHerdrMod(
   try {
     await saveAnswer(files, appHome, isYes ? 'yes' : 'no', now)
   } catch (err) {
-    return { is: 'failed', text: `Could not save the answer about the inbox mod in Herdr. ${message(err)}` }
+    return { is: 'failed', text: `No se pudo guardar la respuesta sobre el mod de la bandeja en Herdr. ${message(err)}` }
   }
 
   return isYes ? keepHerdrModCurrent(files, appHome, bundledFolder, now) : { is: 'current' }

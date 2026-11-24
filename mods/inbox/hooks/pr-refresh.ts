@@ -11,21 +11,21 @@ import { clockTime } from './text'
 import { isShownSince } from './timing'
 
 /** The button at the top of the PRs tab while a PR could not be read. It is not "Try again", since a failed send draws that. */
-export const PR_REFRESH_LABEL = 'Refresh PRs'
+export const PR_REFRESH_LABEL = 'Actualizar PR'
 
 /** The notice at the top of the PRs tab for a cause that stopped the whole fetch. Its first sentence is the lead. */
 export function fetchFailureNotice(f: PrFetchFailure): string {
   switch (f.kind) {
     case 'limit':
       return f.resetsAt === null
-        ? "GitHub's limit is used up. The PRs refresh once it resets."
-        : `GitHub's limit is used up. The PRs refresh after it resets at ${clockTime(f.resetsAt)}.`
+        ? "Se agotó el límite de GitHub. Las PR se actualizarán cuando se reinicie."
+        : `Se agotó el límite de GitHub. Las PR se actualizarán tras reiniciarse a las ${clockTime(f.resetsAt)}.`
     case 'unreachable':
-      return 'Could not reach GitHub. The PRs show as last read.'
+      return 'No se pudo contactar con GitHub. Las PR se muestran según la última lectura.'
     case 'timed-out':
       return `${GH_TIMED_OUT_TEXT}. The PRs show as last read.`
     case 'error':
-      return `Could not read the PRs: ${f.text}. They show as last read.`
+      return `No se pudieron leer las PR: ${f.text}. Se muestran según la última lectura.`
   }
 }
 
@@ -36,8 +36,8 @@ type PrReadState = Pick<PrViews, 'views' | 'branchRef' | 'failure' | 'unread' | 
 
 /** A cause that stopped the whole fetch, in a few words, or null. A missing gh comes first, then a sign-in, then GitHub's answer. */
 function tabWideProblem(prs: PrReadState): string | null {
-  if (prs.isGhMissing) return 'gh was not found'
-  if (prs.isGhSignedOut) return 'gh is not signed in'
+  if (prs.isGhMissing) return 'no se encontró gh'
+  if (prs.isGhSignedOut) return 'gh no ha iniciado sesión'
 
   return prs.failure ? fetchFailureWords(prs.failure) : null
 }
@@ -72,11 +72,11 @@ export function refreshProblem(prs: PrReadState, links: PrLinks): string | null 
   const [only] = unread
   if (!only) return null
   if (unread.length === 1)
-    return `#${parseRef(only.ref).number} could not be read${only.hasBlock ? '' : `: ${only.why}`}`
+    return `#${parseRef(only.ref).number} no se pudo leer${only.hasBlock ? '' : `: ${only.why}`}`
   const numbers = unread.map(u => `#${parseRef(u.ref).number}`)
   const last = numbers.pop()
 
-  return `${numbers.join(', ')} and ${last} could not be read`
+  return `${numbers.join(', ')} and ${last} no se pudieron leer`
 }
 
 /**

@@ -5,59 +5,59 @@ export type ShortcutGroup = { title: string; keys: ShortcutKey[] }
 
 const GROUPS: readonly ShortcutGroup[] = [
   {
-    title: 'Move',
+    title: 'Mover',
     keys: [
-      { key: 'j / k', label: 'down / up' },
-      { key: 'h / l', label: 'collapse or parent / expand' },
-      { key: 'o, Enter', label: 'open a file or toggle a folder' },
-      { key: 'z', label: 'jump to a folder' },
-      { key: 'Space', label: 'Quick Look on macOS', terminal: true },
+      { key: 'j / k', label: 'abajo / arriba' },
+      { key: 'h / l', label: 'contraer o ir al padre / expandir' },
+      { key: 'o, Enter', label: 'abrir un archivo o alternar una carpeta' },
+      { key: 'z', label: 'saltar a una carpeta' },
+      { key: 'Space', label: 'Quick Look en macOS', terminal: true },
     ],
   },
   {
-    title: 'Search',
+    title: 'Buscar',
     keys: [
-      { key: 's', label: 'focus search' },
-      { key: 'i', label: 'search in the folder under the cursor' },
-      { key: 'c / r', label: 'match case / regular expression' },
-      { key: 'q', label: 'search file contents instead of names' },
+      { key: 's', label: 'enfocar la búsqueda' },
+      { key: 'i', label: 'buscar en la carpeta bajo el cursor' },
+      { key: 'c / r', label: 'coincidir mayúsculas / expresión regular' },
+      { key: 'q', label: 'buscar contenidos de archivos en lugar de nombres' },
     ],
   },
   {
-    title: 'Files and actions',
+    title: 'Archivos y acciones',
     keys: [
       { key: 'd', label: 'diff' },
-      { key: 'click', label: 'select one row' },
-      { key: 'ctrl+click', label: 'add or drop a row; alt+click on macOS' },
-      { key: 'shift+click', label: 'select the range from the anchor' },
-      { key: 'shift+j / k', label: 'extend the selection down / up' },
-      { key: 'v / V', label: 'add or drop the row / clear the marks' },
-      { key: 'y / Y', label: 'copy relative / absolute path' },
-      { key: 'u', label: 'copy the name' },
-      { key: 't', label: 'shell in a tmux or herdr pane' },
-      { key: 'x', label: "guard from Claude's edits" },
-      { key: 'w', label: 'files written outside the repo' },
+      { key: 'click', label: 'seleccionar una fila' },
+      { key: 'ctrl+click', label: 'añadir o quitar una fila; alt+clic en macOS' },
+      { key: 'shift+click', label: 'seleccionar el rango desde el ancla' },
+      { key: 'shift+j / k', label: 'extender la selección abajo / arriba' },
+      { key: 'v / V', label: 'añadir o quitar la fila / limpiar las marcas' },
+      { key: 'y / Y', label: 'copiar ruta relativa / absoluta' },
+      { key: 'u', label: 'copiar el nombre' },
+      { key: 't', label: 'shell en un panel tmux o herdr' },
+      { key: 'x', label: "proteger de las ediciones de Claude" },
+      { key: 'w', label: 'archivos escritos fuera del repositorio' },
     ],
   },
   {
-    title: 'View',
+    title: 'Ver',
     keys: [
-      { key: 'p', label: 'preview or treemap', terminal: true },
-      { key: 'f / b', label: 'page the preview', terminal: true },
-      { key: '[ / ]', label: 'previous / next PDF or Word page', terminal: true },
+      { key: 'p', label: 'vista previa o mapa de árbol', terminal: true },
+      { key: 'f / b', label: 'paginar la vista previa', terminal: true },
+      { key: '[ / ]', label: 'página anterior / siguiente de PDF o Word', terminal: true },
       { key: 'a', label: 'auto-collapse' },
-      { key: 'n / g / m', label: 'sort by name / git / value' },
+      { key: 'n / g / m', label: 'ordenar por nombre / git / valor' },
     ],
   },
   {
-    title: 'Pane',
+    title: 'Panel',
     keys: [
-      { key: '?', label: 'show or hide this list', terminal: true },
-      { key: 'ctrl+x tab', label: 'give the pane the keyboard', terminal: true },
-      { key: 'alt+l', label: 'give the tree the keyboard', terminal: true },
-      { key: 'alt+h', label: 'back to the prompt', terminal: true },
-      { key: '/filetree keys', label: 'set up alt+l and alt+h', terminal: true },
-      { key: 'Esc', label: 'back to the prompt', terminal: true },
+      { key: '?', label: 'mostrar u ocultar esta lista', terminal: true },
+      { key: 'ctrl+x tab', label: 'dar el teclado al panel', terminal: true },
+      { key: 'alt+l', label: 'dar el teclado al árbol', terminal: true },
+      { key: 'alt+h', label: 'volver al prompt', terminal: true },
+      { key: '/filetree keys', label: 'configurar alt+l y alt+h', terminal: true },
+      { key: 'Esc', label: 'volver al prompt', terminal: true },
     ],
   },
 ]
@@ -71,7 +71,7 @@ export function shortcutGroups(desktop: boolean): ShortcutGroup[] {
 export function shortcutRows(accent: string, muted: string): RowSpec[] {
   const groups = shortcutGroups(false)
   const width = Math.max(...groups.flatMap(g => g.keys.map(k => k.key.length))) + 2
-  const rows: RowSpec[] = [{ id: '', left: [{ t: ' Keyboard shortcuts', b: true, c: accent }], right: [{ t: '? closes ', c: muted }] }]
+  const rows: RowSpec[] = [{ id: '', left: [{ t: ' Atajos de teclado', b: true, c: accent }], right: [{ t: '? cierra ', c: muted }] }]
   for (const g of groups) {
     rows.push({ id: '', left: [{ t: ' ' }], right: [] })
     rows.push({ id: '', left: [{ t: ` ${g.title}`, b: true }], right: [] })

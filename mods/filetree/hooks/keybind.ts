@@ -56,21 +56,21 @@ export const planKeys = (text: string | undefined, wants: readonly KeyWant[] = F
     try {
       parsed = JSON.parse(text)
     } catch (err) {
-      return { kind: 'invalid', reason: `not valid JSON (${err instanceof Error ? err.message : String(err)})` }
+      return { kind: 'invalid', reason: `no es JSON válido (${err instanceof Error ? err.message : String(err)})` }
     }
-    if (!isRecord(parsed)) return { kind: 'invalid', reason: 'the top level is not a JSON object' }
+    if (!isRecord(parsed)) return { kind: 'invalid', reason: 'el nivel superior no es un objeto JSON' }
     doc = parsed
   }
   const raw = doc.bindings ?? []
-  if (!Array.isArray(raw)) return { kind: 'invalid', reason: '"bindings" is not an array' }
-  if (!raw.every(b => isRecord(b) && typeof b.context === 'string' && isRecord(b.bindings))) return { kind: 'invalid', reason: 'a "bindings" entry lacks a string "context" or a "bindings" object' }
+  if (!Array.isArray(raw)) return { kind: 'invalid', reason: '«bindings» no es una matriz' }
+  if (!raw.every(b => isRecord(b) && typeof b.context === 'string' && isRecord(b.bindings))) return { kind: 'invalid', reason: 'una entrada de «bindings» no tiene una cadena «context» o un objeto «bindings»' }
   const blocks = raw as Block[]
   const add: KeyWant[] = []
   const clash: KeyClash[] = []
   for (const want of wants) {
     const own = boundIn(blocks, want.context, want.key)
     if (own) {
-      if (own[1] !== want.action) clash.push({ ...want, where: want.context, spelled: own[0], bound: own[1] === null ? 'null (unbound)' : shown(own[1]) })
+      if (own[1] !== want.action) clash.push({ ...want, where: want.context, spelled: own[0], bound: own[1] === null ? 'null (sin enlace)' : shown(own[1]) })
       continue
     }
     const shadow = (want.shadows ?? []).map(context => ({ context, found: boundIn(blocks, context, want.key) })).find(s => s.found && s.found[1] !== null && s.found[1] !== want.action)
@@ -97,10 +97,10 @@ async function placeKeys($: EngineInterface, path: string): Promise<Place | { re
   const own = await $.fs.stat(path, { resolve: true }).catch(() => undefined)
   if (!own) return { path, atomic: false }
   const target = own.realPath
-  if (!target) return { refused: `cannot resolve where ${path} leads` }
-  if (own.kind !== 'file') return { refused: `${target} is not a regular file` }
+  if (!target) return { refused: `no se puede resolver a dónde lleva ${path}` }
+  if (own.kind !== 'file') return { refused: `${target} no es un archivo normal` }
   if ((await $.env.get('OS')) === 'Windows_NT') return { path: target, atomic: false }
-  if ((await $.process.run(['test', '-w', target])).exitCode !== 0) return { refused: `${target} is read-only` }
+  if ((await $.process.run(['test', '-w', target])).exitCode !== 0) return { refused: `${target} es de solo lectura` }
   return { path: target, atomic: true }
 }
 
@@ -114,42 +114,42 @@ async function writeKeys($: EngineInterface, place: Place, text: string): Promis
     await $.fs.write(tmp, text)
     await $.process.run(['chmod', '--reference', place.path, tmp]).catch(() => undefined)
     const moved = await $.process.run(['mv', '-f', tmp, place.path])
-    return moved.exitCode === 0 ? undefined : `could not replace ${place.path}: ${moved.stderr.trim()}`
+    return moved.exitCode === 0 ? undefined : `no se pudo reemplazar ${place.path}: ${moved.stderr.trim()}`
   } finally {
     await $.process.run(['rm', '-f', tmp]).catch(() => undefined)
   }
 }
 
-const KEEP = 'Keep mine'
-const REPLACE = 'Replace'
-const FREE = 'Add the free ones only'
-const ADD = 'Add them'
+const KEEP = 'Conservar los míos'
+const REPLACE = 'Reemplazar'
+const FREE = 'Añadir solo los libres'
+const ADD = 'Añadirlos'
 
 export async function bindKeys($: EngineInterface, home: string): Promise<string> {
   const dir = (await $.env.get('CLAUDE_CONFIG_DIR')) || `${home}/.claude`
   const path = `${dir.replace(/[\\/]+$/, '')}/keybindings.json`
   const text = (await $.fs.exists(path)) ? await $.fs.read(path).catch(() => null) : undefined
-  if (text === null) return `Could not read ${path}; nothing changed.`
+  if (text === null) return `No se pudo leer ${path}; no se cambió nada.`
   const plan = planKeys(text)
-  if (plan.kind === 'invalid') return `${path} is ${plan.reason}; fix it and run /filetree keys again. Nothing changed.`
-  if (plan.kind === 'done') return 'Already set: in the terminal, alt+l moves the keys to the file tree and alt+h (or Escape) gives them back. The Desktop app does not read keybindings.json; click the tree there.'
+  if (plan.kind === 'invalid') return `${path} es ${plan.reason}; corrígelo y vuelve a ejecutar /filetree keys. No se cambió nada.`
+  if (plan.kind === 'done') return 'Ya está configurado: en el terminal, alt+l mueve las teclas al árbol de archivos y alt+h (o Escape) las devuelve. La aplicación de escritorio no lee keybindings.json; haz clic en el árbol allí.'
   const place = await placeKeys($, path)
-  if ('refused' in place) return `Did not write: ${place.refused}. Nothing changed.`
+  if ('refused' in place) return `No se escribió: ${place.refused}. No se cambió nada.`
   const adds = plan.add.map(w => `${w.context} ${w.key}`).join(', ')
   const ask = async (q: string, o: string[]) => $.ui.ask(q, { header: 'filetree', options: o }).catch(() => '')
   let replace = false
   if (plan.clash.length > 0) {
-    const clashes = plan.clash.map(w => `${w.where} ${w.spelled} is ${w.bound}`).join(', ')
-    const pick = await ask(`${clashes}. Replace with the file tree keys${adds ? ` and add ${adds}` : ''} in ${path}?`, adds ? [REPLACE, KEEP, FREE] : [REPLACE, KEEP])
+    const clashes = plan.clash.map(w => `${w.where} ${w.spelled} está ${w.bound}`).join(', ')
+    const pick = await ask(`${clashes}. Sustituir por las teclas del árbol de archivos${adds ? ` y añadir ${adds}` : ''} en ${path}?`, adds ? [REPLACE, KEEP, FREE] : [REPLACE, KEEP])
     if (pick === REPLACE) replace = true
-    else if (!(adds && pick === FREE)) return `Kept your bindings; nothing changed in ${path}.`
+    else if (!(adds && pick === FREE)) return `Conservé tus enlaces; no se cambió nada en ${path}.`
   } else {
-    const pick = await ask(`Add ${adds} to ${path}, so alt+l moves the keys to the file tree and alt+h gives them back?`, [ADD, 'Cancel'])
-    if (pick !== ADD) return `Cancelled; nothing changed in ${path}.`
+    const pick = await ask(`Añadir ${adds} a ${path}, para que alt+l mueva las teclas al árbol de archivos y alt+h las devuelva?`, [ADD, 'Cancelar'])
+    if (pick !== ADD) return `Cancelado; no se cambió nada en ${path}.`
   }
   const now = (await $.fs.exists(path)) ? await $.fs.read(path).catch(() => null) : undefined
-  if (now !== text) return `${path} changed while you were asked; run /filetree keys again. Nothing changed.`
+  if (now !== text) return `${path} cambió mientras se te preguntaba; vuelve a ejecutar /filetree keys. No se cambió nada.`
   const refused = await writeKeys($, place, plan.merge(replace)).catch((err: unknown) => (err instanceof Error ? err.message : String(err)))
-  if (refused) return `Did not write: ${refused}.`
-  return `Wrote ${path}: alt+l moves the keys to the file tree, alt+h (or Escape) gives them back in the terminal; the Desktop app does not read keybindings.json. Claude Code picks the change up within about 3 seconds.`
+  if (refused) return `No se escribió: ${refused}.`
+  return `Se escribió ${path}: alt+l mueve las teclas al árbol de archivos, alt+h (o Escape) las devuelve en el terminal; la aplicación de escritorio no lee keybindings.json. Claude Code detecta el cambio en unos 3 segundos.`
 }

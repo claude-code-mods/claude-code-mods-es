@@ -22,7 +22,7 @@ const OUTCOME_RESERVE_BYTES = 4096
 
 function newRevision(host: Pick<PressHost<Session>, 'newId'>): string {
   const id = host.newId()
-  if (!/^[\w-]{1,128}$/.test(id)) throw new Error('The command revision is invalid.')
+  if (!/^[\w-]{1,128}$/.test(id)) throw new Error('La revisión del comando no es válida.')
   return id
 }
 
@@ -50,9 +50,9 @@ export function remoteRowVersion(s: Session, id: string): string {
 async function digestText(text: string): Promise<string> {
   const subtle = crypto.subtle
   if (!('digest' in subtle) || typeof subtle.digest !== 'function')
-    throw new Error('This host cannot hash remote commands.')
+    throw new Error('Este host no puede calcular el hash de comandos remotos.')
   const bytes: unknown = await subtle.digest('SHA-256', new TextEncoder().encode(text))
-  if (!(bytes instanceof ArrayBuffer)) throw new Error('The host returned an invalid command hash.')
+  if (!(bytes instanceof ArrayBuffer)) throw new Error('El host devolvió un hash de comando no válido.')
   return Array.from(new Uint8Array(bytes), byte => byte.toString(16).padStart(2, '0')).join('')
 }
 
@@ -83,11 +83,11 @@ async function requireDurableCommand<S extends Session>(
   expected: RemoteCommandRecord,
   floor: number,
 ): Promise<void> {
-  if (!host.readDurable) throw new Error('This host cannot confirm saved commands.')
+  if (!host.readDurable) throw new Error('Este host no puede confirmar los comandos guardados.')
   const durable = await host.readDurable()
   const saved = durable.remoteCommands[id]
   if (!saved || JSON.stringify(saved) !== JSON.stringify(expected) || (durable.remoteCommandFloor ?? 0) < floor)
-    throw new Error('The command could not be confirmed saved. Nothing was sent.')
+    throw new Error('No se pudo confirmar que el comando se guardó. No se envió nada.')
 }
 
 const rejected = (error: string): PressOutcome => ({
@@ -131,7 +131,7 @@ function isUnresolved(c: RemoteCommandRecord): boolean {
 
 function issuedAt(id: string, c: RemoteCommandRecord): number {
   const at = c.issuedAt ?? Number.parseInt(id.split('-')[0]!, 36)
-  if (!Number.isSafeInteger(at) || at < 0) throw new Error('The saved command time is invalid.')
+  if (!Number.isSafeInteger(at) || at < 0) throw new Error('La hora del comando guardado no es válida.')
   return at
 }
 
@@ -153,9 +153,9 @@ export async function applyRemoteCommand<S extends Session>(
     command.issuedAt < 0 ||
     !/^[a-z0-9]{1,12}-[a-zA-Z0-9_-]{16,100}$/.test(command.id)
   )
-    return rejected('The command identity or time is invalid.')
+    return rejected('La identidad o la hora del comando no es válida.')
   if (!host.readDurable || command.session !== sessionId)
-    return rejected('This command belongs to another session or cannot be saved.')
+    return rejected('Este comando pertenece a otra sesión o no se puede guardar.')
   const now = await host.now()
   const time = Number.parseInt(command.id.split('-')[0]!, 36)
   const validTime =
@@ -173,20 +173,20 @@ export async function applyRemoteCommand<S extends Session>(
     const existing = s.remoteCommands[command.id]
     if (existing) {
       const same = existing.payload === payload || existing.payload === rawPayload
-      if (!same) conflict = 'This command identity already names a different action.'
+      if (!same) conflict = 'Esta identidad de comando ya nombra una acción distinta.'
       if (same && existing.state === 'accepted' && !validTime)
         return {
           ...s,
           remoteCommands: {
             ...s.remoteCommands,
-            [command.id]: { ...existing, state: 'expired', error: 'This request expired before execution.', revision },
+            [command.id]: { ...existing, state: 'expired', error: 'Esta solicitud caducó antes de ejecutarse.', revision },
           },
         }
       admitted = same && existing.state === 'accepted'
       return s
     }
     let floor = s.remoteCommandFloor ?? 0
-    if (!Number.isSafeInteger(floor) || floor < 0) throw new Error('The saved command cutoff is invalid.')
+    if (!Number.isSafeInteger(floor) || floor < 0) throw new Error('El límite del comando guardado no es válido.')
     const kept = { ...s.remoteCommands }
     const drop = (id: string) => {
       const record = kept[id]!
@@ -210,9 +210,9 @@ export async function applyRemoteCommand<S extends Session>(
       revision,
       state: expired ? 'expired' : !supported ? 'refused' : stale ? 'stale' : 'accepted',
       error: expired
-        ? 'This request is outside retained history. Delivery cannot be confirmed.'
+        ? 'Esta solicitud está fuera del historial conservado. No se puede confirmar la entrega.'
         : !supported
-          ? 'This remote action is not supported.'
+          ? 'Esta acción remota no es compatible.'
           : stale
             ? 'This item changed before the action.'
             : null,
@@ -229,22 +229,22 @@ export async function applyRemoteCommand<S extends Session>(
       record.error = 'This request is outside retained history. Delivery cannot be confirmed.'
     } else if (!fits({ ...kept, [command.id]: record }) && record.state !== 'expired') {
       record.state = 'refused'
-      record.error = 'Too many actions are awaiting confirmation. Your reply is kept.'
+      record.error = 'Hay demasiadas acciones esperando confirmación. Tu respuesta se conserva.'
     }
     if (record.state === 'refused' || record.state === 'expired') {
       if (new TextEncoder().encode(JSON.stringify(record)).byteLength > OUTCOME_RESERVE_BYTES)
-        throw new Error('The refusal cannot fit the reserved receipt slot.')
+        throw new Error('El rechazo no cabe en el espacio reservado del recibo.')
     }
     admitted = record.state === 'accepted'
     return { ...s, remoteCommandFloor: floor, remoteCommands: { ...kept, [command.id]: record } }
   })
   if (conflict) return rejected(conflict)
   const record = claimed.remoteCommands[command.id]
-  if (!record) return rejected('The command was not accepted.')
+  if (!record) return rejected('El comando no fue aceptado.')
   await requireDurableCommand(host, command.id, record, claimed.remoteCommandFloor ?? 0)
   if (!admitted)
     return {
-      ...rejected(record.error ?? 'This command was already accepted; its outcome is retained.'),
+      ...rejected(record.error ?? 'Este comando ya fue aceptado; se conserva su resultado.'),
       note: record.state === 'stale' ? 'stale' : null,
     }
   const executionRevision = newRevision(host)
@@ -260,7 +260,7 @@ export async function applyRemoteCommand<S extends Session>(
       },
     }
   })
-  if (!executing) return rejected('This command is already running or has an uncertain outcome.')
+  if (!executing) return rejected('Este comando ya está en ejecución o su resultado es incierto.')
   await requireDurableCommand(
     host,
     command.id,
@@ -299,12 +299,12 @@ export async function applyRemoteCommand<S extends Session>(
   try {
     outcome = await press(durableHost, command.press, false, { ...NO_HOLDS, shownSince: now }, command.id)
   } catch (error) {
-    outcome = rejected(error instanceof Error ? error.message : 'Command outcome is uncertain.')
+    outcome = rejected(error instanceof Error ? error.message : 'El resultado del comando es incierto.')
   }
   const finalRevision = newRevision(host)
   const result = await host.update(s => ({
     ...(outcome.error || outcome.isUnconfirmed
-      ? blockRemoteDeferred(s, command.id, 'This action could not be confirmed saved.')
+      ? blockRemoteDeferred(s, command.id, 'No se pudo confirmar que esta acción se guardó.')
       : s),
     remoteCommands: {
       ...s.remoteCommands,

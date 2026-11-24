@@ -102,7 +102,7 @@ export function replayOutcomeNotes(
   if (lines.length <= BRANCH_NOTES_REPLAY_LIMIT) return lines;
   const omitted = lines.length - BRANCH_NOTES_REPLAY_LIMIT;
   return [
-    `${BRANCH_NOTE_BOAT} ${omitted} earlier supervision ${omitted === 1 ? "note" : "notes"} not replayed; bin/fm-branch-outcome.sh list shows them`,
+    `${BRANCH_NOTE_BOAT} ${omitted} ${omitted === 1 ? "nota de supervisión anterior no se reprodujo" : "notas de supervisión anteriores no se reprodujeron"}; bin/fm-branch-outcome.sh list las muestra`,
     ...lines.slice(-BRANCH_NOTES_REPLAY_LIMIT),
   ];
 }
@@ -121,7 +121,7 @@ export function newOutcomeNotes(rows: readonly OutcomeRow[], lastSeen: number): 
   const missed = (fresh[0]?.seq ?? lastSeen + 1) - lastSeen - 1;
   if (missed > 0) {
     lines.unshift(
-      `${BRANCH_NOTE_BOAT} ${missed} earlier supervision ${missed === 1 ? "outcome" : "outcomes"} not shown; bin/fm-branch-outcome.sh list shows them`,
+      `${BRANCH_NOTE_BOAT} ${missed} ${missed === 1 ? "resultado de supervisión anterior no se mostró" : "resultados de supervisión anteriores no se mostraron"}; bin/fm-branch-outcome.sh list los muestra`,
     );
   }
   return { lines, lastSeen: last };
@@ -159,8 +159,8 @@ export function hostHealthNote(previous: HostHealth | undefined, next: HostHealt
   if (next === undefined) return undefined;
   const wasCooling = previous !== undefined && previous.key === next.key && previous.cooling;
   if (next.cooling && !wasCooling) {
-    return `${BRANCH_NOTE_BOAT} Supervision session paused after repeated engine errors; main will handle wakes while it cools down.`;
+    return `${BRANCH_NOTE_BOAT} Sesión de supervisión pausada tras errores repetidos del motor; main gestionará los despertares mientras se enfría.`;
   }
-  if (!next.cooling && wasCooling) return `${BRANCH_NOTE_BOAT} Supervision session recovered after a successful cooldown probe.`;
+  if (!next.cooling && wasCooling) return `${BRANCH_NOTE_BOAT} Sesión de supervisión recuperada tras una comprobación de enfriamiento correcta.`;
   return undefined;
 }

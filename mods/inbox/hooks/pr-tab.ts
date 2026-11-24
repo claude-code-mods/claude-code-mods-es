@@ -44,14 +44,14 @@ export function threadActions(pr: PrView, t: PrThread, presses: PressState): PrA
     },
     {
       press: { action: 'thread-draft', ...on },
-      label: again(row, 'thread-draft', 'Draft reply'),
+      label: again(row, 'thread-draft', 'Redactar respuesta'),
       kind: 'talk',
       emphasis: 'normal',
       hotkey: 'r',
     },
     {
       press: { action: 'thread-open', ...on },
-      label: 'Open comment',
+      label: 'Abrir comentario',
       kind: 'local',
       emphasis: 'normal',
       icon: 'open',
@@ -104,7 +104,7 @@ export function checkActions(pr: PrView, c: PrCheck, presses: PressState): PrAct
     ...mainMove,
     {
       press: { action: 'log', ...on },
-      label: 'Open log',
+      label: 'Abrir registro',
       kind: 'local',
       emphasis: 'normal',
       icon: 'open',
@@ -150,7 +150,7 @@ export function prBlockActions(
       ? [
           {
             press: { action: 'pr-address-all' as const, ref: pr.ref },
-            label: again(row, 'pr-address-all', `Address all ${waitingOn} threads`),
+            label: again(row, 'pr-address-all', `Atender los ${waitingOn} hilos`),
             kind: 'handoff' as const,
           },
         ]
@@ -160,7 +160,7 @@ export function prBlockActions(
   return withOut(row, [
     ...retryAction(prRetryOf(row.last, pr.ref, null)),
     ...moves.map((m, n): PlannedPrAction => ({ ...m, emphasis: n === 0 ? 'primary' : 'normal' })),
-    { press: { action: 'pr-open', ref: pr.ref }, label: 'Open PR', kind: 'local', emphasis: 'normal', icon: 'open' },
+    { press: { action: 'pr-open', ref: pr.ref }, label: 'Abrir PR', kind: 'local', emphasis: 'normal', icon: 'open' },
     ...(pr.ref === branchRef
       ? []
       : [
@@ -236,7 +236,7 @@ export function prClearActions(prState: PrViews, links: PrLinks): PrAction[] {
   return [
     {
       press: { action: 'pr-clear-finished' },
-      label: 'Clear merged and closed',
+      label: 'Limpiar fusionadas y cerradas',
       kind: 'mark',
       emphasis: 'normal',
       hotkey: 'm',
@@ -388,7 +388,7 @@ export function applyPrPress(
         })
       if (p.action === 'thread-draft')
         return applied({
-          lasts: { [id]: record(id, 'talk', p.action, 'Draft reply') },
+          lasts: { [id]: record(id, 'talk', p.action, 'Redactar respuesta') },
           effects: [send(prompts.draft(pr, t))],
         })
       return applied({
@@ -411,7 +411,7 @@ export function applyPrPress(
       })
       return applied({
         lasts: {
-          [markId]: record(markId, 'handoff', p.action, `Address all ${waiting.length} threads`),
+          [markId]: record(markId, 'handoff', p.action, `Atender los ${waiting.length} hilos`),
           ...Object.fromEntries(threads),
         },
         effects: [send(prompts.address(pr, waiting))],
@@ -426,7 +426,7 @@ export function applyPrPress(
       })
     }
     case 'pr-open':
-      return local([markId], 'Open PR', prPageEffect(pr))
+      return local([markId], 'Abrir PR', prPageEffect(pr))
     case 'pr-dismiss':
       if (!tabPrs(ledger).includes(p.ref) || prState.branchRef === p.ref) return stale
       return applied({
@@ -455,7 +455,7 @@ export function applyPrPress(
     case 'log': {
       const check = pr.checks.find(c => checkKey(c) === p.check)
       if (!check) return stale
-      return local([prCheckId(pr, check)], 'Open log', logEffect(pr, check))
+      return local([prCheckId(pr, check)], 'Abrir registro', logEffect(pr, check))
     }
   }
 }

@@ -11,7 +11,7 @@ const HERDR_APP_TIMEOUT_MS = 5000
 const PANEL_LABEL = 'inbox.panel'
 
 /** What `herdr-app do pane.focus` prints for a pane id the app no longer has. */
-const NO_SUCH_PANE = 'no such pane'
+const NO_SUCH_PANE = 'no existe ese panel'
 
 type AppTerminal = Extract<HerdrTarget, { kind: 'terminal' }>
 
@@ -66,8 +66,8 @@ function printedText(r: Ran, field: string): string | null {
 
 /** Why a command failed, in one line: the `{ "error" }` it prints, else its stderr or exit code. */
 function failure(r: Ran): string {
-  if (r.code === TIMED_OUT_CODE) return `it did not answer within ${HERDR_APP_TIMEOUT_MS / 1000} s`
-  const why = printedText(r, 'error') ?? (r.stderr.trim() || `exit ${r.code}`)
+  if (r.code === TIMED_OUT_CODE) return `no respondió en ${HERDR_APP_TIMEOUT_MS / 1000} s`
+  const why = printedText(r, 'error') ?? (r.stderr.trim() || `salida ${r.code}`)
 
   return why.split('\n')[0]!.trim()
 }
@@ -103,7 +103,7 @@ export function hasHerdrMod(isFile: HerdrOpenCalls['isFile'], target: AppTermina
 }
 
 const noModWhy = (target: AppTerminal) =>
-  `the Herdr app has no inbox mod in ${target.appHome ?? 'its settings folder'}/mods`
+  `la app Herdr no tiene el mod de la bandeja en ${target.appHome ?? 'su carpeta de ajustes'}/mods`
 
 /**
  * Opens the Herdr look to the right of the host's app terminal, with `pane.split` and the `inbox` mod. When the
@@ -118,10 +118,10 @@ async function openHerdrPanel(
   const notOpened = (why: string): HerdrOpen => ({ is: 'not-opened', why })
   if (!(await hasHerdrMod(calls.isFile, target))) return notOpened(noModWhy(target))
   const ls = await firstStarted(calls, target.herdrApp, ['ls'])
-  if (!ls) return notOpened(`no herdr-app started. Tried ${target.herdrApp.join(', then ')}`)
-  if (ls.r.code !== 0) return notOpened(`herdr-app ls failed: ${failure(ls.r)}`)
+  if (!ls) return notOpened(`no se inició herdr-app. Se probó ${target.herdrApp.join(', then ')}`)
+  if (ls.r.code !== 0) return notOpened(`herdr-app ls falló: ${failure(ls.r)}`)
   const pane = paneOf(ls.r.stdout, target.terminal)
-  if (!pane) return notOpened(`herdr-app ls lists no pane for terminal ${target.terminal}`)
+  if (!pane) return notOpened(`herdr-app ls no enumera ningún panel para el terminal ${target.terminal}`)
   const doCommand = (command: string, args: Record<string, string>) =>
     runFor(calls, [ls.command, 'do', command, JSON.stringify(args)])
   const known = (await labelledPanel(calls, target)) ?? remembered
@@ -137,22 +137,22 @@ async function openHerdrPanel(
     await labelPanel(calls, target, panel)
     return { is: 'opened', pane: panel }
   }
-  if (split.code === 0) return { is: 'unsure', why: 'it named no new pane' }
+  if (split.code === 0) return { is: 'unsure', why: 'no nombró ningún panel nuevo' }
   if (split.code === TIMED_OUT_CODE) return { is: 'unsure', why: failure(split) }
 
-  return notOpened(`Herdr did not split the pane: ${failure(split)}`)
+  return notOpened(`Herdr no dividió el panel: ${failure(split)}`)
 }
 
 /** The one line a host shows for what its open action did. */
 function herdrOpenText(open: HerdrOpen): string {
-  if (open.is === 'not-opened') return `Opened the inbox here, since ${open.why}.`
+  if (open.is === 'not-opened') return `Se abrió la bandeja aquí, ya que ${open.why}.`
   if (open.is === 'unsure')
-    return `Opened the inbox here. Herdr's split may also have opened it to the right of this terminal, but ${open.why}.`
-  if (open.is === 'opened') return 'Opened the inbox in Herdr, to the right of this terminal.'
+    return `Se abrió la bandeja aquí. La división de Herdr puede haberla abierto también a la derecha de este terminal, pero ${open.why}.`
+  if (open.is === 'opened') return 'Se abrió la bandeja en Herdr, a la derecha de este terminal.'
 
   return open.is === 'focused'
-    ? 'The inbox is already open in Herdr. Focused it.'
-    : 'The inbox is already open in Herdr, to the right of this terminal.'
+    ? 'La bandeja ya está abierta en Herdr. Se le dio el foco.'
+    : 'La bandeja ya está abierta en Herdr, a la derecha de este terminal.'
 }
 
 /** The line a host shows when it opens its own inbox because the Herdr app home has no inbox mod. */

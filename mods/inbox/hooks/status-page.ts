@@ -133,10 +133,10 @@ export type StatusPage = GoalParts & {
   stale: string | null
 }
 
-const OTHER_WORK = 'Other work'
+const OTHER_WORK = 'Otro trabajo'
 /** What a line starts with before the text it replaced: a subject's plan, a milestone's text, the goal before. */
-export const WAS_PREFIX = 'Prev: '
-const MERGED_PREFIX = 'merged in: '
+export const WAS_PREFIX = 'Ant: '
+const MERGED_PREFIX = 'fusionado en: '
 /** What separates a row's name from its stall word. */
 export const STALL_GAP = ' · '
 

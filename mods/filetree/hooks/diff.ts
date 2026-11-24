@@ -32,7 +32,7 @@ export function splitPatch(patch: string): { path: string; lines: DiffLine[] }[]
       const plus = /^\+\+\+ (?:b\/)?(.+)$/m.exec(part)?.[1]
       const head = /^diff --git a\/.+ b\/(.+)$/m.exec(part)?.[1]
       const lines = parseDiff(part)
-      const note = /^Binary files /m.test(part) ? 'binary file changed' : /^rename from /m.test(part) ? 'renamed, no text change' : /^copy from /m.test(part) ? 'copied, no text change' : /^(old|new) mode /m.test(part) ? 'file mode changed' : 'changed, no text diff'
+      const note = /^Binary files /m.test(part) ? 'archivo binario modificado' : /^rename from /m.test(part) ? 'renombrado, sin cambio de texto' : /^copy from /m.test(part) ? 'copiado, sin cambio de texto' : /^(old|new) mode /m.test(part) ? 'modo de archivo modificado' : 'modificado, sin diferencias de texto'
       return { path: (plus && plus !== '/dev/null' ? plus : head) ?? '', lines: lines.length || !note ? lines : [{ kind: ' ' as const, text: `(${note})`, old: 1, new: 1 }] }
     })
     .filter(f => f.path && f.lines.length)
@@ -110,8 +110,8 @@ export function groupFiles<F extends { path: string }>(files: F[], mode: DiffGro
       if (last && last[0] === dirOf(f.path)) last[1].push(f)
       else groups.push([dirOf(f.path), [f]])
     }
-  } else if (rest.length) groups.push(['source', rest])
-  if (built.length) groups.push(['tests, builds and generated', built])
+  } else if (rest.length) groups.push(['fuentes', rest])
+  if (built.length) groups.push(['pruebas, compilaciones y generados', built])
   if (groups.length < 2) return files.map(file => ({ file }))
   return groups.flatMap(([name, list]) => [{ group: `${GROUP}${name} (${list.length})` }, ...list.map(file => ({ file }))])
 }

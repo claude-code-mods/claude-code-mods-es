@@ -184,7 +184,7 @@ const Rows: ClientModule<RowsProps, Local> = (props, surface) => {
     } catch {}
     if (size + cost > TREE_BUDGET || drawn.length >= MAX_ROWS) {
       visible = i
-      drawn.push(<Text dimColor>{`  … ${props.rows.length - i} more rows, collapse folders or use search`}</Text>)
+      drawn.push(<Text dimColor>{`  … ${props.rows.length - i} filas más, contrae carpetas o usa la búsqueda`}</Text>)
       break
     }
     size += cost

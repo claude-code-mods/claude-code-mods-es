@@ -15,14 +15,14 @@ const commandLabel = (command: string) => clipLabel(command, COMMAND_LABEL_CHARS
 
 function helpLabel(help: Help): string {
   return help.kind === 'open'
-    ? `Open ${baseName(help.path)}`
+    ? `Abrir ${baseName(help.path)}`
     : help.kind === 'copy'
-      ? `Copy ${help.name ?? 'snippet'}`
+      ? `Copiar ${help.name ?? 'snippet'}`
       : help.kind === 'run'
-        ? `Run ${help.name ?? commandLabel(help.command)}`
+        ? `Ejecutar ${help.name ?? commandLabel(help.command)}`
         : help.kind === 'terminal'
-          ? `Copy ${help.name ?? commandLabel(help.command)}`
-          : `Open ${help.name ?? new URL(help.url).host}`
+          ? `Copiar ${help.name ?? commandLabel(help.command)}`
+          : `Abrir ${help.name ?? new URL(help.url).host}`
 }
 
 export type HelpStep = { label: string; step: Help[] }
@@ -37,7 +37,7 @@ function steps(helps: Help[]): HelpStep[] {
     .filter(h => h !== copy)
     .map(h =>
       h === open
-        ? { label: `Copy ${copy.name ?? 'snippet'} and open ${baseName(open.path)}`, step: [copy, open] }
+        ? { label: `Copiar ${copy.name ?? 'snippet'} y abrir ${baseName(open.path)}`, step: [copy, open] }
         : { label: helpLabel(h), step: [h] },
     )
 }
@@ -56,7 +56,7 @@ export function prSteps(item: Item, tracked: TrackedPr[]): HelpStep[] {
 
   return links.length === 0
     ? []
-    : [{ label: links.length === 1 ? helpLabel(links[0]!) : `Open ${links.length} PRs`, step: links }]
+    : [{ label: links.length === 1 ? helpLabel(links[0]!) : `Abrir ${links.length} PRs`, step: links }]
 }
 
 export function stepsOf(item: Item, extraSteps: HelpStep[]): HelpStep[] {

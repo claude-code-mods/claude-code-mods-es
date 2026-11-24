@@ -149,16 +149,16 @@ export function pressFeedbackIn(
   return feedbackIn(id, state, last, undefined, turns, now, reportedAt)
 }
 
-export const fixLabel = (f: Pick<Finding, 'kind'>) => (f.kind === 'opportunity' ? 'Do it' : 'Fix')
+export const fixLabel = (f: Pick<Finding, 'kind'>) => (f.kind === 'opportunity' ? 'Hacerlo' : 'Fix')
 
 const WORKING_LABELS: Record<string, string> = {
   explain: 'Explaining…',
   compare: 'Comparing…',
   discuss: 'Discussing…',
   'thread-discuss': 'Discussing…',
-  'thread-draft': 'Drafting a reply…',
+  'thread-draft': 'Redactando una respuesta…',
   'pr-rank-again': 'Ranking…',
-  'pr-conflicts': 'Resolving conflicts…',
+  'pr-conflicts': 'Resolviendo conflictos…',
   'pr-address-all': 'Addressing…',
   'pr-merge': 'Merging…',
   'thread-address': 'Addressing…',
@@ -166,8 +166,8 @@ const WORKING_LABELS: Record<string, string> = {
 }
 
 const DONE_LABELS: Record<string, (text: string) => string> = {
-  address: () => 'Handed off',
-  issue: () => 'Asked to file',
+  address: () => 'Entregado',
+  issue: () => 'Se pidió crear una incidencia',
   discuss: () => 'Discussed',
   explain: () => 'Explained',
   compare: () => 'Compared',
@@ -175,11 +175,11 @@ const DONE_LABELS: Record<string, (text: string) => string> = {
   type: () => 'Replied',
   'thread-address': () => 'Addressed',
   'thread-discuss': () => 'Discussed',
-  'thread-draft': () => 'Drafted a reply',
-  'pr-conflicts': () => 'Asked to resolve conflicts',
-  'pr-merge': () => 'Asked to merge',
+  'thread-draft': () => 'Respuesta redactada',
+  'pr-conflicts': () => 'Se pidió resolver conflictos',
+  'pr-merge': () => 'Se pidió fusionar',
   'pr-address-all': text => text.replace(/^Address\b/, 'Addressed'),
-  'check-fix': () => 'Asked to fix',
+  'check-fix': () => 'Se pidió corregir',
   'pr-rank-again': () => 'Ranked',
 }
 
@@ -297,24 +297,24 @@ export function isAfterTitle(f: Feedback): boolean {
 }
 
 const runIt = (look: Look) =>
-  isTerminalLike(look) ? 'Run it in a terminal, or type ! and paste.' : 'Run it in Terminal.'
+  isTerminalLike(look) ? 'Ejecútalo en un terminal, o escribe ! y pégalo.' : 'Ejecútalo en Terminal.'
 const VERBS = {
   open: { pending: 'Opening', done: 'Opened', failed: 'open' },
   copy: { pending: 'Copying', done: 'Copied', failed: 'copy' },
   'refresh-prs': { pending: 'Refreshing', done: 'Refreshed', failed: 'refresh' },
-  rerun: { pending: 'Starting a re-run of', done: 'Started a re-run of', failed: 'start a re-run of' },
+  rerun: { pending: 'Iniciando una nueva ejecución de', done: 'Inició una nueva ejecución de', failed: 'iniciar una nueva ejecución de' },
   scroll: { pending: 'Showing', done: 'Shown', failed: 'show' },
 }
 const doneText = (p: LocalResult['parts'][number]) =>
-  p.kind === 'scroll' ? 'Shown in the conversation' : `${VERBS[p.kind].done} ${p.name}`
+  p.kind === 'scroll' ? 'Mostrado en la conversación' : `${VERBS[p.kind].done} ${p.name}`
 
 function localText(r: LocalResult, look: Look): string {
   const isPrs =
     r.parts.length > 1 && r.parts.every(p => p.kind === 'open' && p.error === null && /^PR #\d+$/.test(p.name))
-  const parts = isPrs ? [{ ...r.parts[0]!, name: `${r.parts.length} PRs` }] : r.parts
+  const parts = isPrs ? [{ ...r.parts[0]!, name: `${r.parts.length} PR` }] : r.parts
   if (r.state === 'pending') return `${parts.map(p => `${VERBS[p.kind].pending} ${p.name}`).join(DOT)}…`
   const text = parts
-    .map(p => (p.error === null ? doneText(p) : `Could not ${VERBS[p.kind].failed} ${p.name}: ${p.error}`))
+    .map(p => (p.error === null ? doneText(p) : `No se pudo ${VERBS[p.kind].failed} ${p.name}: ${p.error}`))
     .join(DOT)
   if (r.state === 'failed') return text
   const isCommand = parts.some(p => p.kind === 'copy' && p.isCommand)
@@ -335,15 +335,15 @@ export function feedbackText(f: Feedback, look: Look): string {
     case 'unconfirmed':
       return f.label
     case 'notSent':
-      return `Not sent: ${f.reason}`
+      return `No enviado: ${f.reason}`
     case 'done':
-      return f.isHandedStep ? `✓ Handed off: ${f.label}` : `✓ ${f.label}`
+      return f.isHandedStep ? `✓ Entregado: ${f.label}` : `✓ ${f.label}`
     case 'working':
       return f.label
     case 'stillOpen':
-      return 'Still open'
+      return 'Sigue abierto'
     case 'noComparison':
-      return 'No comparison came back'
+      return 'No llegó ninguna comparación'
     case 'closed':
       return f.label
   }

@@ -241,9 +241,9 @@ export function readPrNode(
 
 /** The plain words for a GraphQL error on one PR or its repo. GitHub answers NOT_FOUND both for a missing PR and for a repo the viewer cannot see. */
 function errorWords(e: GraphQlError, repo: string): string {
-  if (e.type === 'NOT_FOUND') return `not found on GitHub, or no access to ${repo}`
+  if (e.type === 'NOT_FOUND') return `no se encontró en GitHub, o no hay acceso a ${repo}`
 
-  return (e.message ?? e.type ?? 'GitHub could not read it').trim()
+  return (e.message ?? e.type ?? 'GitHub no pudo leerlo').trim()
 }
 
 /**
@@ -282,8 +282,8 @@ export function readPrsAnswer(
     const threads = errors.find(e => e.path?.[2] === 'reviewThreads')
     prs[ref] = {
       node,
-      error: node ? null : own ? errorWords(own, repo) : 'GitHub did not answer for it',
-      threadsError: node && threads ? `could not read its review threads: ${errorWords(threads, repo)}` : null,
+      error: node ? null : own ? errorWords(own, repo) : 'GitHub no respondió por ello',
+      threadsError: node && threads ? `no se pudieron leer sus hilos de revisión: ${errorWords(threads, repo)}` : null,
     }
   })
 
@@ -346,7 +346,7 @@ export function runFailureOf(
     ?.replace(/^gh:\s*/, '')
     .replace(/\s*\(https?:\/\/\S+\)\s*$/, '')
     .trim()
-  const text = line || (r.exitCode === 0 ? "GitHub's answer could not be read" : `gh exited with ${r.exitCode}`)
+  const text = line || (r.exitCode === 0 ? "No se pudo leer la respuesta de GitHub" : `gh terminó con ${r.exitCode}`)
 
   return { kind: 'error', at, text }
 }

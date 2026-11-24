@@ -86,13 +86,13 @@ export type ActionEmphasis = 'primary' | 'normal' | 'quiet'
 export type ActionIcon = 'done' | 'retry' | 'open' | 'copy' | 'run'
 
 export const ROW_COPY = {
-  retry: 'Try again',
+  retry: 'Reintentar',
   send: 'Send',
   cancel: 'Cancel',
   discard: 'Discard',
-  clickField: 'Click the field to type',
-  relevantFile: 'Relevant file: ',
-  allOptions: (count: number) => `All ${count} options`,
+  clickField: 'Haz clic en el campo para escribir',
+  relevantFile: 'Archivo relevante: ',
+  allOptions: (count: number) => `Las ${count} opciones`,
   undo: 'Undo',
   reopen: 'Reopen',
 } as const
@@ -206,7 +206,7 @@ export function optionReasonLine(o: OptionDescription): string | null {
   return o.description === null && o.reason !== null ? recommendedLine(o.reason) : null
 }
 
-const recommendedLine = (reason: string) => `Recommended: ${reason}`
+const recommendedLine = (reason: string) => `Recomendado: ${reason}`
 
 /** The line under an answer's button: what it does, then the recommendation's reason, or the reason alone. Null with neither. */
 export function optionNote(o: OptionDescription | undefined): string | null {
@@ -224,7 +224,7 @@ export function rowTitle(row: Pick<RowView, 'number' | 'title'>, look: Look): st
 }
 
 export function replyHint(row: RowView, agent: string): string {
-  return row.replyKind === 'answer' ? 'Your answer' : `Your reply to ${agent}`
+  return row.replyKind === 'answer' ? 'Tu respuesta' : `Tu respuesta a ${agent}`
 }
 
 /**
@@ -236,7 +236,7 @@ export function actionLabel(
   fits?: (label: string) => boolean,
 ): string {
   if (!action.isPrimary) return action.label
-  const marked = `${action.label} (recommended)`
+  const marked = `${action.label} (recomendado)`
 
   return fits && !fits(marked) ? action.label : marked
 }
@@ -326,18 +326,18 @@ export function closedTotal(closed: { id: string }[], drawnSettled: ReadonlySet<
 }
 
 export function foldLabel(total: number): string {
-  return `${total} closed`
+  return `${total} cerrados`
 }
 
 /** The button under a Closed list that lists the rest of it, or null when the list shows every line. */
 export function earlierLabel(total: number, shown: number): string | null {
-  return total > shown ? `Show ${total - shown} earlier` : null
+  return total > shown ? `Mostrar ${total - shown} anteriores` : null
 }
 
 export function shortAgo(ms: number): string {
   const age = ago(ms)
 
-  return age === 'just now' ? 'now' : age.replace(/ ago$/, '')
+  return age === 'ahora mismo' ? 'now' : age.replace(/ ago$/, '')
 }
 
 /** A sent message's step on its way to the agent, as its row reads it. `arrived` covers a message with no delivery record. */
@@ -362,20 +362,20 @@ export function deliveryLabel(step: SendStep, label: string, reply?: string): st
     const words = replyLine(reply)
     switch (step) {
       case 'sending':
-        return `Sending reply: ${words}`
+        return `Enviando respuesta: ${words}`
       case 'queued':
-        return `Queued reply: ${words}`
+        return `Respuesta en cola: ${words}`
       case 'unconfirmed':
-        return `Reply not confirmed: ${words}`
+        return `Respuesta no confirmada: ${words}`
       case 'arrived':
-        return `Replied: ${words}`
+        return `Respondido: ${words}`
     }
   }
   switch (step) {
     case 'queued':
-      return `Queued: ${label}`
+      return `En cola: ${label}`
     case 'unconfirmed':
-      return `Not confirmed: ${label}`
+      return `Sin confirmar: ${label}`
     default:
       return label
   }
@@ -423,11 +423,11 @@ function isSendRefused(delivery: ClosedDelivery): delivery is { error: string; c
 
 /** A settled row's label with its message's step, as "Queued: Yes", or a reply's words as "Replied: Call it hello". */
 export function settledLabel(label: string, delivery: ClosedDelivery, reply?: string): string {
-  if (delivery && typeof delivery === 'object') return `${label} · Not sent: ${delivery.error}`
+  if (delivery && typeof delivery === 'object') return `${label} · No enviado: ${delivery.error}`
   return deliveryLabel(sendStepOf(delivery), label, reply)
 }
 
 /** A closed record's outcome as a look shows it. A finding a question replaced says where it went. */
 export function outcomeLabel(c: { outcome: string; askedAs?: string }): string {
-  return c.askedAs ? 'Now a question in Asks' : capitalized(c.outcome)
+  return c.askedAs ? 'Ahora es una pregunta en Asks' : capitalized(c.outcome)
 }
