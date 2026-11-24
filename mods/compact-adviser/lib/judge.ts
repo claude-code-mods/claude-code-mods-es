@@ -149,7 +149,7 @@ export function judgeErrorMessage(kind: JudgeErrorKind): string {
 export const JUDGE_UNAVAILABLE_MESSAGE =
   "compact adviser consultó a TypeSafe (Jev) pero no obtuvo un juicio utilizable." +
   "El contexto se dejó intacto a propósito para que una respuesta errónea no active una compactación ni una sugerencia." +
-  "This can be temporary; the adviser will try again later. No action needed unless it keeps repeating.";
+  "Puede ser temporal; el asistente lo reintentará más tarde. No requiere acción salvo que se repita.";
 
 export const JUDGE_DISABLED_NETWORK_MESSAGE =
   "compact adviser no pudo consultar a TypeSafe (Jev): Claude Code tiene desactivado el tráfico de red no esencial." +

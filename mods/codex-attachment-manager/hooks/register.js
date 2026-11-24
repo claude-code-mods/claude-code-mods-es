@@ -199,9 +199,9 @@ async function startRouting($, attempts = 60) {
       headers: { 'content-type': 'application/json', 'x-cam-panel': '1' },
       body: JSON.stringify({ platform: 'claude', baseUrl: current || 'https://api.anthropic.com' }),
     })
-    if (!response.ok) throw new Error('route registration failed')
+    if (!response.ok) throw new Error('no se pudo registrar la ruta')
     route = JSON.parse(response.text)
-    if (typeof route.id !== 'string' || !/^[a-zA-Z0-9_-]+$/.test(route.id) || route.baseUrl !== `http://127.0.0.1:${ROUTING_PORT}/__cam/routes/${route.id}`) throw new Error('invalid route response')
+    if (typeof route.id !== 'string' || !/^[a-zA-Z0-9_-]+$/.test(route.id) || route.baseUrl !== `http://127.0.0.1:${ROUTING_PORT}/__cam/routes/${route.id}`) throw new Error('respuesta de ruta no válida')
   } catch {
     await writeRouting($, idle('failed'))
     return true

@@ -25,7 +25,7 @@ export function requestLogId(body: string): string {
 }
 
 export function loggedJudgeErrorKind(error: unknown): string {
-  return error instanceof JudgeError ? error.kind : "unavailable";
+  return error instanceof JudgeError ? error.kind : "no disponible";
 }
 
 export function requestLogLine(body: string, at = new Date().toISOString()): string {

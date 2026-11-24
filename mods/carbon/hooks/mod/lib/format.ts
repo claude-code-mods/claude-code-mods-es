@@ -1,7 +1,7 @@
 // What an answer's CO2 line says and when it raises its voice. Pure: no Claude Code API, so
 // Node runs it directly (tests/run-mod-tests.mjs).
 
-export type Lang = "fr" | "en" | "zh";
+export type Lang = "fr" | "es";
 
 export type AnswerCo2View = {
   // "16 gCO₂", or "230 gCO₂ · 14× votre médiane" for an unusual answer
@@ -50,10 +50,10 @@ export function detectLang(
 ): Lang {
   const value = envValues.find(isLocaleValue);
   if (value !== undefined) {
-    return value.toLowerCase().startsWith("fr") ? "fr" : value.toLowerCase().startsWith("zh") ? "zh" : "en";
+    return value.toLowerCase().startsWith("fr") ? "fr" : "es";
   }
   if (setting !== undefined && setting !== "") {
-    return setting.toLowerCase().startsWith("fr") ? "fr" : setting.toLowerCase().startsWith("zh") ? "zh" : "en";
+    return setting.toLowerCase().startsWith("fr") ? "fr" : "es";
   }
   return "fr";
 }
@@ -73,7 +73,7 @@ export function languageSetting(value: unknown): string | undefined {
 
 function decimal(value: number, digits: number, lang: Lang): string {
   const text = value.toFixed(digits);
-  return lang === "fr" ? text.replace(".", ",") : lang === "zh" ? text : text;
+  return text.replace(".", ",");
 }
 
 // < 0.1 g, one decimal under 10 g, whole grams under 1 kg, then kg with one decimal.
@@ -128,18 +128,16 @@ export function buildAnswerCo2(
   if (!isUnusual(turn.grams, history))
     return { main: amount, sub: null, isUnusual: false };
   const ratio = Math.round(turn.grams / median(history));
-  const main = `${amount} · ${ratio}× ${lang === "zh" ? "tu mediana" : lang === "fr" ? "votre médiane" : "your median"}`;
+  const main = `${amount} · ${ratio}× ${lang === "fr" ? "votre médiane" : "tu mediana"}`;
   const share = turn.grams > 0 ? turn.subagentGrams / turn.grams : 0;
   if (turn.subagents === 0 || share < SUBAGENT_SHARE)
     return { main, sub: null, isUnusual: true };
   const n = turn.subagents;
   const grams = formatGrams(turn.subagentGrams, lang);
   const sub =
-    lang === "zh"
-      ? `de los cuales ${n} subagentes${NBSP}: ${grams}`
-      : lang === "fr"
+    lang === "fr"
         ? `dont ${n} sous-agent${n > 1 ? "s" : ""}${NBSP}: ${grams}`
-        : `incl. ${n} subagent${n > 1 ? "s" : ""}: ${grams}`;
+        : `incl. ${n} subagente${n > 1 ? "s" : ""}: ${grams}`;
   return { main, sub, isUnusual: true };
 }
 
@@ -170,7 +168,7 @@ export function sessionLine(
   ...after: (string | null)[]
 ): string {
   const fr = lang === "fr";
-  const head = lang === "zh" ? "Esta sesión:" : fr ? `Cette session${NBSP}:` : "This session:";
+  const head = fr ? `Cette session${NBSP}:` : "Esta sesión:";
   const total = `${head} ${formatGrams(sessionGrams, lang)}`;
   const cost = sessionUsd !== null && sessionUsd > 0 ? formatUsd(sessionUsd, lang) : null;
   return [total, cost, ...after].filter((part) => part !== null).join(" · ");
@@ -183,12 +181,12 @@ export function updateHint(version: string): string {
 }
 
 const MONTH_NAMES_FR = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
-const MONTH_NAMES_EN = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+const MONTH_NAMES_ES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
 const MONTH_NAMES_ZH = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
 
 export function cardHint(month: number, grams: number, lang: Lang): string {
   const fr = lang === "fr";
-  const name = (lang === "zh" ? MONTH_NAMES_ZH : fr ? MONTH_NAMES_FR : MONTH_NAMES_EN)[month] ?? "";
+  const name = (fr ? MONTH_NAMES_FR : MONTH_NAMES_ES)[month] ?? "";
   return `📊 ${name}${fr ? `${NBSP}:` : ":"} ${formatGrams(grams, lang)} · /carbon-card`;
 }
 
@@ -200,7 +198,7 @@ export function yearCardHint(year: number, grams: number, lang: Lang): string {
 export type RateLimit = { kind: string; percentUsed: number; resetsAt?: string };
 
 const WEEKDAYS_FR = ["dim.", "lun.", "mar.", "mer.", "jeu.", "ven.", "sam."];
-const WEEKDAYS_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const WEEKDAYS_ES = ["dom.", "lun.", "mar.", "mié.", "jue.", "vie.", "sáb."];
 const DAY_MS = 86_400_000;
 
 // A subscription's quota as the terminal status line shows it: the 5-hour window, "Usage
@@ -233,12 +231,12 @@ export function quotaText(
     used - floor === 0.5 ? (floor % 2 === 0 ? floor : floor + 1) : Math.round(used);
   const percent = Math.min(100, rounded);
   const head =
-    (lang === "zh" ? `Uso ${percent}%` : fr ? `Usage ${percent}${NBSP}%` : `Use ${percent}%`) + (weekly ? (fr ? " 7j" : " 7d") : "");
+    (fr ? `Usage ${percent}${NBSP}%` : `Uso ${percent}${NBSP}%`) + (weekly ? (fr ? " 7j" : " 7 d") : "");
   const reset = resetOf(window);
   if (Number.isNaN(reset)) return head;
   const d = new Date(reset);
   if (weekly && reset - now >= DAY_MS) {
-    return `${head} ↻${(fr ? WEEKDAYS_FR : WEEKDAYS_EN)[d.getDay()]}`;
+    return `${head} ↻${(fr ? WEEKDAYS_FR : WEEKDAYS_ES)[d.getDay()]}`;
   }
   const time = `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
   return `${head} ↻${time}`;
@@ -246,11 +244,9 @@ export function quotaText(
 
 // Shown once per machine, the same on every surface.
 export function welcomeText(lang: Lang): string {
-  return lang === "zh"
-    ? "Ahora cada respuesta mostrará sus emisiones de CO₂."
-    : lang === "fr"
+  return lang === "fr"
       ? "Le CO₂ s'affiche maintenant pour chaque réponse."
-      : "CO₂ now shows for each answer.";
+      : "Ahora cada respuesta mostrará sus emisiones de CO₂.";
 }
 
 export function pushHistory(history: number[], grams: number): number[] {
@@ -275,28 +271,22 @@ export function paneTitle(_lang: Lang): string {
 }
 
 export function commandDescription(lang: Lang): string {
-  return lang === "zh"
-    ? "Ver tus moléculas de CO₂ y el historial de sesiones"
-    : lang === "fr"
+  return lang === "fr"
       ? "Votre molécule de CO₂ et l'historique de vos sessions"
-      : "Your CO₂ molecule and the history of your sessions";
+      : "Ver tus moléculas de CO₂ y el historial de sesiones";
 }
 
 // Shown once per machine to someone already welcomed before the pane existed.
 export function paneHint(lang: Lang): string {
-  return lang === "zh"
-    ? "Escribe /carbon-panel para ver tus moléculas de CO₂ y el historial de sesiones."
-    : lang === "fr"
+  return lang === "fr"
       ? "Tapez /carbon-panel pour voir votre molécule et l'historique de vos sessions."
-      : "Type /carbon-panel to see your molecule and the history of your sessions.";
+      : "Escribe /carbon-panel para ver tus moléculas de CO₂ y el historial de sesiones.";
 }
 
 export function paneUnplaced(lang: Lang): string {
-  return lang === "zh"
-    ? "No se puede abrir el panel de carbono aquí: amplía la ventana o actualiza Claude Code."
-    : lang === "fr"
+  return lang === "fr"
       ? `Le panneau carbone ne peut pas s'ouvrir ici${NBSP}: élargissez la fenêtre ou mettez Claude Code à jour.`
-      : "The carbon pane cannot open here: widen the window or update Claude Code.";
+      : "No se puede abrir el panel de carbono aquí: amplía la ventana o actualiza Claude Code.";
 }
 
 // The molecule's line: the session so far, and its ratio to the median of past sessions.
@@ -306,66 +296,60 @@ export function currentLine(
   lang: Lang,
 ): string {
   const fr = lang === "fr";
-  const head = lang === "zh" ? "Esta sesión:" : fr ? `Cette session${NBSP}:` : "This session:";
+  const head = fr ? `Cette session${NBSP}:` : "Esta sesión:";
   const total = `${head} ${formatGrams(grams, lang)}`;
   if (sessionMedian === null || !(sessionMedian > 0) || !(grams > 0)) return total;
   const r = grams / sessionMedian;
   const ratio =
     r >= 10 ? `${Math.round(r)}` : decimal(r, r >= 1 ? 1 : 2, lang);
-  return `${total} · ${ratio}×${NBSP}${lang === "zh" ? "tu mediana" : fr ? "votre médiane" : "your median"}`;
+  return `${total} · ${ratio}×${NBSP}${fr ? "votre médiane" : "tu mediana"}`;
 }
 
 // Before 10 past sessions the colour compares with a starting reference (0.5 kgCO₂),
 // said simply to someone who just arrived
 export function colorNote(pastSessions: number, lang: Lang): string {
-  if (lang === "zh") return `Los colores son provisionales: se ajustarán a tus hábitos tras 10 sesiones (actualmente ${pastSessions}).`;
   return lang === "fr"
     ? `Couleur provisoire${NBSP}: elle s'ajustera à vos habitudes après 10 sessions (${pastSessions} pour l'instant).`
-    : `Provisional colour: it adjusts to your habits after 10 sessions (${pastSessions} so far).`;
+    : `Los colores son provisionales: se ajustarán a tus hábitos tras 10 sesiones (${pastSessions} hasta ahora).`;
 }
 
 // No history file. `missing` names the tools the SessionStart hook found absent (jq,
 // sqlite3): without them no database is created.
 export function noHistoryText(lang: Lang, missing: string[] | null = null): string {
   if (missing !== null && missing.length > 0) {
-    const tools = missing.join(lang === "fr" ? " et " : " and ");
-    if (lang === "zh") return `Para registrar sesiones, instala ${tools} y reinicia Claude Code (consulta el README).`;
+    const tools = missing.join(lang === "fr" ? " et " : " y ");
     return lang === "fr"
       ? `Pour enregistrer vos sessions, installez ${tools} puis relancez Claude Code (voir le README).`
-      : `To record your sessions, install ${tools} and restart Claude Code (see the README).`;
+      : `Para registrar tus sesiones, instala ${tools} y reinicia Claude Code (consulta el README).`;
   }
-  return lang === "zh"
-    ? "Aún no hay historial (consulta el README)."
-    : lang === "fr"
+  return lang === "fr"
       ? "Aucun historique pour l'instant (voir le README)."
-      : "No history yet (see the README).";
+      : "Aún no hay historial (consulta el README).";
 }
 
 // Shown once, to someone whose database the SessionStart hook created by itself
 export function autoSetupText(lang: Lang): string {
-  if (lang === "zh") return "Las sesiones de esta máquina ya se están registrando, incluidas las que ya había en disco. No se envía ningún dato.";
   return lang === "fr"
     ? "Vos sessions sont maintenant enregistrées sur cette machine, y compris celles déjà sur le disque. Rien n'est envoyé."
-    : "Your sessions are now recorded on this machine, including those already on disk. Nothing is sent anywhere.";
+    : "Tus sesiones ya se están registrando en esta máquina, incluidas las que ya había en disco. No se envía ningún dato.";
 }
 
 export function emptyRangeText(lang: Lang): string {
-  if (lang === "zh") return "No hay sesiones en este período.";
   return lang === "fr"
     ? "Aucune session sur cette période."
-    : "No session in this period.";
+    : "No hay sesiones en este período.";
 }
 
 
 const RANGE_LABELS: Record<string, [string, string, string]> = {
-  "7d": ["7 j", "7 d", "últimos 7 días"],
-  "30d": ["30 j", "30 d", "últimos 30 días"],
-  "1y": ["12 mois", "12 months", "últimos 12 meses"],
-  all: ["Tout", "All", "Todo"],
-  custom: ["Personnalisée", "Custom", "Personalizado"],
+  "7d": ["7 j", "últimos 7 días", "últimos 7 días"],
+  "30d": ["30 j", "últimos 30 días", "últimos 30 días"],
+  "1y": ["12 mois", "últimos 12 meses", "últimos 12 meses"],
+  all: ["Tout", "Todo", "Todo"],
+  custom: ["Personnalisée", "Personalizado", "Personalizado"],
 };
 function pick(pair: [string, string, string] | undefined, lang: Lang): string {
-  return pair === undefined ? "" : lang === "zh" ? pair[2] : lang === "fr" ? pair[0] : pair[1];
+  return pair === undefined ? "" : lang === "fr" ? pair[0] : pair[2];
 }
 
 export function rangeLabel(range: string, lang: Lang): string {
@@ -374,11 +358,10 @@ export function rangeLabel(range: string, lang: Lang): string {
 
 
 function countOf(n: number, step: string, lang: Lang): string {
-  if (lang === "zh") return `${n} ${step === "week" ? "semanas" : step === "month" ? "meses" : "sesiones"}`;
   const fr = lang === "fr";
-  if (step === "week") return fr ? `${n} semaine${n > 1 ? "s" : ""}` : `${n} week${n > 1 ? "s" : ""}`;
-  if (step === "month") return fr ? `${n} mois` : `${n} month${n > 1 ? "s" : ""}`;
-  return `${n} session${n > 1 ? "s" : ""}`;
+  if (step === "week") return fr ? `${n} semaine${n > 1 ? "s" : ""}` : `${n} ${n > 1 ? "semanas" : "semana"}`;
+  if (step === "month") return fr ? `${n} mois` : `${n} ${n > 1 ? "meses" : "mês"}`;
+  return `${n} ${n > 1 ? "sesiones" : "sesión"}`;
 }
 
 // Under the stripes: what one stripe is, and the median their colours measure against
@@ -397,27 +380,25 @@ export function stripesWaitText(step: string, filled: number, lang: Lang): strin
     month: ["mois", "months", "meses"],
   };
   const unit = pick(units[step], lang);
-  if (lang === "zh") return `Las franjas de colores aparecen tras 3 ${unit} (ahora ${filled}): una por período, de azul a rojo según las emisiones de CO₂.`;
   return fr
     ? `Vos bandes de couleur apparaissent après 3 ${unit} d'usage (${filled} pour l'instant)${NBSP}: une par période, du bleu au rouge selon son CO₂.`
-    : `Your colour stripes show after 3 ${unit} of use (${filled} so far): one per period, blue to red by its CO₂.`;
+    : `Tus franjas de color aparecen tras 3 ${unit} de uso (${filled} hasta ahora): una por período, del azul al rojo según sus emisiones de CO₂.`;
 }
 
 export function stripesCaption(step: string, stripeMedian: number | null, lang: Lang): string {
   const fr = lang === "fr";
   const unit = pick(PER[step], lang);
-  const one = lang === "zh" ? `una franja por ${unit}` : fr ? `une bande par ${unit}` : `one stripe per ${unit}`;
+  const one = fr ? `une bande par ${unit}` : `una franja por ${unit}`;
   if (stripeMedian === null) return one;
-  const per = lang === "zh" ? "" : fr ? ` par ${unit}` : ` a ${unit}`;
-  return `${one} · ${lang === "zh" ? "mediana" : fr ? "médiane" : "median"} ${formatGrams(stripeMedian, lang)}${per}`;
+  const per = fr ? ` par ${unit}` : ` por ${unit}`;
+  return `${one} · ${fr ? "médiane" : "mediana"} ${formatGrams(stripeMedian, lang)}${per}`;
 }
 
 // The period's figure, the pane's main one
 export function periodHeadline(grams: number, lang: Lang): string {
-  if (lang === "zh") return `${formatGrams(grams, lang)} (este período)`;
   return lang === "fr"
     ? `${formatGrams(grams, lang)} sur la période`
-    : `${formatGrams(grams, lang)} over the period`;
+    : `${formatGrams(grams, lang)} en el período`;
 }
 
 export function sessionsCount(n: number, lang: Lang): string {
@@ -426,14 +407,13 @@ export function sessionsCount(n: number, lang: Lang): string {
 
 // The custom range's fields: a date typed day first, or as 2026-05-01
 export function datePlaceholder(lang: Lang): string {
-  return lang === "zh" ? "AAAA/MM/DD" : lang === "fr" ? "JJ/MM/AAAA" : "DD/MM/YYYY";
+  return lang === "fr" ? "JJ/MM/AAAA" : "DD/MM/AAAA";
 }
 
 export function dateInvalid(lang: Lang): string {
-  if (lang === "zh") return "Fecha no reconocida: usa el formato 2026/05/01.";
   return lang === "fr"
     ? `Date non reconnue${NBSP}: tapez-la comme 01/05/2026.`
-    : "Date not recognised: type it as 01/05/2026.";
+    : "Fecha no reconocida: escríbela como 01/05/2026.";
 }
 
 // A day key shown back in its field: "01/05/2026"
@@ -443,24 +423,23 @@ export function dayInputValue(key: string): string {
 }
 
 export function fromLabel(lang: Lang): string {
-  return lang === "zh" ? "Desde" : lang === "fr" ? "Du" : "From";
+  return lang === "fr" ? "Du" : "Desde";
 }
 
 export function toLabel(lang: Lang): string {
-  return lang === "zh" ? "Hasta" : lang === "fr" ? "au" : "to";
+  return lang === "fr" ? "au" : "hasta";
 }
 
 export function waitingText(lang: Lang): string {
-  if (lang === "zh") return "Esta sesión: esperando la primera respuesta";
   return lang === "fr"
     ? `Cette session${NBSP}: en attente de la première réponse`
-    : "This session: waiting for the first answer";
+    : "Esta sesión: esperando la primera respuesta";
 }
 
 
 
 const MONTHS_FR = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."];
-const MONTHS_EN = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const MONTHS_ES = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
 const MONTHS_ZH = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
 
 // A day ("22 août", "Aug 22", with the year when asked), or a month for monthly
@@ -472,10 +451,9 @@ export function dateLabel(
   withYear = false,
 ): string {
   const d = new Date(ms);
-  const month = (lang === "zh" ? MONTHS_ZH : lang === "fr" ? MONTHS_FR : MONTHS_EN)[d.getMonth()] ?? "";
-  if (step === "month") return lang === "zh" ? `${month} ${d.getFullYear()}` : `${month}${NBSP}${d.getFullYear()}`;
+  const month = (lang === "fr" ? MONTHS_FR : MONTHS_ES)[d.getMonth()] ?? "";
+  if (step === "month") return `${month}${NBSP}${d.getFullYear()}`;
   const year = withYear ? `${NBSP}${d.getFullYear()}` : "";
-  if (lang === "zh") return `${d.getDate()}/${d.getMonth() + 1}/${withYear ? d.getFullYear() : ""}`;
   return lang === "fr"
     ? `${d.getDate()}${NBSP}${month}${year}`
     : `${month}${NBSP}${d.getDate()}${withYear ? `,${NBSP}${d.getFullYear()}` : ""}`;
@@ -492,9 +470,9 @@ export function stripeTitle(
   const fr = lang === "fr";
   const when =
     step === "week"
-      ? `${lang === "zh" ? "semana del " : fr ? "semaine du" : "week of"} ${dateLabel(start, "session", lang)}`
+      ? `${fr ? "semaine du" : "semana del"} ${dateLabel(start, "session", lang)}`
       : dateLabel(start, step, lang);
-  const amount = grams > 0 ? formatGrams(grams, lang) : lang === "zh" ? "sin sesiones" : fr ? "aucune session" : "no session";
+  const amount = grams > 0 ? formatGrams(grams, lang) : fr ? "aucune session" : "sin sesiones";
   return sessions === 0
     ? `${when} · ${amount}`
     : `${when} · ${amount} · ${countOf(sessions, "session", lang)}`;
@@ -503,10 +481,10 @@ export function stripeTitle(
 // Against the same length of time just before: "+12 % par rapport aux 30 jours
 // d'avant". Nothing when there is nothing before to compare with.
 const BEFORE: Record<string, [string, string, string]> = {
-  "7d": ["aux 7 jours d'avant", "the 7 days before", "frente a los 7 días anteriores"],
-  "30d": ["aux 30 jours d'avant", "the 30 days before", "frente a los 30 días anteriores"],
-  "1y": ["aux 12 mois d'avant", "the 12 months before", "frente a los 12 meses anteriores"],
-  custom: ["à la période d'avant", "the period before", "frente al período anterior"],
+  "7d": ["aux 7 jours d'avant", "los 7 días anteriores", "frente a los 7 días anteriores"],
+  "30d": ["aux 30 jours d'avant", "los 30 días anteriores", "frente a los 30 días anteriores"],
+  "1y": ["aux 12 mois d'avant", "los 12 meses anteriores", "frente a los 12 meses anteriores"],
+  custom: ["à la période d'avant", "el período anterior", "frente al período anterior"],
 };
 
 // The change against the period before, in whole percent; null when there is none
@@ -524,11 +502,9 @@ export function compareText(
   if (before === undefined || change === null) return null;
   const sign = change > 0 ? "+" : change < 0 ? "-" : "";
   const amount = `${sign}${Math.abs(change)}${NBSP}%`;
-  return lang === "zh"
-    ? `${amount} ${before[2]}`
-    : lang === "fr"
+  return lang === "fr"
       ? `${amount} par rapport ${before[0]}`
-      : `${amount} vs ${before[1]}`;
+      : `${amount} frente a ${before[1]}`;
 }
 
 // ── Model families, as the session block names them ─────
@@ -551,15 +527,13 @@ export function carTag(tag: string): string {
 
 // A subagent's molecule, on hover: "Sous-agent 2 · 12 gCO₂"
 export function subagentTitle(n: number, grams: number, lang: Lang): string {
-  return `${lang === "zh" ? "Subagente" : lang === "fr" ? "Sous-agent" : "Subagent"} ${n} · ${formatGrams(grams, lang)}`;
+  return `${lang === "fr" ? "Sous-agent" : "Subagent"} ${n} · ${formatGrams(grams, lang)}`;
 }
 
 export function subagentsAlt(n: number, lang: Lang): string {
-  return lang === "zh"
-    ? `${n} subagentes de esta sesión, cada uno con una pequeña molécula de CO₂ coloreada según sus emisiones`
-    : lang === "fr"
+  return lang === "fr"
       ? `${n} sous-agent${n > 1 ? "s" : ""} de cette session, une petite molécule chacun, colorée selon son CO₂`
-      : `${n} subagent${n > 1 ? "s" : ""} of this session, a small molecule each, coloured by its CO₂`;
+      : `${n} subagente${n > 1 ? "s" : ""} de esta sesión, cada uno con una pequeña molécula de CO₂ coloreada según sus emisiones`;
 }
 
 // More subagents than the row shows: "+4"
@@ -570,7 +544,6 @@ export function moreAgentsText(n: number): string {
 // The context window's fill: "Contexte 42 %"
 export function contextText(percentUsed: number, lang: Lang): string {
   const p = `${Math.round(percentUsed)}${NBSP}%`;
-  return lang === "zh" ? `Contexto ${p}` : lang === "fr" ? `Contexte ${p}` : `Context ${p}`;
 }
 
 // The running session, under its line: "12 réponses · 3 sous-agents · Opus"
@@ -582,8 +555,8 @@ export function sessionStatsText(
 ): string {
   const fr = lang === "fr";
   const parts = [
-    lang === "zh" ? `${answers} respuestas` : fr ? `${answers} réponse${answers > 1 ? "s" : ""}` : `${answers} answer${answers > 1 ? "s" : ""}`,
-    lang === "zh" ? `${subagents} subagentes` : fr ? `${subagents} sous-agent${subagents > 1 ? "s" : ""}` : `${subagents} subagent${subagents > 1 ? "s" : ""}`,
+    fr ? `${answers} réponse${answers > 1 ? "s" : ""}` : `${answers} respuesta${answers > 1 ? "s" : ""}`,
+    fr ? `${subagents} sous-agent${subagents > 1 ? "s" : ""}` : `${subagents} subagente${subagents > 1 ? "s" : ""}`,
   ];
   if (f !== null) parts.push(familyName(f));
   return parts.join(" · ");
@@ -601,40 +574,34 @@ export function teamUrl(lang: Lang): string {
 // The project's home: its README says what the tool does and leads to the methodology
 export const REPO_URL = "https://github.com/gwittebolle/claude-carbon";
 export function repoLabel(lang: Lang): string {
-  return lang === "zh" ? "Más información sobre claude-carbon" : lang === "fr" ? "En savoir plus sur claude-carbon" : "Learn more about claude-carbon";
 }
 
 // A newer release, at the top of the foot: what to ask Claude, the plugin command
 // The one command for every install: the skill updates the plugin, the clone, or both
 export const UPDATE_COMMAND = "/carbon-update";
 export function updateText(version: string, lang: Lang): string {
-  return lang === "zh"
-    ? `Hay una nueva versión ${version}: ejecuta ${UPDATE_COMMAND} y reinicia.`
-    : lang === "fr"
+  return lang === "fr"
       ? `Version ${version} disponible${NBSP}: tapez ${UPDATE_COMMAND}, puis redémarrez.`
-      : `Version ${version} is out: type ${UPDATE_COMMAND}, then restart.`;
+      : `Hay una nueva versión ${version}: ejecuta ${UPDATE_COMMAND} y reinicia.`;
 }
 
 // The foot's two credit lines, a label and a colon each, the link after it
 export function builtByLabel(lang: Lang): string {
-  return lang === "zh" ? "Desarrollado por:" : lang === "fr" ? `Développé par${NBSP}:` : "Built by:";
 }
 export function forTeamLabel(lang: Lang): string {
-  return lang === "zh" ? "Descubre la versión empresarial:" : lang === "fr" ? `Découvrez la version entreprise${NBSP}:` : "Discover the business version:";
 }
 
 export function blockTitle(kind: "session" | "usage", lang: Lang): string {
-  if (kind === "session") return lang === "zh" ? "Esta sesión" : lang === "fr" ? "Cette session" : "This session";
-  return lang === "zh" ? "Mi uso" : lang === "fr" ? "Mon usage" : "My usage";
+  if (kind === "session") return lang === "fr" ? "Cette session" : "Esta sesión";
 }
 
 // The tiles at the top of the desktop pane: a label over a figure
 const TILE_LABELS: Record<string, [string, string, string]> = {
-  period: ["Sur la période", "Over the period", "En el período"],
-  change: ["Par rapport à avant", "Against before", "Frente a antes"],
+  period: ["Sur la période", "En el período", "En el período"],
+  change: ["Par rapport à avant", "Frente a antes", "Frente a antes"],
   sessions: ["Sessions", "Sessions", "Sesiones"],
-  cost: ["Valeur au prix API", "API-price value", "Valor a precio API"],
-  car: ["En voiture", "By car", "En coche"],
+  cost: ["Valeur au prix API", "Valor a precio API", "Valor a precio API"],
+  car: ["En voiture", "En coche", "En coche"],
 };
 export function tileLabel(kind: string, lang: Lang): string {
   return pick(TILE_LABELS[kind], lang);
@@ -648,17 +615,15 @@ export function changeValue(change: number): string {
 
 // "27 616 $", "$27,616", "12,30 $"
 export function moneyValue(usd: number, lang: Lang): string {
-  return costText(usd, lang).replace(lang === "zh" ? " (a precio API)" : lang === "fr" ? " au prix API" : " at API prices", "");
+  return costText(usd, lang).replace(lang === "fr" ? " au prix API" : " (a precio API)", "");
 }
 
 // Under the value tile, so it holds whoever pays: a subscription, an API key, extra
 // usage, or sessions of several kinds. Which session was billed how is not recorded.
 export function apiValueNote(lang: Lang): string {
-  return lang === "zh"
-    ? `Si se factura a través de API, este uso cuesta${NBSP}; las suscripciones Pro, Max o Ultra pueden cubrirlo total o parcialmente.`
-    : lang === "fr"
+  return lang === "fr"
       ? `Le prix de cet usage facturé à l'API${NBSP}; un abonnement Pro, Max ou Ultra en couvre tout ou partie.`
-      : "What this usage costs billed through the API; a Pro, Max or Ultra subscription covers some or all of it.";
+      : "Lo que cuesta este uso facturado a través de la API; una suscripción Pro, Max o Ultra puede cubrir parte o todo.";
 }
 
 // "12,34 $ au prix API", "$12.34 at API prices"
@@ -670,7 +635,6 @@ export function costText(usd: number, lang: Lang): string {
         ? `${thousands(usd, lang)}${NBSP}$`
         : `$${thousands(usd, lang)}`
       : formatUsd(usd, lang);
-  return lang === "zh" ? `${money} (a precio API)` : lang === "fr" ? `${money} au prix API` : `${money} at API prices`;
 }
 
 function thousands(n: number, lang: Lang): string {
@@ -703,11 +667,11 @@ export function carValue(
 // The blocks a person can show or hide in the pane, under the gear
 
 const BLOCK_LABELS: Record<string, [string, string, string]> = {
-  compare: ["Comparaison", "Comparison", "Comparación"],
-  cost: ["Coût API", "API cost", "Coste API"],
-  equivalence: ["Équivalence", "Equivalence", "Equivalencia"],
-  projects: ["Projets", "Projects", "Proyectos"],
-  detail: ["Détail", "Detail", "Detalle"],
+  compare: ["Comparaison", "Comparación", "Comparación"],
+  cost: ["Coût API", "Coste API", "Coste API"],
+  equivalence: ["Équivalence", "Equivalencia", "Equivalencia"],
+  projects: ["Projets", "Proyectos", "Proyectos"],
+  detail: ["Détail", "Detalle", "Detalle"],
 };
 export function blockLabel(block: string, lang: Lang): string {
   return pick(BLOCK_LABELS[block], lang);
@@ -715,10 +679,10 @@ export function blockLabel(block: string, lang: Lang): string {
 
 // ── The "Détail" block: a period's tokens, energy and CO2 by kind of token ──
 const KIND_LABELS: Record<string, [string, string, string]> = {
-  input: ["Entrée", "Input", "Entrada"],
-  cacheWrite: ["Cache écrit", "Cache write", "Escritura de caché"],
-  cacheRead: ["Cache relu", "Cache read", "Lectura de caché"],
-  output: ["Sortie", "Output", "Salida"],
+  input: ["Entrée", "Entrada", "Entrada"],
+  cacheWrite: ["Cache écrit", "Escritura de caché", "Escritura de caché"],
+  cacheRead: ["Cache relu", "Lectura de caché", "Lectura de caché"],
+  output: ["Sortie", "Salida", "Salida"],
 };
 export function kindLabel(kind: string, lang: Lang): string {
   return pick(KIND_LABELS[kind], lang);
@@ -727,13 +691,12 @@ export function kindLabel(kind: string, lang: Lang): string {
 // Above each bar: what it splits
 export function detailBarLabel(bar: "tokens" | "co2", lang: Lang): string {
   if (bar === "tokens") return "Tokens";
-  return lang === "zh" ? `${UNIT} y energía` : lang === "fr" ? `${UNIT} et énergie` : `${UNIT} and energy`;
 }
 
 // 820, 12k, 371M, then billions with one decimal: 25,3 Md / 25.3B
 export function formatTokens(n: number, lang: Lang): string {
   if (n >= 999.5e6)
-    return lang === "fr" ? `${decimal(n / 1e9, 1, lang)}${NBSP}Md` : `${decimal(n / 1e9, 1, lang)}B`;
+    return lang === "fr" ? `${decimal(n / 1e9, 1, lang)}${NBSP}Md` : `${decimal(n / 1e9, 1, lang)} mil M`;
   const space = lang === "fr" ? NBSP : "";
   if (n >= 999.5e3) return `${Math.round(n / 1e6)}${space}M`;
   if (n >= 1000) return `${Math.round(n / 1e3)}${space}k`;
@@ -773,7 +736,7 @@ export function detailTotalLine(
   lang: Lang,
 ): string {
   return (
-    `${lang === "zh" ? "Total" : `Total${lang === "fr" ? NBSP : ""}`}: ${formatTokens(total.tokens, lang)}${" tokens"} · ` +
+    `${`Total${lang === "fr" ? NBSP : ""}`}: ${formatTokens(total.tokens, lang)}${" tokens"} · ` +
     `${formatWh(total.wh, lang)} · ${formatGrams(total.grams, lang)}`
   );
 }
@@ -795,38 +758,30 @@ export function detailHover(
 export const METHODOLOGY_URL =
   "https://github.com/gwittebolle/claude-carbon/blob/main/METHODOLOGY.md#the-panes-detail-by-kind-of-token";
 export function methodologyLabel(lang: Lang): string {
-  return lang === "zh" ? "Leer la metodología" : lang === "fr" ? "Lire la méthodologie" : "Read the methodology";
 }
 
 // When some sessions of the period are left out: stored with older factors, or the
 // running one before its first answer
 export function detailCoverage(n: number, total: number, lang: Lang): string {
-  return lang === "zh"
-    ? `${n} de ${total} sesiones en este período: las demás se registraron con factores más antiguos.`
-    : lang === "fr"
+  return lang === "fr"
       ? `Sur ${n} des ${total} sessions de la période${NBSP}: les autres ont été enregistrées avec des facteurs plus anciens.`
-      : `Over ${n} of the period's ${total} sessions: the others were recorded with older factors.`;
+      : `De ${n} de las ${total} sesiones del período: las demás se registraron con factores más antiguos.`;
 }
 
 // Before the hook has written the tokens by kind: after the next answer
 export function detailWaitText(lang: Lang): string {
-  return lang === "zh"
-    ? "Los detalles aparecerán tras la próxima respuesta."
-    : lang === "fr"
+  return lang === "fr"
       ? "Le détail s'affichera après la prochaine réponse."
-      : "The detail shows after the next answer.";
+      : "Los detalles aparecerán tras la próxima respuesta.";
 }
 
 export function detailAlt(bar: "tokens" | "co2", lang: Lang): string {
-  return lang === "zh"
-    ? `Distribución de ${bar === "tokens" ? "tokens" : UNIT} en entrada, escritura de caché, lectura de caché y salida`
-    : lang === "fr"
+  return lang === "fr"
       ? `Répartition ${bar === "tokens" ? "des tokens" : `du ${UNIT}`} entre entrée, cache écrit, cache relu et sortie`
-      : `Share of the ${bar === "tokens" ? "tokens" : UNIT} between input, cache write, cache read and output`;
+      : `Distribución de ${bar === "tokens" ? "tokens" : UNIT} en entrada, escritura de caché, lectura de caché y salida`;
 }
 
 export function showLabel(lang: Lang): string {
-  return lang === "zh" ? "Mostrar" : lang === "fr" ? "Afficher" : "Show";
 }
 
 
@@ -834,34 +789,27 @@ export function showLabel(lang: Lang): string {
 // covers the calendar year so far (the one just ended, over the first days of January),
 // whatever range the pane shows: the label says which.
 export function cardButtonLabel(year: number, lang: Lang): string {
-  return lang === "zh" ? `Obtener mi tarjeta de ${year}` : lang === "fr" ? `Obtenir ma carte ${year}` : `Get my ${year} card`;
 }
 
 // After the button filled the prompt: what is there and what to do
 export function cardReadyText(lang: Lang): string {
-  return lang === "zh"
-    ? "/carbon-card se ha insertado en el campo: pulsa Enter para generar la tarjeta."
-    : lang === "fr"
+  return lang === "fr"
       ? `/carbon-card est dans le prompt${NBSP}: appuyez sur Entrée pour créer la carte.`
-      : "/carbon-card is in the prompt: press Enter to make the card.";
+      : "/carbon-card se ha insertado en el campo: pulsa Enter para generar la tarjeta.";
 }
 
 // The prompt could not take it (a dialog is open, or no prompt box here)
 export function cardFillFailed(lang: Lang): string {
-  return lang === "zh"
-    ? "No se pudo insertar /carbon-card en el campo: escríbelo tú mismo."
-    : lang === "fr"
+  return lang === "fr"
       ? `Le prompt n'a pas pu recevoir /carbon-card${NBSP}: tapez-le vous-même.`
-      : "The prompt could not take /carbon-card: type it yourself.";
+      : "No se pudo insertar /carbon-card en el campo: escríbelo tú mismo.";
 }
 
 // When the prompt already holds a draft, the button leaves it alone and says why
 export function cardDraftBusy(lang: Lang): string {
-  return lang === "zh"
-    ? "Hay un borrador en el campo: bórralo antes de generar la tarjeta."
-    : lang === "fr"
+  return lang === "fr"
       ? `Le prompt contient déjà un brouillon${NBSP}: videz-le pour obtenir la carte.`
-      : "The prompt already holds a draft: clear it to get the card.";
+      : "Hay un borrador en el campo: bórralo antes de generar la tarjeta.";
 }
 
 
@@ -879,7 +827,7 @@ export function projectBarLine(
   share: number,
   lang: Lang,
 ): string {
-  const name = project === "" ? (lang === "zh" ? "sin proyecto" : lang === "fr" ? "sans projet" : "no project") : project;
+  const name = project === "" ? (lang === "fr" ? "sans projet" : "sin proyecto") : project;
   const bar = "█".repeat(Math.max(1, Math.round(share * 16)));
   return `${bar} ${percent(share)} ${name} · ${formatGrams(grams, lang)}`;
 }
@@ -887,18 +835,16 @@ export function projectBarLine(
 // The rest after the projects listed
 export function otherProjectsLine(count: number, grams: number, share: number, lang: Lang): string {
   const fr = lang === "fr";
-  const label = lang === "zh" ? `${count} proyectos más` : fr
+  const label = fr
     ? `${count} autre${count > 1 ? "s" : ""} projet${count > 1 ? "s" : ""}`
-    : `${count} other project${count > 1 ? "s" : ""}`;
+    : `${count} proyecto${count > 1 ? "s" : ""} más`;
   return `${label} · ${formatGrams(grams, lang)} · ${percent(share)}`;
 }
 
 export function mascotAlt(lang: Lang): string {
-  return lang === "zh"
-    ? "Moléculas de CO₂ en píxeles, coloreadas según esta sesión respecto a tu mediana: azul (por debajo) a rojo (por encima)"
-    : lang === "fr"
+  return lang === "fr"
       ? "Molécule de CO₂ en pixels, colorée selon cette session par rapport à votre médiane, du bleu (en dessous) au rouge (au-dessus)"
-      : "Pixel CO₂ molecule, coloured by this session against your median, from blue (below) to red (above)";
+      : "Molécula de CO₂ en píxeles, coloreada según esta sesión respecto a tu mediana: azul (por debajo) a rojo (por encima)";
 }
 
 // The scale under the molecule, read aloud: where this session sits on it
@@ -907,16 +853,14 @@ export function scaleAlt(cls: number | null, lang: Lang): string {
   if (cls === null)
     return fr
       ? "Échelle des couleurs, du bleu (sous votre médiane) au rouge (au-dessus)"
-      : "Colour scale, from blue (under your median) to red (over it)";
+      : "Escala de colores, del azul (por debajo de tu mediana) al rojo (por encima)";
   return fr
     ? `Échelle des couleurs, du bleu au rouge : cette session est en ${cls + 1}e position sur 8`
-    : `Colour scale, from blue to red: this session is ${cls + 1} of 8`;
+    : `Escala de colores, del azul al rojo: esta sesión ocupa el puesto ${cls + 1} de 8`;
 }
 
 export function stripesAlt(lang: Lang): string {
-  return lang === "zh"
-    ? "Una franja por período, la más antigua a la izquierda, de azul (por debajo de la mediana) a rojo (por encima)"
-    : lang === "fr"
+  return lang === "fr"
       ? "Une bande par période, la plus ancienne à gauche, du bleu (sous la médiane) au rouge (au-dessus)"
-      : "One stripe per period, oldest on the left, from blue (below the median) to red (above)";
+      : "Una franja por período, la más antigua a la izquierda, del azul (por debajo de la mediana) al rojo (por encima)";
 }

@@ -839,12 +839,12 @@ async function snoozeOrDismiss($: EngineInterface, command: "snooze" | "dismiss"
     });
   }
   $.ui.toast(
-    command === "snooze" ? "Advice snoozed for three completed exchanges." : "Hint dismissed.",
+    command === "snooze" ? "Consejo pospuesto durante tres intercambios completados." : "Sugerencia descartada.",
   );
 }
 
 function errorMessage(error: unknown): string {
-  return error instanceof Error ? error.message : "Could not save settings.";
+  return error instanceof Error ? error.message : "No se pudieron guardar los ajustes.";
 }
 
 export const register: Register = (on, options) => {
@@ -946,7 +946,7 @@ export const register: Register = (on, options) => {
           void compactNow($, key).catch(() =>
             notice(
               $,
-              "Compact adviser could not compact after the before-compact prompt; context left unchanged.",
+              "compact-adviser no pudo compactar después del prompt previo a la compactación; el contexto no se modificó.",
             ),
           );
         });
@@ -954,7 +954,7 @@ export const register: Register = (on, options) => {
       }
       clearStatus($);
       await deferRetry($, handoff.key);
-      notice($, "The before-compact turn did not finish cleanly. Context left unchanged.");
+      notice($, "El turno previo a la compactación no terminó correctamente. El contexto no se modificó.");
       return result;
     }
     if (e.agentId !== undefined || e.reason !== "answer" || e.isAborted || !e.answer.trim()) {
@@ -989,7 +989,7 @@ export const register: Register = (on, options) => {
 
   on("command.run", { command: COMMAND }, async ($, e, next) => {
     if (!(await isActivated($))) return next(e);
-    if (!interactive) return { text: "compact-adviser acts only in interactive sessions." };
+    if (!interactive) return { text: "compact-adviser solo actúa en sesiones interactivas." };
     const [command = "", ...rest] = e.args.trim().split(/\s+/);
     const value = rest.join(" ");
     try {
@@ -1235,7 +1235,7 @@ export const register: Register = (on, options) => {
     }
 
     const modeValue = `${MODE_LABELS[config.mode]}${
-      config.mode === "auto" && !config.autoAcknowledged ? ", not confirmed" : ""
+      config.mode === "auto" && !config.autoAcknowledged ? ", sin confirmar" : ""
     }`;
     const setting = (label: string, value: string) => `${label.padEnd(24)}${value}`;
     const open = (target: Exclude<PaneView, "menu">, row: string, focus: string) => () => {
