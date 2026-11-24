@@ -121,13 +121,13 @@ async function pollForDecision($: EngineInterface, p: Prompt, session: string | 
   if (q) {
     const e = q.entry
     const attempts = e.attempts ?? 0
-    const note = attempts > 0 ? `queued for retry: ${e.lastError ?? 'Jev no respondió'} (attempt ${attempts})${e.nextAttemptAt ? `; próximo intento ${hhmm(e.nextAttemptAt)}` : ''}` : `En cola (antes hay ${q.before} turnos anteriores)`
+    const note = attempts > 0 ? `en cola para reintentar: ${e.lastError ?? 'Jev no respondió'} (intento ${attempts})${e.nextAttemptAt ? `; próximo intento ${hhmm(e.nextAttemptAt)}` : ''}` : `En cola (antes hay ${q.before} turnos anteriores)`
     await update($, S_SAVING, () => 'queued')
     await update($, S_SAVING_NOTE, () => note)
   } else {
     const failure = failureAfter(await readText($, LOG), p.at)
     await update($, S_SAVING, () => (failure ? 'failed' : 'unknown'))
-    await update($, S_SAVING_NOTE, () => (failure ? `fallido：${failure}` : 'Aún sin decidir: no hay registro de este turno en el registro (el demonio quizá sigue procesando turnos anteriores)'))
+    await update($, S_SAVING_NOTE, () => (failure ? `fallido: ${failure}` : 'Aún sin decidir: no hay registro de este turno en el registro (el demonio quizá sigue procesando turnos anteriores)'))
   }
   redraw($)
 }
@@ -141,12 +141,12 @@ async function doWhy($: EngineInterface, idOrHash: string, where: Where): Promis
   const cli = await read($, S_CLI)
   if (!cli) return note($, where, NOT_FOUND)
   const r = await runCli($, cli, ['why', idOrHash])
-  await update($, S_PENDING, (): Pending => ({ kind: 'output', where, title: `jevmem why ${idOrHash}${r.ok ? '' : '（fallido）'}`, text: r.text }))
+  await update($, S_PENDING, (): Pending => ({ kind: 'output', where, title: `jevmem why ${idOrHash}${r.ok ? '' : '(fallido)'}`, text: r.text }))
   redraw($)
 }
 async function doRetire($: EngineInterface, action: 'forget' | 'wrong', id: string, kind: string | null, where: Where): Promise<void> {
   if (!isId(id)) return note($, where, 'no es un ID de memoria')
-  if (kind === 'constraint') return note($, where, action === 'forget' ? `Desactiva esta regla en la terminal: jvmem forget ${id}` : `Desactiva esta regla en la terminal: jvmem wrong ${id} --should-be none`)
+  if (kind === 'constraint') return note($, where, action === 'forget' ? `Desactiva esta regla en la terminal: jevmem forget ${id}` : `Desactiva esta regla en la terminal: jevmem wrong ${id} --should-be none`)
   await update($, S_PENDING, (): Pending => ({ kind: 'confirm', where, action, id }))
   redraw($)
 }
@@ -169,14 +169,14 @@ async function doConfirm($: EngineInterface, yes: boolean): Promise<void> {
   if (!cli) return note($, p.where, NOT_FOUND)
   const args = p.action === 'forget' ? ['forget', p.id] : p.action === 'wrong' ? ['wrong', p.id, '--should-be', 'none'] : ['missed', p.text ?? '']
   const r = await runCli($, cli, args)
-  await update($, S_PENDING, (): Pending => ({ kind: 'output', where: p.where, title: `jevmem ${p.action === 'missed' ? 'missed "…"' : args.join(' ')}${r.ok ? '' : '（fallido）'}`, text: r.text }))
+  await update($, S_PENDING, (): Pending => ({ kind: 'output', where: p.where, title: `jevmem ${p.action === 'missed' ? 'missed "…"' : args.join(' ')}${r.ok ? '' : '(fallido)'}`, text: r.text }))
   redraw($)
 }
 async function doGuardLog($: EngineInterface): Promise<void> {
   const cli = await read($, S_CLI)
   if (!cli) return note($, 'guard', NOT_FOUND)
   const r = await runCli($, cli, ['guard', 'log', '-n', '5'])
-  await update($, S_PENDING, (): Pending => ({ kind: 'output', where: 'guard', title: `jevmem guard log -n 5${r.ok ? '' : '（fallido）'}`, text: r.text }))
+  await update($, S_PENDING, (): Pending => ({ kind: 'output', where: 'guard', title: `jevmem guard log -n 5${r.ok ? '' : '(fallido)'}`, text: r.text }))
   redraw($)
 }
 async function doClose($: EngineInterface): Promise<void> {

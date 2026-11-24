@@ -26,9 +26,9 @@ async function fleetRunOnce($: EngineInterface, st: FleetState) {
   try {
     const reply = await $.process.run(['python3', '-I', `${$.plugin.root}/hooks/fleet-source.py`],
       { timeoutMs: 10000, stdin: JSON.stringify({ action: 'load-config', path: st.path }) })
-    if (reply.exitCode !== 0 || reply.isStdoutTruncated || reply.isStderrTruncated) throw new Error('config refused')
+    if (reply.exitCode !== 0 || reply.isStdoutTruncated || reply.isStderrTruncated) throw new Error('configuración rechazada')
     const parsed = JSON.parse(reply.stdout)
-    if (parsed.ok !== true) throw new Error('config invalid')
+    if (parsed.ok !== true) throw new Error('configuración no válida')
     const config = parsed.result as FleetRuntimeConfig
     if (config.enabled !== true || config.maxJudgeCalls === 0) {
       stopTimer(st)
@@ -38,7 +38,7 @@ async function fleetRunOnce($: EngineInterface, st: FleetState) {
     return await runFleetOnce($, config)
   } catch {
     stopTimer(st)
-    return { status: 'uncertain', gaps: ['Fleet configuration/source diagnosis required'] }
+    return { status: 'uncertain', gaps: ['se requiere diagnóstico de la configuración/fuente de la flota'] }
   }
 }
 

@@ -138,7 +138,7 @@ export function plainDecision(d: Decision): string {
     const n = /(\d+) background subagent/.exec(r)?.[1]
     return n ? `Esperando: ${n} subagentes en segundo plano aún no han respondido` : 'Esperando: el turno sigue en curso'
   }
-  if (d.action === 'error') return `fallido：${short(d.detail || d.reason || 'el juicio terminó con un error')}`
+  if (d.action === 'error') return `fallido: ${short(d.detail || d.reason || 'el juicio terminó con un error')}`
   if (d.action !== 'skipped') return `${d.action}: ${short(d.reason ?? d.detail ?? '')}`
   if (/^empty turn/.test(d.reason ?? d.detail ?? '')) return 'No guardado: turno vacío'
   const dup = d.duplicate_of ?? /duplicate of ([a-z0-9]{6})/.exec(r)?.[1]

@@ -86,7 +86,7 @@ export function draw($: EngineInterface, e: RenderInput<'Pane'>, v: View, act: A
   else if (v.recallState !== 'this' || !v.recall) recall.push(<Text dimColor>nada para esta solicitud</Text>)
   else {
     const r = v.recall
-    if (r.lines === 0) recall.push(<Text dimColor wrap="wrap">aún no hay líneas de memoria: di una decisión, una regla o un fallo y jvmem lo guardará</Text>)
+    if (r.lines === 0) recall.push(<Text dimColor wrap="wrap">aún no hay líneas de memoria: di una decisión, una regla o un fallo y jevmem lo guardará</Text>)
     else if (r.served.length === 0) recall.push(<Text dimColor>ninguna línea de memoria coincide con esta solicitud</Text>)
     for (const m of r.served) {
       const id = String(m.id ?? '')
@@ -95,7 +95,7 @@ export function draw($: EngineInterface, e: RenderInput<'Pane'>, v: View, act: A
       else recall.push(<Text dimColor>no es un ID de memoria</Text>)
     }
     for (const w of r.withheld) recall.push(<Text dimColor wrap="wrap">{`${String(w.id)} conservada: ${cut(String(w.reason ?? ''))}`}</Text>)
-    const how = r.path === 'word-match' ? `coincidencia de palabras: Jev no respondió${r.error ? `（${cut(r.error)}）` : ''}` : `Jev ${r.ms} ms`
+    const how = r.path === 'word-match' ? `coincidencia de palabras: Jev no respondió${r.error ? `(${cut(r.error)})` : ''}` : `Jev ${r.ms} ms`
     if (r.lines !== 0) recall.push(<Text dimColor wrap="wrap">{`${r.served.length} aciertos · ${r.withheld.length} conservadas · ${r.gated} restringidas · ${how}`}</Text>)
   }
 
@@ -116,7 +116,7 @@ export function draw($: EngineInterface, e: RenderInput<'Pane'>, v: View, act: A
     )
   }
   if (v.lastCall && 'missing' in v.lastCall) guard.push(<Text dimColor>{`${v.lastCall.tool}: esta llamada no tiene registro`}</Text>)
-  else if (v.lastCall && (!v.guard || v.guard.entry !== v.lastCall)) guard.push(<Text dimColor wrap="wrap">{`Última llamada: ${v.lastCall.tool} ${verb(v.lastCall.decision)}（${routeWords[v.lastCall.route] ?? v.lastCall.route}）`}</Text>)
+  else if (v.lastCall && (!v.guard || v.guard.entry !== v.lastCall)) guard.push(<Text dimColor wrap="wrap">{`Última llamada: ${v.lastCall.tool} ${verb(v.lastCall.decision)}(${routeWords[v.lastCall.route] ?? v.lastCall.route})`}</Text>)
   if (!guard.length) guard.push(<Text dimColor>aún no hay llamadas comprobadas</Text>)
 
   // Block 3: saved last turn.

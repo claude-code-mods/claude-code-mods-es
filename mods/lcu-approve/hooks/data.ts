@@ -35,9 +35,9 @@ export const firstLine = (text: string) => String(text ?? '').trim().split('\n')
 // The runtime's risk warning names its own agent; the person is using Claude, so say what it means.
 export const plainWarning = (text: string) =>
   text
-    .replace(/Allowing ChatGPT to use this app/g, 'Allowing computer use to control this app')
-    .replace(/monitor ChatGPT while it uses this app/g, 'monitor the agent while it uses this app')
-    .replace(/ChatGPT/g, 'the agent')
+    .replace(/Allowing ChatGPT to use this app/g, 'Autorizando a Control del ordenador a controlar esta aplicación')
+    .replace(/monitor ChatGPT while it uses this app/g, 'supervisar al agente mientras usa esta aplicación')
+    .replace(/ChatGPT/g, 'el agente')
 
 // Whether the terminal draws the picture of an Image (the kitty graphics protocol: kitty, Ghostty); elsewhere
 // the Image would leave blank cells before the app's name.
@@ -64,4 +64,4 @@ export function parseNotice(stdout: string): UpdateNotice | undefined {
 }
 
 export const noticeToast = (notice: UpdateNotice) =>
-  `${notice.severity === 'security' ? 'Security update: ' : notice.severity === 'breaking' ? 'Breaking update: ' : ''}LCU ${notice.latest ?? 'update'} is available \u2014 ask Claude to update it, or run lcu update`
+  `${notice.severity === 'security' ? 'Actualización de seguridad: ' : notice.severity === 'breaking' ? 'Actualización incompatible: ' : ''}LCU ${notice.latest ?? 'actualización'} está disponible \u2014 pide a Claude que la actualice o ejecuta lcu update`

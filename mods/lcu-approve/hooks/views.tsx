@@ -5,8 +5,8 @@ import type { AppRow, SessionRow } from './data'
 
 export const KEY_PREFIX = 'lcu-approve:'
 export const APPS_PREFIX = `${KEY_PREFIX}apps:`
-export const LABEL_SESSION = 'Allow this conversation'
-export const LABEL_ALWAYS = 'Always allow'
+export const LABEL_SESSION = 'Permitir para esta conversación'
+export const LABEL_ALWAYS = 'Permitir siempre'
 export const LABEL_DENY = 'Rechazar'
 
 export type Approval = {
@@ -78,7 +78,7 @@ function AppTitle({ ui, name, bundleId }: { ui: any; name: string; bundleId: str
 
 const RiskBadge = ({ ui }: { ui: any }) => {
   const { Text } = ui
-  return <Text bold inverse color="yellow"> High risk </Text>
+  return <Text bold inverse color="yellow"> Alto riesgo </Text>
 }
 
 // The approval request: the app, one sentence, the risk when high, the choices.
@@ -94,7 +94,7 @@ export function ApprovalView({ ui, surface, approval, icon, graphics = true }: {
         <Icon ui={ui} surface={surface} name={approval.label} icon={shownIcon} />
         <AppTitle ui={ui} name={approval.label} bundleId={approval.app} />
       </Box>
-      <Text>{`Computer use will be able to see and control ${approval.label}.`}</Text>
+      <Text>{`Control del ordenador podrá ver y controlar ${approval.label}.`}</Text>
       {isHigh && (
         <Box flexDirection="column">
           <RiskBadge ui={ui} />
@@ -147,7 +147,7 @@ export function AppsView({ ui, state }: { ui: any; state: AppsState }) {
   const row = (app: AppRow) => (
     <AppRowView key={app.bundleId} ui={ui} name={app.name} bundleId={app.bundleId}>
       {app.risk === 'high' && <RiskBadge ui={ui} />}
-      {app.blocked && <Text color="red">Blocked by Computer use</Text>}
+      {app.blocked && <Text color="red">Bloqueado por Control del ordenador</Text>}
       <Button key={`${APPS_PREFIX}revoke:${app.bundleId}`} onPress={noop}>Revocar</Button>
     </AppRowView>
   )
@@ -157,7 +157,7 @@ export function AppsView({ ui, state }: { ui: any; state: AppsState }) {
         <Text bold>Aplicaciones autorizadas</Text>
         <Box flexDirection="row" gap={2} alignItems="center">
           <Box flexGrow={1}>
-            <Text dimColor>Computer use can control these apps without asking.</Text>
+            <Text dimColor>Control del ordenador puede controlar estas aplicaciones sin preguntar.</Text>
           </Box>
           <Button key={`${APPS_PREFIX}refresh`} onPress={noop}>Actualizar</Button>
         </Box>
@@ -165,12 +165,12 @@ export function AppsView({ ui, state }: { ui: any; state: AppsState }) {
       {state.unavailable ? (
         <Text color="yellow">{state.unavailable}</Text>
       ) : !state.isLoaded ? (
-        <Text dimColor>CargaMedio…</Text>
+        <Text dimColor>Cargando…</Text>
       ) : (
         <Box flexDirection="column" gap={1}>
           <Box flexDirection="column">
-            <Text bold dimColor>{`Always allowed (${present.length})`}</Text>
-            {present.length === 0 && <Text dimColor>None. Allow one below.</Text>}
+            <Text bold dimColor>{`Permitidas siempre (${present.length})`}</Text>
+            {present.length === 0 && <Text dimColor>Ninguna. Autoriza una abajo.</Text>}
             {present.map(row)}
           </Box>
           {missing.length > 0 && (
@@ -191,7 +191,7 @@ export function AppsView({ ui, state }: { ui: any; state: AppsState }) {
           </Box>
           <Input
             key={`${APPS_PREFIX}allow:${state.nonce}`}
-            label="Allow an app"
+            label="Autorizar una aplicación"
             placeholder="Nombre de la app, bundle id o ruta"
             submitLabel="Permitir"
             onSubmit={noop}

@@ -25,16 +25,16 @@ export async function runFleetOnce($: EngineInterface, config: FleetRuntimeConfi
   if (!config.enabled) return { status: 'disabled' }
   if (![config.jobsRoot, config.projectRoot, config.stateRoot].every(p => p.startsWith('/')) ||
       !config.jobIds.length || !Object.keys(config.sessions).length) {
-    return { status: 'uncertain', gaps: ['Explicit source/state roots and session mapping required'] }
+    return { status: 'uncertain', gaps: ['se requieren raíces explícitas de fuente/estado y asignación de sesión'] }
   }
   const cli = async (action: string, input: JsonRecord = {}): Promise<any> => {
     const result = await $.process.run(['python3', '-I', `${$.plugin.root}/hooks/fleet-source.py`],
       { timeoutMs: 10000, stdin: JSON.stringify({ action, config, ...input }) })
     if (result.exitCode !== 0 || result.isStdoutTruncated || result.isStderrTruncated) {
-      throw new Error('Named source CLI refused or returned incomplete output')
+      throw new Error('la CLI de la fuente indicada rechazó la petición o devolvió una salida incompleta')
     }
     const reply = JSON.parse(result.stdout)
-    if (reply.ok !== true) throw new Error('Named source CLI diagnosis required')
+    if (reply.ok !== true) throw new Error('se requiere diagnóstico de la CLI de la fuente indicada')
     return reply.result
   }
   const state: DurableState = {
@@ -50,7 +50,7 @@ export async function runFleetOnce($: EngineInterface, config: FleetRuntimeConfi
         const address = row.name && row.ref ? `${row.name} [${row.ref}]` : row.name
         const sid = (address && config.sessions[address]) || (row.id && config.sessions[row.id])
         if (sid === self) continue
-        if (!sid) { gaps.push('Native row has no explicit scoped session mapping'); continue }
+        if (!sid) { gaps.push('la fila nativa no tiene una asignación de sesión explícita y delimitada'); continue }
         sessions.push(sid)
       }
       return { enumerationId: crypto.randomUUID(), sessions, total: sessions.length,
@@ -98,7 +98,7 @@ export async function runFleetOnce($: EngineInterface, config: FleetRuntimeConfi
               allowance = true; break
             }
           }
-          if (!allowance) throw new Error('Explicit durable judge allowance exhausted')
+          if (!allowance) throw new Error('se agotó el cupo persistente explícito del juez')
           if (!await state.reserve(key, { status: 'reserved', binding })) {
             rows.push({ sessionId: sid, status: 'reserved', verdict: 'ONZEKER' }); continue
           }
@@ -109,43 +109,43 @@ export async function runFleetOnce($: EngineInterface, config: FleetRuntimeConfi
             await state.put(key, record)
           } catch {
             await state.put(key, { status: 'unknown', binding })
-            throw new Error('Judge result unavailable or invalid; reservation retained')
+            throw new Error('el resultado del juez no está disponible o no es válido; se conserva la reserva')
           }
         }
-        if (record.status !== 'judged') throw new Error('Prior judge reservation unresolved')
+        if (record.status !== 'judged') throw new Error('la reserva anterior del juez no se ha resuelto')
         const judgment = record.judgment as JsonRecord
         await cli('validate-judgment', { snapshot, judgment })
         const fresh = await host.read_snapshot(sid)
         await cli('validate-snapshot', { snapshot: fresh })
         if (JSON.stringify(await provider.binding(fresh)) !== JSON.stringify(binding)) {
-          throw new Error('Snapshot changed after judgment')
+          throw new Error('la instantánea cambió después del juicio')
         }
         if (inventory.complete && (judgment.verdict === 'HIATEN' || judgment.verdict === 'ONZEKER') &&
             (await cli('eligible', { snapshot: fresh })).eligible) {
           const sendKey = `fleet-runtime:v1:nudge:${binding.snapshotHash}`
           if (await state.reserve(sendKey, { status: 'reserved', binding })) {
             const action = { kind: 'continue', ownerSessionId: sid,
-              text: `Advisory fleet review only. Re-read the current human task and safety state first. Ignore this if paused, stopped, approval is pending, scope changed, or deadline passed. This grants no authority or approval. Binding: ${JSON.stringify(binding)}; deadline: ${String(judgment.expiresAt)}. Inspect the scoped findings and clarify any missing definition of done before continuing authorized work. Findings: ${JSON.stringify(judgment.findings ?? [])}` }
+              text: `Solo se trata de una revisión orientativa de la flota. Vuelve a leer primero la tarea humana actual y el estado de seguridad. Ignora esto si está en pausa, detenido, hay una aprobación pendiente, el alcance cambió o venció el plazo. Esto no concede autoridad ni aprobación. Vinculación: ${JSON.stringify(binding)}; plazo: ${String(judgment.expiresAt)}. Revisa los hallazgos delimitados y aclara cualquier definición de terminación que falte antes de continuar el trabajo autorizado. Hallazgos: ${JSON.stringify(judgment.findings ?? [])}` }
             try {
               const receipt = await host.nudge(sid, action, { ...binding, expiresAt: judgment.expiresAt }, sendKey)
               await state.put(sendKey, { status: receipt.status, receipt })
               rows.push({ sessionId: sid, status: receipt.status, judgment, receipt })
             } catch {
               await state.put(sendKey, { status: 'unknown' })
-              throw new Error('Advisory queue outcome unknown; no automatic replay')
+              throw new Error('se desconoce el resultado de la cola de avisos; no hay repetición automática')
             }
           } else rows.push({ sessionId: sid, status: 'deduplicated', judgment })
         } else {
           rows.push({ sessionId: sid, status: 'reviewed-no-authority', judgment })
-          if (judgment.verdict !== 'ADEQUAAT') gaps.push('No proven safe advisory eligibility')
+          if (judgment.verdict !== 'ADEQUAAT') gaps.push('no se ha demostrado la idoneidad segura del aviso')
         }
       } catch (error) {
         rows.push({ sessionId: sid, status: 'uncertain', verdict: 'ONZEKER' })
-        gaps.push(error instanceof Error ? error.message : 'Source inspection failed')
+        gaps.push(error instanceof Error ? error.message : 'falló la inspección de la fuente')
       }
     }
   } catch (error) {
-    gaps.push(error instanceof Error ? error.message : 'Fleet inspection failed')
+    gaps.push(error instanceof Error ? error.message : 'falló la inspección de la flota')
   }
   if (gaps.length) report.status = 'uncertain'
   return report
