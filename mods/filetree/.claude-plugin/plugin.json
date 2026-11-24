@@ -16,7 +16,7 @@
   "userConfig": {
     "activity": {
       "type": "string",
-      "title": "Claude activity",
+      "title": "Actividad de Claude",
       "description": "Qué actividad de archivos de Claude brilla en el árbol: los archivos leídos con la herramienta Read o con lectores de Bash (rg, grep, find, cat) en morado, las escrituras en naranja y las acciones de git en verde",
       "default": "reads and writes",
       "options": [
@@ -28,7 +28,7 @@
     },
     "shimmer": {
       "type": "string",
-      "title": "Activity shimmer",
+      "title": "Brillo de actividad",
       "description": "on: los archivos que Claude lee, escribe y confirma brillan en el árbol. off: se dibujan como filas normales, y las carpetas siguen abriéndose para mostrarlos. El botón Clawd en la cabecera de la app de escritorio cambia esta opción, y todas las sesiones, terminales o de escritorio, la siguen.",
       "default": "on",
       "options": [
@@ -38,7 +38,7 @@
     },
     "glyphs": {
       "type": "string",
-      "title": "Glyphs",
+      "title": "Glifos",
       "description": "Conjunto de iconos: auto usa iconos de Nerd Font cuando Nerd Fonts 3.2 o posterior está instalado aquí, salvo en la app de escritorio, y Unicode normal en los demás casos; plain usa solo Unicode; text es normal con los botones de la cabecera como palabras (up, cwd, sync, dots, size, fold, split, clear), y vuelve a los glifos normales cuando el panel es demasiado estrecho",
       "default": "auto",
       "options": [
@@ -50,7 +50,7 @@
     },
     "follow": {
       "type": "string",
-      "title": "Follow Claude",
+      "title": "Seguir a Claude",
       "description": "on: el árbol se desplaza hasta lo que Claude lee, escribe o confirma. off: la vista se queda donde la dejaste y solo tu propio desplazamiento la mueve; los resaltados siguen apareciendo.",
       "default": "on",
       "options": [
@@ -60,7 +60,7 @@
     },
     "jump": {
       "type": "string",
-      "title": "Jump moves Claude",
+      "title": "El salto mueve a Claude",
       "description": "tree y Claude: elegir una carpeta con z cambia la raíz del árbol y mueve la sesión allí con /cd, que primero pide permiso para una carpeta en la que esta sesión no confía. tree: z solo cambia la raíz del árbol y Claude se queda donde está.",
       "default": "tree and Claude",
       "options": [
@@ -70,7 +70,7 @@
     },
     "copy": {
       "type": "string",
-      "title": "Right-click copies",
+      "title": "El clic derecho copia",
       "description": "relative: un clic derecho sobre una entrada copia su ruta desde la raíz del árbol. absolute: copia la ruta completa. Shift+clic derecho copia la otra. y e Y siguen copiando la ruta relativa y la absoluta.",
       "default": "relative",
       "options": [
@@ -80,7 +80,7 @@
     },
     "work": {
       "type": "string",
-      "title": "Follow work",
+      "title": "Seguir el trabajo",
       "description": "on: cuando Claude o sus subagentes siguen leyendo y escribiendo en otro repositorio git durante unos minutos, la sesión se mueve allí con /cd al final de un turno (o mientras está inactiva) y el árbol la sigue; como máximo una vez cada dos minutos, nunca cuando varios repositorios están igual de ocupados y nunca en carpetas temporales, ~/.claude, ~/.config ni en la bóveda de agentes. off: la sesión se queda donde la dejaste. Con Jump moves Claude en tree, solo se mueve el árbol.",
       "default": "on",
       "options": [
@@ -90,7 +90,7 @@
     },
     "start": {
       "type": "string",
-      "title": "Open at start",
+      "title": "Abrir al inicio",
       "description": "on: el panel se abre cuando se inicia una sesión. off: permanece cerrado hasta que ejecutes /filetree.",
       "default": "on",
       "options": [
@@ -100,7 +100,7 @@
     },
     "focus": {
       "type": "string",
-      "title": "Focus on open",
+      "title": "Enfocar al abrir",
       "description": "on: /filetree mueve el teclado al árbol cuando lo abre. off: el teclado se queda en el aviso, de modo que el mismo comando, o una tecla enlazada a él, oculta el árbol de nuevo; /filetree open, /filetree <path> y un árbol oculto tras otra pestaña siguen tomando el foco.",
       "default": "on",
       "options": [
@@ -110,7 +110,7 @@
     },
     "column": {
       "type": "string",
-      "title": "Right column",
+      "title": "Columna derecha",
       "description": "Qué muestra por defecto la columna derecha: date (última modificación), age (tiempo desde la última modificación; abreviado: now, 12m, 3h, 5d, después Oct 9 pasada una semana y el año pasado un año), size (archivos en bytes, carpetas como uso de disco calculado en segundo plano), loc (líneas no vacías de cada archivo de texto, carpetas como la suma y 0 si no contienen texto, contado en segundo plano; los binarios no muestran nada) o files (el número de archivos bajo cada carpeta, contado en segundo plano). El botón de la cabecera alterna date o age, size, loc y files; en loc, el treemap dimensiona las cajas según las líneas.",
       "default": "date",
       "options": [
@@ -123,7 +123,7 @@
     },
     "dates": {
       "type": "string",
-      "title": "Date format",
+      "title": "Formato de fecha",
       "description": "Cómo escribe la columna de fecha un día: year-month-day (2026-11-04 15:40), day-month (04-11 15:40) o month-day (11-04 15:40). day-month y month-day omiten el año. La columna age no cambia.",
       "default": "year-month-day",
       "options": [
@@ -134,7 +134,7 @@
     },
     "clock": {
       "type": "string",
-      "title": "Clock",
+      "title": "Reloj",
       "description": "Cómo escribe la columna de fecha la hora: 24h (15:40) o 12h (3:40 PM).",
       "default": "24h",
       "options": [
@@ -144,13 +144,13 @@
     },
     "long": {
       "type": "string",
-      "title": "Long file",
+      "title": "Archivo largo",
       "description": "En la columna loc, un archivo con más líneas que este número muestra su recuento de líneas en rojo. off: nunca. Predeterminado 500.",
       "default": "500"
     },
     "remote": {
       "type": "string",
-      "title": "Remote branch",
+      "title": "Rama remota",
       "description": "on: la fila de la rama muestra la rama superior junto a los recuentos de adelante y atrás. off: solo se muestran los recuentos.",
       "default": "off",
       "options": [
@@ -160,7 +160,7 @@
     },
     "hints": {
       "type": "string",
-      "title": "Hints",
+      "title": "Pistas",
       "description": "on: fuera de un repositorio git, una línea bajo la cabecera indica que git status comienza después de git init. off: la línea se oculta y el árbol gana esa fila.",
       "default": "on",
       "options": [
@@ -170,7 +170,7 @@
     },
     "collapse": {
       "type": "string",
-      "title": "Auto-collapse",
+      "title": "Plegado automático",
       "description": "on: las carpetas que el árbol abrió para mostrar lecturas y escrituras de Claude se cierran de nuevo 10 segundos después de que Claude las tocara por última vez, salvo que tú las hayas abierto o entrado en ellas; activarlo también cierra las que se abrieron mientras estaba desactivado. off: permanecen abiertas. El conmutador de la barra de herramientas y la tecla a lo cambian.",
       "default": "off",
       "options": [
@@ -180,7 +180,7 @@
     },
     "headers": {
       "type": "string",
-      "title": "Column headers",
+      "title": "Cabeceras de columna",
       "description": "on: una fila de cabecera con Name, Git y el valor bajo la barra de búsqueda; haz clic en una para ordenar descendente, ascendente y luego desactivar. off: ocultarla.",
       "default": "on",
       "options": [
@@ -190,7 +190,7 @@
     },
     "spacing": {
       "type": "string",
-      "title": "Search spacing",
+      "title": "Espaciado de búsqueda",
       "description": "on: una línea en blanco encima y debajo de la barra de búsqueda. off: la barra de búsqueda queda justo bajo la cabecera y el árbol gana las dos filas.",
       "default": "on",
       "options": [
@@ -200,7 +200,7 @@
     },
     "shortcuts": {
       "type": "string",
-      "title": "Shortcuts",
+      "title": "Atajos",
       "description": "? en el árbol muestra todas las teclas, agrupadas, en lugar del árbol; j, k, las flechas, f, b y las teclas de página lo desplazan; ? de nuevo o cualquier otra tecla que actúe lo cierra, y la tecla sigue actuando. auto: el pie muestra una pista ?: shortcuts. always: la lista se abre con el panel. off: sin pista. ? funciona en todos los modos con el árbol enfocado; escrito en el campo de búsqueda es solo un carácter.",
       "default": "auto",
       "options": [
@@ -217,7 +217,7 @@
     },
     "binaries": {
       "type": "string",
-      "title": "Binary files",
+      "title": "Archivos binarios",
       "description": "Qué hace un doble clic o Enter con una imagen, audio, vídeo, PDF, documento de oficina, archivo comprimido, fuente o archivo compilado cuando Open with nombra un editor o comando. Open with: se lo entrega al editor o comando como a cualquier otro archivo. default app: se abre con la app predeterminada para su tipo, como si Open with estuviera vacío, de modo que un editor de código en Open with recibe código y el sistema recibe imágenes. El tipo de archivo viene de su extensión; la vista previa no cambia.",
       "default": "Open with",
       "options": [
@@ -227,19 +227,19 @@
     },
     "edit": {
       "type": "string",
-      "title": "Edit with",
+      "title": "Editar con",
       "description": "Qué hace e en la vista previa: abrir el archivo en la primera línea mostrada. Vacío: $VISUAL, después $EDITOR y luego vi en tmux o un panel de herdr con +line (solo Linux/macOS; el botón e está oculto en otros casos). Cualquier otro valor es un comando como Open with, donde {line} es esa línea, por ejemplo code -g {path}:{line} o zed {path}:{line}.",
       "default": ""
     },
     "diff": {
       "type": "string",
-      "title": "Diff with",
+      "title": "Comparar con",
       "description": "Qué hace d sobre un archivo modificado, en el árbol o en la vista previa. Vacío: mostrar su diff frente a HEAD en el panel, dibujado por la vista de diff propia de Claude Code (un archivo sin seguimiento aparece como todo añadido; d de nuevo vuelve al archivo). Cualquier otro valor es un comando de terminal, ejecutado sobre el archivo en una ventana de tmux, un panel de herdr o, en Linux, una nueva ventana de terminal mediante xdg-terminal-exec, con la ruta del archivo al final. Ejemplos: hunk diff --, lazygit -f, git difftool -y --, nvim -c Gvdiffsplit.",
       "default": ""
     },
     "groups": {
       "type": "string",
-      "title": "Diff groups",
+      "title": "Agrupaciones de diff",
       "description": "Cómo ordena d los archivos modificados de una carpeta. folder: agrupados por carpeta, con los archivos de prueba, compilación y generados (archivos de bloqueo, carpetas dist, build y out, *.min.*, instantáneas, carpetas de pruebas, archivos *.test.* y *_test.*) en su propio grupo al final. kind: primero los demás archivos y después ese grupo de pruebas, compilación y generados. off: una sola lista en el orden de git.",
       "default": "folder",
       "options": [
@@ -250,7 +250,7 @@
     },
     "target": {
       "type": "string",
-      "title": "Terminal target",
+      "title": "Destino de terminal",
       "description": "Dónde Open with, e en la vista previa y un comando Diff with inician su programa de terminal: dentro de tmux o herdr. auto: una nueva ventana de tmux o un panel de herdr dividido a la derecha. pane right y pane below dividen el panel actual; tab abre una ventana de tmux o una pestaña de herdr; workspace abre una nueva sesión de tmux y cambia a ella, o un nuevo espacio de trabajo de herdr. En tmux, un nvim ya ejecutándose en la sesión se reutiliza dondequiera que esté.",
       "default": "auto",
       "options": [
@@ -263,13 +263,13 @@
     },
     "ignore": {
       "type": "string",
-      "title": "Ignore",
+      "title": "Ignorar",
       "description": "Nombres de archivos y carpetas que se excluyen del árbol, su búsqueda y su brillo, separados por espacios o comas. Los nombres coinciden exactamente, sin comodines, a cualquier profundidad, como .git y node_modules, que ya vienen incluidos. Ejemplo: .cache .tmp",
       "default": ""
     },
     "split": {
       "type": "string",
-      "title": "Preview pane",
+      "title": "Panel de vista previa",
       "description": "Dónde se sitúa la vista previa dividida del archivo bajo el cursor cuando la pulsa el botón de la cabecera o p: bottom (bajo el árbol, sobre la línea de estado) o top (bajo la cabecera). Empieza oculta; el texto se desplaza con la rueda sobre ella, f/b o Page Up/Down; las imágenes, los fotogramas de vídeo y las páginas de PDF o documentos de oficina se dibujan mediante el protocolo gráfico de kitty en los terminales que lo admiten, y [ y ] cambian las páginas de un documento.",
       "default": "bottom",
       "options": [
@@ -279,7 +279,7 @@
     },
     "treemap": {
       "type": "string",
-      "title": "Treemap",
+      "title": "Mapa de árbol",
       "description": "Qué muestra la vista previa dividida sobre una carpeta. auto: un treemap de píxeles precisos mediante el protocolo gráfico de kitty en Ghostty y kitty, fuera de tmux y herdr, y el treemap de celdas en todos los demás casos. image: intenta el treemap de píxeles en cualquier terminal, y vuelve a las celdas cuando no puede mostrarlo, como dentro de tmux. cells: siempre el treemap de celdas. off: sin treemap ni análisis de uso de disco.",
       "default": "auto",
       "options": [
@@ -291,7 +291,7 @@
     },
     "palette": {
       "type": "string",
-      "title": "Palette",
+      "title": "Paleta",
       "description": "Tus propios colores, superpuestos al tema Omarchy, claro o predeterminado: pares key=#hex separados por espacios. Claves: fg, bg, accent (carpetas, enlaces), muted (fechas, tamaños), urgent (eliminados, conflictos), selection (fila seleccionada), hover (fila bajo el puntero), jump (carpetas en modo salto z), added, modified, renamed (estado de git), add y del (recuentos de líneas). Una clave que omitas conserva el color del tema. Ejemplo (Gruvbox Dark Hard): fg=#ebdbb2 bg=#1d2021 accent=#83a598 muted=#928374 urgent=#fb4934 selection=#3c3836 added=#b8bb26 modified=#fabd2f renamed=#83a598 add=#b8bb26 del=#fb4934",
       "default": ""
     }
