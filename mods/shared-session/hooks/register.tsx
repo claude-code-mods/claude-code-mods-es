@@ -437,7 +437,7 @@ async function noteLatest($: $, latest: unknown) {
   }
   $.ui.log(
     auto
-      ? `Shared Sessions ${latest} is out (this session runs ${mine}). It installs by itself; new sessions get it${live === 'next' ? ', and from then on updates load without a restart' : ''}.`
+      ? `Ya está disponible Shared Sessions ${latest} (esta sesión usa ${mine}). Se instala sola; las sesiones nuevas la reciben${live === 'next' ? ' y desde entonces las actualizaciones se cargan sin reiniciar' : ''}.`
       : `Shared Sessions ${latest} is out (this session runs ${mine}). Turn on Updates in the Room, or run: ${UPDATE_COMMAND}`,
   )
 }
@@ -557,7 +557,7 @@ async function selfUpdate($: $, latest: string) {
   )
   const got = /version=(\S+)/.exec(fetched.out)?.[1]
   const apply = Boolean(got && newerThan(got, mine))
-  if (apply) $.ui.log(`Updating Shared Sessions to ${got}. It reloads in place; nothing to restart.`)
+  if (apply) $.ui.log(`Actualizando Shared Sessions a ${got}. Se recarga en el mismo sitio; no hay que reiniciar.`)
   if (got) {
     await sh(
       $,
@@ -579,7 +579,7 @@ async function selfUpdate($: $, latest: string) {
     // otherwise keep this session on its version unseen.
     if (!got && !/busy/.test(fetched.out) && failedFor !== latest) {
       failedFor = latest
-      $.ui.log(`Shared Sessions ${latest} is out, but this machine couldn't download it. Run: ${UPDATE_COMMAND} — the next session picks it up.`)
+      $.ui.log(`Ya está disponible Shared Sessions ${latest}, pero este ordenador no pudo descargarla. Ejecuta: ${UPDATE_COMMAND}; la próxima sesión la recogerá.`)
     }
   }
 }
@@ -604,7 +604,7 @@ async function catchUpFromInstalled($: $) {
   }
   const version = typeof installed?.version === 'string' ? installed.version : ''
   if (!version || !newerThan(version, mine) || typeof installed?.installPath !== 'string') return
-  $.ui.log(`Updating Shared Sessions to ${version} from the installed copy. It reloads in place; nothing to restart.`)
+  $.ui.log(`Actualizando Shared Sessions a ${version} desde la copia instalada. Se recarga en el mismo sitio; no hay que reiniciar.`)
   await sh(
     $,
     [
@@ -725,7 +725,7 @@ async function readUpdates($: $) {
   // marketplace's autoUpdate), or the folder named for them gone: in place now.
   const missing = named && dir ? !(await $.fs.exists(`${dir}/.claude-plugin/plugin.json`).catch(() => true)) : false
   if (on && (!named || missing) && !runsLive($) && (await enableLive($))) {
-    $.ui.log('Shared Sessions now updates in place: from your next new session on, a release loads without a restart.')
+    $.ui.log('Shared Sessions ahora se actualiza en el mismo sitio: a partir de tu próxima sesión, una versión se carga sin reiniciar.')
   }
 }
 
@@ -738,7 +738,7 @@ async function writeUpdates($: $, on: boolean) {
   try {
     if (await $.fs.exists(path)) settings = JSON.parse(await $.fs.read(path))
   } catch {
-    $.ui.toast(`Couldn't read ${path}, so nothing changed`)
+    $.ui.toast(`No se pudo leer ${path}, así que no cambió nada`)
     return
   }
   const known = (settings.extraKnownMarketplaces ?? {}) as Record<string, Record<string, unknown>>
@@ -747,17 +747,17 @@ async function writeUpdates($: $, on: boolean) {
   try {
     await $.fs.write(path, `${JSON.stringify(settings, null, 2)}\n`)
   } catch {
-    $.ui.toast("Couldn't change it here: use /plugin → Marketplaces → claude-share")
+    $.ui.toast('No se puede cambiar aquí: usa /plugin → Marketplaces → claude-share')
     return
   }
   await update($, updatesA, () => on)
   if (on) {
     const live = await enableLive($)
-    $.ui.toast(live ? (runsLive($) ? 'Updates: automatic, in place' : 'Updates: automatic. New sessions update in place') : 'Updates: automatic')
+    $.ui.toast(live ? (runsLive($) ? 'Actualizaciones: automáticas, en el mismo sitio' : 'Actualizaciones: automáticas. Las sesiones nuevas se actualizan en el mismo sitio') : 'Actualizaciones: automáticas')
   } else {
     await nameLiveDir($, false)
     await update($, liveUpdatesA, () => (runsLive($) ? 'running' : null))
-    $.ui.toast(runsLive($) ? 'Updates: manual, from your next new session on' : 'Updates: manual')
+    $.ui.toast(runsLive($) ? 'Actualizaciones: manuales, a partir de tu próxima sesión nueva' : 'Actualizaciones: manuales')
   }
 }
 
@@ -1868,7 +1868,7 @@ async function absorb($: $, room: ShareRoom, mode: ShareMode, event: ServerEvent
       const back = (lostAt.get(who) ?? -Infinity) > event.ts - 30 * 60_000
       lostAt.delete(who)
       if (live && !mine && !back) {
-        $.ui.log(`${who} joined`)
+        $.ui.log(`${who} se ha unido`)
         void cue($, 'join', `${who} joined your session`)
       }
       break
@@ -1881,7 +1881,7 @@ async function absorb($: $, room: ShareRoom, mode: ShareMode, event: ServerEvent
       const removed = body.reason === 'removed'
       await note({ ts: event.ts, who, kind: 'leave', text: lost ? 'timeout' : removed ? 'removed' : undefined })
       if (lost) lostAt.set(who, event.ts)
-      else if (live && !mine) $.ui.log(removed ? `${who} left: no longer in the team` : `${who} left`)
+      else if (live && !mine) $.ui.log(removed ? `${who} se ha ido: ya no está en el equipo` : `${who} se ha ido`)
       break
     }
     case 'prompt':
@@ -2377,7 +2377,7 @@ async function refreshStatus($: $) {
   statusShown = true
   const here = [...new Set(v.everyone.filter(p => p.online).map(p => p.name))]
   const w = v.working
-  $.ui.status(`● Live · ${v.mode === 'host' ? 'sharing' : `${v.room.host}'s session`} · ${listNames(here)} here${w ? ` · Claude for ${w.by}` : ''}`)
+  $.ui.status(`● En directo · ${v.mode === 'host' ? 'compartiendo' : `sesión de ${v.room.host}`} · ${listNames(here)} aquí${w ? ` · Claude para ${w.by}` : ''}`)
 }
 
 async function setPrefs($: $, change: Partial<SharePrefs>) {
@@ -2481,9 +2481,9 @@ async function updateRow($: $, el: UI, compact: boolean) {
         {updating.ok || compact ? null : (
           <Button
             key="copy-update"
-            label="Copy update command"
+            label="Copiar comando de actualización"
             plain
-            onPress={press => void copyText($, UPDATE_COMMAND, 'Update command copied: paste it in a terminal', press.surface)}
+            onPress={press => void copyText($, UPDATE_COMMAND, 'Comando de actualización copiado: pégalo en una terminal', press.surface)}
           />
         )}
       </Box>
@@ -2500,7 +2500,7 @@ async function updateRow($: $, el: UI, compact: boolean) {
       </Box>
       <Box flexShrink={0} flexDirection="row" gap={1}>
         {[
-          <Button key="update-now" label={inPlace ? 'Update and load here' : 'Install update'} variant="primary" onPress={() => void pressUpdate($)} />,
+          <Button key="update-now" label={inPlace ? 'Actualizar y cargar aquí' : 'Instalar actualización'} variant="primary" onPress={() => void pressUpdate($)} />,
           compact || updates ? null : <Button key="updates-on" label="Turn on Updates" plain dimColor onPress={() => void writeUpdates($, true)} />,
         ]}
       </Box>
@@ -2542,7 +2542,7 @@ async function receive($: $, mode: ShareMode, room: ShareRoom, page: EventsPage)
   if (mode === 'host') await noteBehind($, page.people)
   const hostIs = page.people.find(p => p.role === 'host')?.online
   if (mode === 'guest' && hostWas !== undefined && hostIs !== undefined && hostWas !== hostIs) {
-    $.ui.toast(hostIs ? `${room.host} is back` : `${room.host}'s Claude Code closed; the room waits for them`)
+    $.ui.toast(hostIs ? `${room.host} ha vuelto` : `Se cerró el Claude Code de ${room.host}; la sala los espera`)
   }
   // What's shared now, before the page's events: an artifact among them
   // shows a preview the list has.
@@ -2645,7 +2645,7 @@ async function receive($: $, mode: ShareMode, room: ShareRoom, page: EventsPage)
         }
         break
       case 'ended':
-        await closeRoom($, 'ended', { room, log: mode === 'guest' ? `${room.host} stopped sharing this session.` : 'This shared session ended.' })
+        await closeRoom($, 'ended', { room, log: mode === 'guest' ? `${room.host} stopped sharing this session.` : 'Esta sesión compartida ha terminado.' })
         return
     }
   }
@@ -2850,7 +2850,7 @@ async function closeSteps($: $, s: RoomScope, live: boolean, how: Exit, opts: Ex
   await update($, closingA, () => null)
   closeMark = 'down'
   // 7.
-  const said = how === 'ended' ? opts.log : how === 'keep' ? undefined : guest ? `Left ${room.host}'s session.` : 'Stopped sharing. The link no longer works.'
+  const said = how === 'ended' ? opts.log : how === 'keep' ? undefined : guest ? `Left ${room.host}'s session.` : 'Se dejó de compartir. El enlace ya no funciona.'
   if (said) $.ui.log(said)
   // What can wait, last in the bound: a window still opening closes what it
   // started, and left for good, the room's profile goes again (anything a
@@ -3097,7 +3097,7 @@ async function setPinned($: $, pinned: boolean, attempt = 0) {
 async function allowTools($: $, tools: readonly string[], said: string): Promise<boolean> {
   const found = await readSettings($)
   if (!found) {
-    $.ui.toast(`Couldn't read ${(await settingsFile($)) ?? 'your Claude Code settings'}, so nothing changed`)
+    $.ui.toast(`No se pudo leer ${(await settingsFile($)) ?? 'la configuración de Claude Code'}, así que no cambió nada`)
     return false
   }
   const permissions = { ...((found.settings.permissions ?? {}) as Record<string, unknown>) }
@@ -3106,7 +3106,7 @@ async function allowTools($: $, tools: readonly string[], said: string): Promise
   try {
     await $.fs.write(found.path, `${JSON.stringify({ ...found.settings, permissions }, null, 2)}\n`)
   } catch {
-    $.ui.toast(`Couldn't change ${found.path}`)
+    $.ui.toast(`No se pudo cambiar ${found.path}`)
     return false
   }
   $.ui.toast(said)
@@ -3362,7 +3362,7 @@ async function share($: $, surface?: RenderSurface, opts: ShareOpts = {}): Promi
 // The room made, and this session sharing it (or the one it shares already).
 async function makeRoom($: $, surface: RenderSurface | undefined, opts: ShareOpts): Promise<ShareRoom> {
   const mode = await read($, modeA)
-  if (mode === 'guest') throw new Error('Leave the session you joined before sharing this one.')
+  if (mode === 'guest') throw new Error('Sal de la sesión a la que te uniste antes de compartir esta.')
   await update($, askingA, () => null)
   const existing = await read($, roomA)
   if (mode === 'host' && existing) {
@@ -3458,25 +3458,25 @@ async function copyText($: $, text: string, done: string, surface?: RenderSurfac
 async function pressInvite($: $, url: string, surface?: RenderSurface) {
   const t = await read($, teamsA)
   if (!t.account) {
-    $.ui.toast('Sign in to invite teammates: the Team panel shows how')
+    $.ui.toast('Inicia sesión para invitar a tus compañeros: el panel Equipo indica cómo')
     return openTeam($)
   }
   const people = await read($, peopleA)
   const mates = (t.teammates ?? []).filter(m => !people.some(p => p.online && p.name === m.name))
   if (!mates.length) {
     const copied = await $.ui.copy({ text: url, surface }).catch(() => ({ isCopied: false }))
-    $.ui.toast(copied.isCopied ? 'No teammates to invite here yet · link copied' : 'No teammates to invite here yet: share the link instead')
-    if (!copied.isCopied) $.ui.log(`The share link: ${url}`)
+    $.ui.toast(copied.isCopied ? 'Todavía no hay compañeros que invitar aquí · enlace copiado' : 'Todavía no hay compañeros que invitar aquí: comparte el enlace')
+    if (!copied.isCopied) $.ui.log(`El enlace de compartición: ${url}`)
     return
   }
   await update($, roomTabA, () => 'people')
-  $.ui.toast(`Invite ${mates.length === 1 ? (mates[0]?.name ?? 'your teammate') : `any of ${mates.length} teammates`} below`)
+  $.ui.toast(`Invita ${mates.length === 1 ? (mates[0]?.name ?? 'a tu compañero') : `a cualquiera de ${mates.length} compañeros`} abajo`)
 }
 
 async function copyLink($: $, url: string, surface?: RenderSurface) {
   const copied = await $.ui.copy({ text: url, surface }).catch(() => ({ isCopied: false }))
   if (copied.isCopied) $.ui.toast('Link copied')
-  else $.ui.log(`The share link: ${url}`)
+  else $.ui.log(`El enlace de compartición: ${url}`)
 }
 
 // Stop sharing ends the room for everyone: the first press asks, a second
@@ -3526,7 +3526,7 @@ type RoomCheckpointFile = { version: 1; value: RoomCheckpoint | null }
 
 async function roomCheckpointDir($: $): Promise<string> {
   const dir = await configDirOf($)
-  if (!dir) throw new Error('No Claude configuration directory is available')
+  if (!dir) throw new Error('No hay ningún directorio de configuración de Claude disponible')
   return `${dir}/shared-session/rooms`
 }
 
@@ -3555,10 +3555,10 @@ async function readRoomCheckpoint($: $, key: string): Promise<RoomCheckpoint | u
     record = JSON.parse(text) as RoomCheckpointFile
   } catch {
     // JSON's syntax error may quote the damaged payload, which holds tokens.
-    throw new Error('A saved room checkpoint is invalid; it was left untouched')
+    throw new Error('Un punto de control guardado de la sala no es válido; se ha dejado intacto')
   }
   if (record?.version !== 1 || (record.value !== null && !isRoomCheckpoint(record.value)))
-    throw new Error('A saved room checkpoint is invalid; it was left untouched')
+    throw new Error('Un punto de control guardado de la sala no es válido; se ha dejado intacto')
   return record.value ?? undefined
 }
 
@@ -3574,12 +3574,12 @@ async function writeRoomCheckpoint($: $, key: string, value: RoomCheckpoint) {
     $,
     `umask 077\nset -e\nmkdir -p ${sq(dir)}\nchmod 700 ${sq(dir)}\ntmp=${sq(tmp)}\ntrap 'rm -f "$tmp"' 0\ncat > ${sq(tmp)} <<'${tag}'\n${body}\n${tag}\nchmod 600 ${sq(tmp)}\nmv ${sq(tmp)} ${sq(path)}\n`,
   )
-  if (result.code !== 0) throw new Error('Could not write the private saved room checkpoint')
+  if (result.code !== 0) throw new Error('No se pudo escribir el punto de control privado de la sala')
 }
 
 async function deleteRoomCheckpoint($: $, key: string) {
   const path = `${await roomCheckpointDir($)}/${encodeURIComponent(key)}.json`
-  if ((await sh($, `rm -f -- ${sq(path)}\n`)).code !== 0) throw new Error('Could not delete the saved room checkpoint')
+  if ((await sh($, `rm -f -- ${sq(path)}\n`)).code !== 0) throw new Error('No se pudo eliminar el punto de control guardado de la sala')
 }
 
 async function roomCheckpointKeys($: $): Promise<string[]> {
@@ -4012,7 +4012,7 @@ async function resumeJoined($: $) {
     )
     for (const exchange of caught) laterRides.push({ text: exchange.prompt, ride: { kind: 'static', rows: exchange.rows } })
     startFeed($)
-    $.ui.log(caught.length ? `Back in ${room.host}'s session. What you missed follows.` : `Back in ${room.host}'s session.`)
+    $.ui.log(caught.length ? `De vuelta en la sesión de ${room.host}. Lo que te perdiste continúa.` : `Back in ${room.host}'s session.`)
     if (caught.length || running) scheduleRides($)
   } finally {
     if (reclaiming === back) reclaiming = null
@@ -4052,7 +4052,7 @@ async function resumeHosting($: $) {
       page = await eventsSince($, saved.room, saved.room.seq)
     } catch (error) {
       if (isGone(error)) {
-        if (current()) $.ui.log('The session you shared ended while this one was closed.')
+        if (current()) $.ui.log('La sesión que compartiste terminó mientras esta estaba cerrada.')
         return
       }
       // Unreachable for now: share on, and the feed keeps trying.
@@ -4060,7 +4060,7 @@ async function resumeHosting($: $) {
     // The session ended meanwhile (its place saved again, or its room
     // ended), or the room was given up for another: nothing more of it here.
     if (!current()) return
-    if (page?.ended) return void $.ui.log('The session you shared ended while this one was closed.')
+    if (page?.ended) return void $.ui.log('La sesión que compartiste terminó mientras esta estaba cerrada.')
     const room: ShareRoom = { ...saved.room, seq: page?.seq ?? saved.room.seq }
     const shares = sharesSaved(saved)
     await update($, roomA, v => (reclaiming === back ? room : v))
@@ -4116,7 +4116,7 @@ async function resumeHosting($: $) {
     }
     if (!s.live) return
     startFeed($)
-    $.ui.log(`Still sharing this session: ${room.url}`)
+    $.ui.log(`Todavía compartiendo esta sesión: ${room.url}`)
   } finally {
     if (reclaiming === back) reclaiming = null
     tookBack($, back)
@@ -4163,7 +4163,7 @@ async function setPolicy($: $, change: Partial<SharePolicy>) {
 // session, which watch-only keeps to teammates.
 async function acceptPrompt($: $, who: string, seat: string, text: string, pid: string, attachments: ShareFileMeta[] = [], approver = false) {
   if ((await read($, policyA)).prompts === 'watch' && !(approver && (await isRunner($)))) {
-    send($, 'declined', { pid, who, reason: 'This session is watch-only right now. Chat in the Room panel.' })
+    send($, 'declined', { pid, who, reason: 'Esta sesión es solo de observación ahora. Chatea en el panel Sala.' })
     return
   }
   // What they attached, saved in the project, each named in the prompt with
@@ -4452,8 +4452,8 @@ async function restoreMailboxes($: $) {
 // the session that wrote it (and its turn on the joined session).
 function peerRefusal(host: string, result: string | undefined): string {
   if (result === 'offline') return `${host} isn't connected right now, so this didn't reach their Claude. Send it again later.`
-  if (result === 'gone') return "The shared session has ended, so this didn't reach anyone's Claude."
-  if (result === 'busy') return `Too many messages went to ${host}'s session this minute, so this one didn't. Send it again in a minute.`
+  if (result === 'gone') return "La sesión compartida ha terminado, así que esto no llegó a ningún Claude."
+  if (result === 'busy') return `Este minuto se enviaron demasiados mensajes a la sesión de ${host}, y este no se envió. Vuelve a enviarlo en un minuto.`
   if (result === 'large') return `This was too large to send to ${host}'s session, so it didn't reach their Claude.`
   return `Couldn't reach the share server, so this didn't reach ${host}'s Claude.`
 }
@@ -4839,7 +4839,7 @@ function settleCloudAnswer(body: Record<string, unknown>) {
   const active = hostAskActive
   if (active?.yes && active.id === body.id) return active.answer(label === active.yes ? 'yes' : label === 'Not now' ? 'no' : 'later')
   const ask = approvals.find(a => a.id === body.id && a.stage === 'row')
-  if (ask && ['Allow once', ask.always, 'Decline'].includes(label)) answerFor(ask, label)
+  if (ask && ['Permitir una vez', ask.always, 'Decline'].includes(label)) answerFor(ask, label)
 }
 
 // Approver: a question from the cloud host, drawn above the prompt and in the
@@ -4897,7 +4897,7 @@ async function takeCloudAsk($: $, event: ServerEvent, live: boolean) {
         ...(typeof b.extent === 'string' && b.extent ? { extent: b.extent.slice(0, 80) } : {}),
         ...(typeof b.preview === 'string' && b.preview ? { preview: b.preview.slice(0, 4000) } : {}),
         always: typeof b.always === 'string' ? b.always : '',
-        options: options.length ? options : ['Allow once', 'Decline'],
+        options: options.length ? options : ['Permitir una vez', 'Decline'],
         ts: event.ts,
       }
   await update($, cloudAsksA, list => (list.some(a => a.id === ask.id) ? list : [...list, ask].slice(-20)))
@@ -7412,7 +7412,7 @@ function noteOnce($: $, key: string, text: string, s?: RoomScope) {
 
 async function browserDirOf($: $): Promise<string> {
   const dir = await configDirOf($)
-  if (!dir) throw new Error('No Claude configuration directory is available')
+  if (!dir) throw new Error('No hay ningún directorio de configuración de Claude disponible')
   return `${dir}/shared-session/browser`
 }
 
@@ -11396,7 +11396,7 @@ async function stopFromTeam($: $, roomId: string) {
   let over = true
   try {
     await api($, server, `/api/rooms/${roomId}/end`, { method: 'POST', account: saved.token })
-    $.ui.toast('Stopped sharing. The link no longer works.')
+    $.ui.toast('Se dejó de compartir. El enlace ya no funciona.')
   } catch (error) {
     // Already over: it only had to leave the list.
     if (!(error instanceof ApiError && (error.status === 404 || error.status === 410))) {
@@ -12141,7 +12141,7 @@ export const register: Register = (on, options) => {
     const mode = await read($, modeA)
     if (mode !== 'idle') await closeRoom($, mode === 'host' ? 'stop' : 'leave')
     return {
-      text: mode === 'idle' ? 'This session is not shared.' : mode === 'host' ? 'Stopped sharing. The link no longer works.' : 'Left the shared session.',
+      text: mode === 'idle' ? 'This session is not shared.' : mode === 'host' ? 'Se dejó de compartir. El enlace ya no funciona.' : 'Left the shared session.',
     }
   })
 
@@ -12909,7 +12909,7 @@ export const register: Register = (on, options) => {
     const cwd = await $.session.cwd()
     const what = callWhat(e.tool, e.input, cwd)
     const extent = callExtent(e.tool, e.input)
-    const always = `Always allow ${who}`.slice(0, 40)
+    const always = `Permitir siempre a ${who}`.slice(0, 40)
     const room = await read($, roomA)
     // The host's to answer from here: unanswered until this hook returns.
     const id = e.tool_use_id
@@ -12932,9 +12932,9 @@ export const register: Register = (on, options) => {
       preview: approvalPreview(e.tool, e.input, cwd),
       whole: approvalPreview(e.tool, e.input, cwd, WHOLE_CALL_LINES),
       descriptions: {
-        'Allow once': `Run this one ${e.tool} call for ${who}.`,
-        [always]: `Don't ask again for ${who}'s requests while this session is shared.`,
-        Decline: `Claude is told you declined and carries on without it.`,
+        'Permitir una vez': `Ejecuta esta llamada ${e.tool} para ${who}.`,
+        [always]: `No volver a preguntar por las solicitudes de ${who} mientras se comparta esta sesión.`,
+        Decline: `Se le indica a Claude que lo rechazaste y continúa sin él.`,
       },
       room: room ? roomIdentity(room) : '',
       stage: 'waiting',
@@ -12977,12 +12977,12 @@ export const register: Register = (on, options) => {
           ...(extent ? { extent } : {}),
           preview: ask.whole.slice(0, 4000),
           always,
-          options: ['Allow once', always, 'Decline'],
+          options: ['Permitir una vez', always, 'Decline'],
         })
         await approvalWait($, ask, answered, () => over)
       } else if (!over) {
         ask.stage = 'dialog'
-        const options = ['Allow once', always, 'Decline']
+        const options = ['Permitir una vez', always, 'Decline']
         const askedAt = await $.clock.now()
         let shown = true
         let said = 'Decline'
@@ -13044,7 +13044,7 @@ export const register: Register = (on, options) => {
     // The room it was asked in is over (Stop sharing, its end) by its answer:
     // no, as the row's calls are. Its teammate may be gone too.
     if (!(await askedRoomOpen($, ask.room))) answer = 'Decline'
-    const allowed = answer === 'Allow once' || (always !== '' && answer === always)
+    const allowed = answer === 'Permitir una vez' || (always !== '' && answer === always)
     if (allowed && answer === always) {
       if (owner.seat)
         await update($, trustedA, list => [
@@ -13348,15 +13348,15 @@ export const register: Register = (on, options) => {
     const host = v.room?.host
     const w = v.working
     let message: string | null = null
-    if (v.mode === 'host' && w?.byGuest) message = w.waitingFor ? `Waiting for your OK to run ${w.waitingFor}` : `Working for ${w.by}`
+    if (v.mode === 'host' && w?.byGuest) message = w.waitingFor ? `Esperando tu autorización para ejecutar ${w.waitingFor}` : `Trabajando para ${w.by}`
     // The host's own turn: the engine's words, and who's watching it.
     const watching = v.mode === 'host' ? new Set(v.everyone.filter(p => p.online && p.role === 'guest' && !isMe(p, v.me)).map(p => p.name)).size : 0
     if (v.mode === 'host' && watching) message = `${message ?? e.props.message ?? e.props.word} · ${watching} watching`
     if (v.mode === 'guest') {
-      if (w?.waitingFor) message = `Waiting for ${host} to allow ${w.waitingFor}`
+      if (w?.waitingFor) message = `Esperando a que ${host} autorice ${w.waitingFor}`
       else if (w?.doing) message = `${doingLine(w.doing)}${w.by === myName ? '' : ` · for ${w.by}`}`
-      else if (w) message = w.by === myName ? `Working on your prompt in ${host}'s session` : `Working for ${w.by}`
-      else message = `Waiting for ${host}'s session`
+      else if (w) message = w.by === myName ? `Trabajando en tu mensaje en la sesión de ${host}` : `Trabajando para ${w.by}`
+      else message = `Esperando la sesión de ${host}`
     }
     return message ? next({ ...e, props: { ...e.props, message } }) : next(e)
   })
@@ -13376,8 +13376,8 @@ export const register: Register = (on, options) => {
     if (v.mode !== 'guest') return next(e)
     const hint =
       v.policy.prompts === 'watch'
-        ? `Watch-only · chat in the Room (/room) · Leave anytime`
-        : `↵ sends to ${v.room?.host}'s session · @name mentions someone · Esc stops the turn`
+        ? `Solo observación · chat en la Sala (/room) · Sal cuando quieras`
+        : `↵ envía a la sesión de ${v.room?.host} · @name menciona a alguien · Esc detiene el turno`
     return next({ ...e, props: { ...e.props, hint } })
   })
 
@@ -13417,7 +13417,7 @@ export const register: Register = (on, options) => {
               <Text>{`Finish signing in with ${providerName(signing.provider)} in your browser…`}</Text>
               <Text>{codeSaid(signing.code)}</Text>
               <Box flexDirection="row" gap={1} alignItems="center">
-                {Link && linkable(signing.url) ? <Link href={signing.url} label="Open the sign-in page again" /> : null}
+                {Link && linkable(signing.url) ? <Link href={signing.url} label="Abrir de nuevo la página de inicio de sesión" /> : null}
                 <Button key="signin-cancel" label="Cancel" plain dimColor onPress={() => void cancelSignIn($)} />
               </Box>
             </Box>
@@ -13479,8 +13479,8 @@ export const register: Register = (on, options) => {
       Input ? (
         <Input
           key="team-new"
-          placeholder="Team name"
-          submitLabel="Create team"
+          placeholder="Nombre del equipo"
+          submitLabel="Crear equipo"
           autoFocus={autoFocus || undefined}
           onSubmit={(value: string) =>
             void createTeam($, value)
@@ -13497,7 +13497,7 @@ export const register: Register = (on, options) => {
         <Box flexDirection="column" gap="lg">
           {invites.length ? (
             <Box flexDirection="column" gap={1}>
-              {headingOf(el, 'Invited you')}
+              {headingOf(el, 'Te ha invitado')}
               {invites.map(inviteRow)}
             </Box>
           ) : null}
@@ -13558,12 +13558,12 @@ export const register: Register = (on, options) => {
           </Box>
           <Box flexShrink={0} flexDirection="row" gap={1}>
             {inIt ? (
-              <Text color="claude">{mode === 'host' ? 'This session' : "You're in it"}</Text>
+              <Text color="claude">{mode === 'host' ? 'Esta sesión' : "You're in it"}</Text>
             ) : mine ? (
               [
                 here[s.id] ? <Button key={`open-${s.id}`} label="Open" plain onPress={() => void openHere($, s.id)} /> : null,
                 stopping === `stop:${s.id}` ? (
-                  <Button key={`stop-${s.id}`} label="Stop for everyone?" variant="primary" onPress={() => void stopFromTeam($, s.id)} />
+                  <Button key={`stop-${s.id}`} label="¿Detener para todos?" variant="primary" onPress={() => void stopFromTeam($, s.id)} />
                 ) : (
                   <Button key={`stop-${s.id}`} label="Stop" plain onPress={() => void stopFromTeam($, s.id)} />
                 ),
@@ -13578,7 +13578,7 @@ export const register: Register = (on, options) => {
                   <Button key={`join-${s.id}`} label="Join" plain dimColor onPress={press => void joinFromTeam($, [s], press.surface)} />
                 ),
                 stopping === `leave:${s.id}` ? (
-                  <Button key={`leave-${s.id}`} label="Leave everywhere?" variant="primary" onPress={() => void leaveFromTeam($, s.id)} />
+                  <Button key={`leave-${s.id}`} label="¿Salir en todas partes?" variant="primary" onPress={() => void leaveFromTeam($, s.id)} />
                 ) : (
                   <Button key={`leave-${s.id}`} label="Leave" plain onPress={() => void leaveFromTeam($, s.id)} />
                 ),
@@ -13619,7 +13619,7 @@ export const register: Register = (on, options) => {
             </Text>
           )}
           <Text size="caption" dimColor tabular>
-            {`${t.members.length} ${t.members.length === 1 ? 'person' : 'people'} · ${team.access === 'link' ? 'anyone with a link' : 'members only'}`}
+            {`${t.members.length} ${t.members.length === 1 ? 'person' : 'people'} · ${team.access === 'link' ? 'cualquiera con un enlace' : 'solo miembros'}`}
           </Text>
         </Box>
         {keptHere($, t.server ?? (await serverOf($))) ? (
@@ -13631,11 +13631,11 @@ export const register: Register = (on, options) => {
         {Select
           ? settingOf(
               el,
-              'Your shares go',
+              'Tus comparticiones van a',
               <Select
                 key="share-to"
                 value={t.byLink ? 'link' : team.id}
-                options={[...t.teams.map(x => ({ value: x.id, label: `To ${x.name}` })), { value: 'link', label: 'By link alone' }]}
+                options={[...t.teams.map(x => ({ value: x.id, label: `To ${x.name}` })), { value: 'link', label: 'Solo por enlace' }]}
                 onSelect={(value: string) => void setCurrentTeam($, value === 'link' ? null : value)}
               />,
             )
@@ -13646,9 +13646,9 @@ export const register: Register = (on, options) => {
               {room.team ? `This session: shared with ${room.team.name}` : 'This session: shared by link'}
             </Text>
             {room.team ? (
-              <Button key="room-unteam" label="Link only" plain onPress={() => void setRoomTeam($, null)} />
+              <Button key="room-unteam" label="Solo enlace" plain onPress={() => void setRoomTeam($, null)} />
             ) : (
-              <Button key="room-team" label={`Share with ${team.name}`} plain onPress={() => void setRoomTeam($, team.id)} />
+              <Button key="room-team" label={`Compartir con ${team.name}`} plain onPress={() => void setRoomTeam($, team.id)} />
             )}
           </Box>
         ) : null}
@@ -13672,7 +13672,7 @@ export const register: Register = (on, options) => {
       <Box flexDirection="column" gap="lg">
         {invites.length ? (
           <Box flexDirection="column" gap={1}>
-            {headingOf(el, 'Invited you')}
+            {headingOf(el, 'Te ha invitado')}
             {invites.map(inviteRow)}
           </Box>
         ) : null}
@@ -13895,7 +13895,7 @@ export const register: Register = (on, options) => {
         </Text>
         {waiting ? <Markdown key="approval-whole" text={waiting.whole} /> : null}
         <Box flexDirection="row" gap={1}>
-          <Button key="room-approve-once" label="Allow once" variant="primary" onPress={() => answerBandAsk(approving.id, 'Allow once')} />
+          <Button key="room-approve-once" label="Allow once" variant="primary" onPress={() => answerBandAsk(approving.id, 'Permitir una vez')} />
           <Button key="room-approve-always" label={approving.always} plain onPress={() => answerBandAsk(approving.id, approving.always)} />
           <Button key="room-approve-no" label="Decline" plain dimColor onPress={() => answerBandAsk(approving.id, 'Decline')} />
         </Box>
@@ -13950,7 +13950,7 @@ export const register: Register = (on, options) => {
                 </Text>
                 {ask.preview ? <Markdown key={`cloud-ask-whole-${ask.id}`} text={ask.preview} /> : null}
                 <Box flexDirection="row" gap={1}>
-                  <Button key={`cloud-ask-once-${ask.id}`} label="Allow once" variant="primary" onPress={() => void answerCloudAsk($, ask.id, 'Allow once')} />
+                  <Button key={`cloud-ask-once-${ask.id}`} label="Allow once" variant="primary" onPress={() => void answerCloudAsk($, ask.id, 'Permitir una vez')} />
                   {ask.always ? (
                     <Button key={`cloud-ask-always-${ask.id}`} label={ask.always} plain onPress={() => void answerCloudAsk($, ask.id, ask.always)} />
                   ) : null}
@@ -14346,7 +14346,7 @@ export const register: Register = (on, options) => {
         {inviteBlock}
         {turns.length ? (
           <Box key="room-stats" flexDirection="column" gap="xs">
-            {label('This session')}
+            {label('Esta sesión')}
             {stats.map(([k, value]) => (
               <Box key={`stat-${k}`} flexDirection="row" justifyContent="space-between">
                 <Text size="footnote" dimColor>
@@ -14863,7 +14863,7 @@ export const register: Register = (on, options) => {
           <Box flexDirection="row" gap={1} alignItems="center">
             <Button
               key="room-stop"
-              label={v.confirming === 'stop' ? 'Stop for everyone' : 'Stop sharing'}
+              label={v.confirming === 'stop' ? 'Detener para todos' : 'Dejar de compartir'}
               variant={v.confirming === 'stop' ? 'primary' : 'secondary'}
               onPress={() => void confirmStop($)}
             />
@@ -15025,7 +15025,7 @@ export const register: Register = (on, options) => {
         ],
         [
           ...(approving.extent ? [<Button key="approve-whole" label={approving.extent} plain dimColor onPress={() => void openRoom($)} />] : []),
-          <Button key="approve-once" label="Allow once" variant="primary" onPress={() => answerBandAsk(approving.id, 'Allow once')} />,
+          <Button key="approve-once" label="Allow once" variant="primary" onPress={() => answerBandAsk(approving.id, 'Permitir una vez')} />,
           <Button key="approve-always" label={approving.always} plain onPress={() => answerBandAsk(approving.id, approving.always)} />,
           <Button key="approve-no" label="Decline" plain dimColor onPress={() => answerBandAsk(approving.id, 'Decline')} />,
         ],
@@ -15079,7 +15079,7 @@ export const register: Register = (on, options) => {
         ],
         [
           ...(cloudAsk.extent ? [<Button key="cloud-whole" label={cloudAsk.extent} plain dimColor onPress={() => void openRoom($)} />] : []),
-          <Button key="cloud-once" label="Allow once" variant="primary" onPress={() => void answerCloudAsk($, cloudAsk.id, 'Allow once')} />,
+          <Button key="cloud-once" label="Allow once" variant="primary" onPress={() => void answerCloudAsk($, cloudAsk.id, 'Permitir una vez')} />,
           ...(cloudAsk.always
             ? [<Button key="cloud-always" label={cloudAsk.always} plain onPress={() => void answerCloudAsk($, cloudAsk.id, cloudAsk.always)} />]
             : []),
@@ -15217,7 +15217,7 @@ export const register: Register = (on, options) => {
           ) : null,
           isHost ? (
             stopping ? (
-              <Button key="stop-sharing" label="Stop for everyone?" variant="primary" onPress={() => void confirmStop($)} />
+              <Button key="stop-sharing" label="¿Detener para todos?" variant="primary" onPress={() => void confirmStop($)} />
             ) : (
               <Button key="stop-sharing" label="Stop" plain onPress={() => void confirmStop($)} />
             )
