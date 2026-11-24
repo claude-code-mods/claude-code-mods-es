@@ -129,7 +129,7 @@ async function drawnBySkinCode($: EngineInterface, text: unknown): Promise<boole
   try {
     return (await answer) === true
   } catch (error) {
-    $.ui.log(`skin-code did not answer, so skins draws the reply: ${error instanceof Error ? error.message : String(error)}`, { to: 'debug' })
+    $.ui.log(`skin-code no respondió, así que skins dibuja la respuesta: ${error instanceof Error ? error.message : String(error)}`, { to: 'debug' })
 
     return false
   }
@@ -862,7 +862,7 @@ export const register: Register = on => {
         $.ui.toast(copied.message)
       } else {
         const result = await $.ui.copy({ text: copied.text })
-        $.ui.toast(result.isCopied ? (word === 'copy' ? 'Copied the reply' : 'Copied the code') : 'Could not copy here')
+        $.ui.toast(result.isCopied ? (word === 'copy' ? 'Respuesta copiada' : 'Código copiado') : 'No se pudo copiar aquí')
       }
 
       return {}
@@ -974,7 +974,7 @@ export const register: Register = on => {
       ...(diff === null ? {} : diff),
     }
     const copy = (text: string) => {
-      void $.ui.copy({ text, surface: e.surface }).then(result => $.ui.toast(result.isCopied ? 'Copied' : 'Could not copy here'))
+      void $.ui.copy({ text, surface: e.surface }).then(result => $.ui.toast(result.isCopied ? 'Copiado' : 'No se pudo copiar aquí'))
     }
     const fields = (e.props.input ?? {}) as { file_path?: unknown; notebook_path?: unknown }
     const path = fields.file_path ?? fields.notebook_path
@@ -1048,7 +1048,7 @@ export const register: Register = on => {
     const active = await activeSkin($)
     const output = e.props.output as { stdout?: unknown } | null
     const copy = (text: string) => {
-      void $.ui.copy({ text, surface: e.surface }).then(result => $.ui.toast(result.isCopied ? 'Copied' : 'Could not copy here'))
+      void $.ui.copy({ text, surface: e.surface }).then(result => $.ui.toast(result.isCopied ? 'Copiado' : 'No se pudo copiar aquí'))
     }
     // Only the terminal's shell card has a fold control here.
     const needs = { folds: e.surface === 'terminal' && SHELLS.has(e.props.tool) }
@@ -1179,7 +1179,7 @@ export const register: Register = on => {
     const svg = e.surface !== 'terminal' && active.prefs.tables === 'on' && 'Svg' in ui ? ui.Svg : undefined
     lastColumns = e.viewport?.columns
     const copy = (copied: string) => {
-      void $.ui.copy({ text: copied, surface: e.surface }).then(result => $.ui.toast(result.isCopied ? 'Copied' : 'Could not copy here'))
+      void $.ui.copy({ text: copied, surface: e.surface }).then(result => $.ui.toast(result.isCopied ? 'Copiado' : 'No se pudo copiar aquí'))
     }
 
     const base = await sessionLook($, e, lookOf(ui, active, e.surface, copy), replyNeeds(text, segments))
@@ -1208,7 +1208,7 @@ export const register: Register = on => {
     const ui = $.ui.resolve(e)
     const svg = e.surface !== 'terminal' && active.prefs.tables === 'on' && 'Svg' in ui ? ui.Svg : undefined
     const copy = (copied: string) => {
-      void $.ui.copy({ text: copied, surface: e.surface }).then(result => $.ui.toast(result.isCopied ? 'Copied' : 'Could not copy here'))
+      void $.ui.copy({ text: copied, surface: e.surface }).then(result => $.ui.toast(result.isCopied ? 'Copiado' : 'No se pudo copiar aquí'))
     }
 
     const base = await sessionLook($, e, lookOf(ui, active, e.surface, copy), replyNeeds(e.props.text, segments))
@@ -1291,7 +1291,7 @@ export const register: Register = on => {
       $.clock.after(1, () =>
         $.command
           .run({ command: 'compact' })
-          .catch((error: unknown) => $.ui.toast(`Compacting failed: ${error instanceof Error ? error.message : String(error)}`))
+          .catch((error: unknown) => $.ui.toast(`Error al compactar: ${error instanceof Error ? error.message : String(error)}`))
           .finally(() => update($, compactingAtom, () => false)),
       )
     }
