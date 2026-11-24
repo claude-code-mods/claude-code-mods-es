@@ -72,7 +72,8 @@ test('\u82f1\u6587：\u9762\u677f\u8207\u5b88\u9580\u6e05\u55ae', async ($, on) 
 })
 
 // ：language （），；， pickLang
-const PICK_CASES: { name: string; setting: unknown; locale: string | undefined; want: 'zh-TW' | 'en' }[] = [
+const PICK_CASES: { name: string; setting: unknown; locale: string | undefined; want: 'zh-TW' | 'en' | 'es' }[] = [
+  { name: 'language 設定是 español', setting: 'español', locale: 'en-US', want: 'es' },
   { name: '\u7cfb\u7d71\u8a9e\u7cfb zh-TW', setting: undefined, locale: 'zh-TW', want: 'zh-TW' },
   { name: '\u7cfb\u7d71\u8a9e\u7cfb zh-Hant-TW', setting: undefined, locale: 'zh-Hant-TW', want: 'zh-TW' },
   { name: '\u7cfb\u7d71\u8a9e\u7cfb zh-CN', setting: undefined, locale: 'zh-CN', want: 'zh-TW' },

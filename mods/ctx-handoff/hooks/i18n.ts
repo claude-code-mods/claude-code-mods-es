@@ -2,7 +2,7 @@
 // ：、（NOTE_TAG、、／／、）、store ——，。
 // ；zh-TW ，en ，。
 
-export type Lang = 'en'
+export type Lang = 'en' | 'zh-TW' | 'es'
 
 let current: Lang = 'en'
 export const setLang = (lang: Lang) => { current = lang }
@@ -10,17 +10,409 @@ export const getLang = () => current
 export const t = (): Messages => MSG[current]
 
 // （zh、zh_TW.UTF-8、、Traditional Chinese…）
-export const isChinese = (s: string) => /^zh|chinese|taiwan/i.test(s.trim())
+export const isChinese = (s: string) => /^zh|chinese|中文|繁體|繁体|台灣|taiwan/i.test(s.trim())
+const Spanish = /^es(?:-|[_ ]|$)|spanish|español|espanol|castellano/i
 
 // ：Claude Code  language （），。
 //  Linux／macOS  LANG， Windows ；Git Bash  LANG  en_US，
 export const pickLang = (setting: unknown, systemLocale: string | undefined): Lang => {
-  if (typeof setting === 'string' && setting.trim()) return 'en'
-  return 'en'
+  if (typeof setting === 'string' && setting.trim()) return isChinese(setting) ? 'zh-TW' : Spanish.test(setting) ? 'es' : 'en'
+  return systemLocale && isChinese(systemLocale) ? 'zh-TW' : systemLocale && Spanish.test(systemLocale) ? 'es' : 'en'
 }
 
 const s = (n: number) => (n === 1 ? '' : 's')
 
+const es: Messages = {
+ind: '  ',
+  bullet: '- ',
+  list: ', ',
+  slashList: ' / ',
+  fieldLabel: line => line,
+  guardMatch: (tool, match, unless) => `${tool} coincide con /${match}/${unless ? ` y no con /${unless}/` : ''}`,
+
+  usage: (input, read, ratio, write, plain, output, sec) =>
+    `entrada ${input} (lectura de caché ${read} = ${ratio}%, escrito ${write}, sin caché ${plain}) · salida ${output} · ${sec}s`,
+
+  fork: {
+    timeout: 'timeout: el fork no respondió a tiempo, se abandonó la espera',
+    nothingToFork: 'nothing-to-fork: esta sesión acaba de reiniciarse o de ejecutar /clear, así que aún no hay nada que continuar. Envía un mensaje, espera la respuesta y vuelve a intentarlo',
+  },
+
+  handoff: {
+    failedLog: why => `falló el handoff: ${why}`,
+    failedToast: 'Falló el handoff',
+    failGenerate: why => `falló la generación: ${why}`,
+    savedLog: (kind, usage) => `handoff (${kind}) ${usage}`,
+    dropped: reason => `descartado: ${reason}`,
+    reasonClear: r => `falló /clear: ${r}`,
+    reasonSubmit: r => `falló el envío: ${r}`,
+    reasonException: r => `excepción: ${r}`,
+    reasonStage: (stage, r) => `falló ${stage}: ${r}`,
+    resubmitFailed: r => `no se pudieron reenviar los mensajes recibidos durante el handoff: ${r}`,
+    clearFailedLog: r => `falló /clear: ${r}`,
+    submitFailedLog: r => `falló el envío: ${r}`,
+    submitFailedToast: 'El handoff se creó pero no se envió. Ejecuta /handoff resend para enviarlo de nuevo',
+    failedAll: r => `falló el handoff: ${r}`,
+    failedCleanup: r => `la limpieza tras el handoff fallido también falló: ${r}`,
+    whyManual: 'el usuario ejecutó /handoff now',
+    whyTokens: tokens => `el context alcanzó ${tokens} tokens`,
+    intro: why =>
+      `La conversación anterior se borró automáticamente porque ${why}. Este es el handoff: léelo, dime en unas líneas cuál es el estado actual y el siguiente paso según tu comprensión y espera las instrucciones del usuario. No empieces a trabajar todavía.`,
+    introHeld: why =>
+      `La conversación anterior se borró automáticamente porque ${why}. Están el handoff y los mensajes que el usuario envió durante el handoff: responde al último mensaje del usuario que aparece abajo, usando el handoff como contexto.`,
+    note: note => ` (${note})`,
+    heldHead: '---\nMensajes que el usuario envió durante el handoff:',
+  },
+
+  background: {
+    pause: 'Pausar el trabajo en segundo plano de esta sesión',
+    resume: 'Reanudar el trabajo en segundo plano de esta sesión',
+    bound: (file, sid) => `Notas del espacio de trabajo: ${file}; esta sesión ${sid}`,
+    away: (paused, next) => `Trabajo en segundo plano ${paused ? 'pausado' : 'activo'}; ${next === undefined ? 'sin temporizador programado' : `siguiente ${new Date(next).toLocaleString()}`}`,
+    task: (label, sid, phase, at) => `${label}: ${phase} (origen ${sid}, iniciado ${new Date(at).toLocaleTimeString()})`,
+    distill: 'Actualización de notas', handoff: 'Handoff / actualización', idle: 'inactivo',
+    idleTask: label => `${label}: inactivo`,
+    phases: { refresh: 'actualizando caché', generating: 'generando resumen', submitting: 'enviando handoff' },
+    collected: (at, usage, unknown) => `Uso en segundo plano de esta sesión (recopilado desde ${new Date(at).toLocaleString()} tras esta actualización, no es una factura): ${usage}; ${unknown} solicitudes con uso desconocido`,
+    uncollected: 'Aún no se ha recopilado uso en segundo plano de esta sesión; el coste anterior no es necesariamente cero',
+    pending: sid => `Handoff sin entregar del origen ${sid}; /handoff resend ${sid}`,
+    history: 'Registros recientes (el historial de diagnóstico no es un resumen recuperable)',
+  },
+  distill: {
+    why: {
+      idle: 'actualización inactiva',
+      away: 'ausencia',
+      before: 'antes del handoff',
+      manual: 'manual',
+      every: n => `cada ${n} mensajes`,
+    },
+    failLog: (why, reason) => `falló la actualización de notas (${why}): ${reason}`,
+    timeout: min => `timeout: sin respuesta tras ${min} minutos, se abandonó`,
+    edited: file => `el archivo de notas se editó durante la actualización, se omite esta vez: ${file}`,
+    skipLog: (why, reason) => `actualización de notas (${why}): ${reason}`,
+    waiting: why => `actualización de notas (${why}): hay otra actualización en curso, se ha puesto en cola detrás; esta parte de la conversación ya está capturada`,
+    doneLog: (why, changes, rejected, file) =>
+      `actualización de notas (${why}): ${changes} cambio${s(changes)}${rejected ? `, se descartaron ${rejected} línea${s(rejected)} inválida${s(rejected)}` : ''}${changes ? `; escrito en ${file}` : ''}`,
+    queued: n => `${n} cambio${s(n)} en cola para tu próximo mensaje`,
+    toast: (n, queued, file) => `Notas actualizadas: ${n} cambio${s(n)}${queued ? ', se enviarán con tu próximo mensaje' : ''}: ${file}`,
+    writeFailed: err => `no se pudo escribir el archivo: ${err}`,
+    noUsableActions: 'No hay acciones utilizables en la salida de notas; se conserva la conversación para reintentar',
+    retryLost: 'Falta el punto de la actualización parcial anterior; no se cambiaron las notas ni el progreso',
+    retryCleanup: err => `Notas actualizadas, pero falló la limpieza del punto de reintento: ${err}`,
+  },
+
+  status: {
+    running: 'Actualizando notas…',
+    left: n => `Faltan ${n} mensaje${s(n)} para actualizar las notas`,
+    short: 'La conversación es corta, aún no se actualizaron las notas',
+    next: 'Las notas se actualizarán tras el próximo mensaje',
+    deferred: parts => `Handoff retrasado: ${parts}`,
+  },
+
+  distillStatus: {
+    head: (on, every) => `Notas en segundo plano ${on} (actualización inactiva, ausencia, antes del handoff, cada ${every} mensajes)`,
+    next: (left, idleMin) => `Siguiente: en ${left} mensaje${s(left)}, tras ${idleMin} min inactivo, o antes de un handoff`,
+    last: (at, why, n) => `Última: ${at} · ${why} · ${n} cambio${s(n)}`,
+    lastNone: 'Última: ninguna',
+    rejected: (n, samples) => `Se descartaron ${n} línea${s(n)} inválida${s(n)}: ${samples}`,
+    failed: (at, why, reason) => `Último fallo: ${at} · ${why} · ${reason}`,
+    notes: (file, memory, rules, injected) =>
+      `Notas del espacio de trabajo: ${file} (${memory} recuerdo${memory === 1 ? '' : 's'}, ${rules} regla${s(rules)}, ${injected} regla${s(injected)} llevadas a nuevas conversaciones)`,
+    procedures: (n, inProject) => `Procedimientos del espacio de trabajo: ${n} (${inProject} ya están en una skill o documento del proyecto; los procedimientos no se llevan a nuevas conversaciones)`,
+    tiers: (full, titles, archived, days) =>
+      `Recuerdos llevados: ${full} preferencia${s(full)} y corrección${s(full)} completas, ${titles} hecho${s(titles)} y ubicación${s(titles)} solo como títulos, ${archived} archivados (sin confirmar durante más de ${days} días, no se llevan)`,
+  },
+
+  idle: {
+    refreshSkipped: 'Actualización de caché omitida: este proceso no tiene ninguna solicitud que bifurcar; el temporizador inactivo se reanuda tras la próxima respuesta principal',
+    refresh: (n, max, read, create) => `actualización de caché ${n}/${max} cache_read=${read} cache_creation=${create}`,
+    refreshFailed: (n, max, reason) => `actualización de caché ${n}/${max} fallida: ${reason}`,
+    awaySavedLog: tokens => `handoff de ausencia guardado (${tokens} tokens), no se hará /clear automáticamente`,
+    awaySavedToast: 'Handoff de ausencia guardado',
+    outdated: 'la conversación continuó, se borró el handoff de ausencia obsoleto',
+  },
+
+  stop: {
+    tasks: n => `${n} tarea${s(n)} en segundo plano`,
+    oneShot: n => `${n} programación${s(n)} única`,
+    agents: n => `${n} subagente${s(n)}`,
+    deferral: (parts, cap) => `${parts} aún están en curso, se espera a que terminen antes del handoff (límite ${cap} tokens)`,
+    note: (parts, cap) => `${parts} aún están en curso en el handoff; context alcanzó el límite de ${cap}`,
+    capLog: (tokens, cap, parts) => `context ${tokens} alcanzó el límite de ${cap}; no se espera más a ${parts}, se hace el handoff ahora`,
+    retryLog: tokens => `context ${tokens} alcanzó el umbral, pero el último handoff falló hace poco; se reintentará más tarde`,
+    stopFailed: err => `Falló la comprobación de Stop: ${err}`,
+  },
+
+  loops: {
+    doneLog: 'Dijo que había terminado, pero no se ejecutó ninguna prueba ni comprobación tras los cambios de este turno; se pidió a Claude que verificara primero',
+    rewriteLog: 'La respuesta final no estaba en el idioma configurado; se pidió a Claude que la reescribiera una vez',
+    status: (retry, done, reply) => `Recordatorios: fallo repetido ${retry}, verificar antes de terminar ${done}, idioma de respuesta ${reply}`,
+  },
+
+  progress: {
+    status: (at, task, state, hintOff) => `Progreso más reciente: ${at}, ${task} (${state})${hintOff ? ', no se ofrece en chats nuevos (resume_hint desactivado)' : ''}`,
+    states: { done: 'hecho', in_progress: 'en curso', blocked: 'bloqueado' },
+  },
+
+  start: {
+    description: 'ctx-handoff: status; panel / now / dry / distill / resume / continue / resend / away / guard / refresh',
+    taken: err => `/handoff ya está en uso (${err}), se usará /ctx-handoff en su lugar`,
+    registerFailed: err => `no se pudo registrar el comando: ${err}`,
+    resumeFailed: err => `no se pudo restaurar el temporizador inactivo: ${err}`,
+    pruneFailed: err => `no se pudo limpiar el store al iniciar: ${err}`,
+  },
+
+  submit: {
+    wait: (sec, max) => `${sec}s transcurridos, normalmente termina en un minuto, hasta unos ${max} minutos`,
+    attach: 'Las imágenes y otros archivos adjuntos no se pueden conservar. Pégalos de nuevo tras el handoff.',
+    busy: (wait, attach) => `Handoff en curso (${wait}).${attach ? ` ${attach}` : ''}`,
+    dup: (wait, attach) => `Handoff en curso (${wait}). Este mensaje ya está conservado y no se enviará dos veces.${attach ? ` ${attach}` : ''}`,
+    held: (wait, attach) => `Handoff en curso (${wait}). Este mensaje está conservado y se enviará en la nueva conversación.${attach ? ` ${attach}` : ''}`,
+    pendingToast: 'Un handoff no se entregó. Ejecuta /handoff resend para enviarlo de nuevo',
+    awayAttach: 'Hay un handoff de ausencia y la caché de la conversación antigua ha caducado. Los archivos adjuntos no se pueden conservar: ejecuta primero /handoff resume (nueva conversación) o /handoff continue (permanecer en la antigua) y pégalos de nuevo.',
+    awayHeld: hasAttach =>
+      'Hay un handoff de ausencia y la caché de la conversación antigua ha caducado. /handoff resume: continuar en una nueva conversación e incluir este mensaje; /handoff continue: enviar este mensaje en la conversación antigua (o enviarlo de nuevo).' +
+      (hasAttach ? ' Solo se conservó el texto. Vuelve a pegar las imágenes y los archivos adjuntos tras elegir.' : ''),
+  },
+
+  guard: {
+    state: { proposed: 'borrador', on: 'activo', off: 'inactivo' },
+    mode: { deny: 'bloquear', remind: 'recordar' },
+    checkFailed: err => `falló la comprobación del guard, se permite la llamada: ${err}`,
+    head: (id, rule, message) => `Guard #${id} (${rule}): ${message}`,
+    denyToast: (id, tool, rule) => `Guard #${id} bloqueó ${tool}: ${rule}`,
+    denyHint: id => `Si el usuario realmente quiere ejecutarlo tal cual, pídele que ejecute primero /handoff guard off ${id}.`,
+    noCandidates: min => `No hay ninguna regla sin guard que se haya corregido de nuevo tras entrar en el repo, ni que haya aparecido ${min}+ veces sin estar en él`,
+    suggestFailed: reason => `Falló la sugerencia de guard: ${reason}`,
+    autoFailed: reason => `Falló la creación de borradores de guard: ${reason}`,
+    autoDrafted: n => `Se crearon ${n} borrador${n === 1 ? '' : 'es'} de guard; en la próxima conversación Claude preguntará si usarlos`,
+    suggested: (rules, drafts) => `Se revisaron ${rules} regla${s(rules)} y se crearon ${drafts} borrador${s(drafts)} de guard (aún no activos; aprueba con /handoff guard on N)`,
+    droppedLines: (n, list) => `Se descartaron ${n} línea${s(n)}: ${list}`,
+    none: min => `Guards: ninguno (las reglas corregidas de nuevo tras entrar en el repo, o mencionadas ${min}+ veces sin estar en él, se convierten en borradores y Claude te pregunta; o ejecuta /handoff guard suggest)`,
+    listHead: 'Guards:',
+    entry: (id, state, mode, rule, hits) => `#${id} [${state} · ${mode}] ${rule} (activado ${hits} vez${s(hits)})`,
+    example: (bad, good) => `Ejemplo: bloquea "${bad}", permite "${good}"`,
+    replay: (calls, hits) => `Comparación de prueba con esta conversación al crear el borrador: ${hits} de ${calls} llamada${s(calls)} a herramientas`,
+    recentHits: 'Activaciones recientes (comprueba que deban activarse realmente; si hay muchos falsos positivos, limita el guard o desactívalo):',
+    usage: 'Uso: /handoff guard [suggest | on N | off N | mode N deny|remind | drop N]',
+    missing: id => `No existe el guard #${id}`,
+    changed: (id, dropped) => `Guard #${id} ${dropped ? 'eliminado' : 'actualizado'}`,
+    summary: (on, draft, off) => `Guards: ${on} activos, ${draft} borradores, ${off} inactivos`,
+    summaryMore: (n, min) => `; ${n} regla${s(n)} apareció ${min}+ veces sin guard (/handoff guard suggest)`,
+    panelDone: (id, action) => `Guard #${id} ${action === 'on' ? 'aprobado' : action === 'off' ? 'desactivado' : 'eliminado'}`,
+    parse: {
+      noMarker: 'No se encontró el marcador ACTIONS',
+      notCandidate: 'la regla no es candidata',
+      badTool: 'formato de tool incorrecto',
+      missingFields: 'falta match / message / mode',
+      tooLong: 'regex demasiado larga',
+      missingExamples: 'faltan ejemplos bad / good',
+      badNotBlocked: 'el ejemplo malo no está bloqueado',
+      goodBlocked: 'el ejemplo bueno también estaría bloqueado',
+      duplicate: 'la misma regla está repetida',
+      wrap: (line, why) => `${line} (${why})`,
+    },
+  },
+
+  panelCmd: {
+    opened: 'Panel abierto sobre el campo de entrada. Haz clic en los botones o pulsa ctrl+x tab para usar el teclado. Ejecuta /handoff panel de nuevo para cerrarlo',
+    closed: 'Panel cerrado',
+    readFailed: err => `No se pudieron leer los datos del panel: ${err}`,
+    failed: err => `Falló: ${err}`,
+    busyKeep: 'Se están actualizando las notas, inténtalo de nuevo en un momento',
+    busyDrop: 'Se están actualizando las notas, inténtalo borrar de nuevo en un momento',
+    notFound: 'No se encontró esta entrada. Puede que el archivo de notas se haya editado hace poco',
+    kept: title => `Conservado: ${title} (se llevará de nuevo a nuevas conversaciones)`,
+    deleted: (kind, name, dir) =>
+      `Se eliminó ${kind === 'm' ? 'el recuerdo' : kind === 'r' ? `la regla "${name}"` : `el procedimiento "${name}"`} (copia original en ${dir}/.ctx-handoff-backup/)`,
+    settingSet: (name, value) => `${name}: ${value} (las demás sesiones lo recogerán en su próximo mensaje)`,
+    settingReset: (name, value) => `${name} vuelve a settings.json o al valor predeterminado: ${value}`,
+  },
+
+  change: {
+    addMemory: head => `Recuerdo añadido: ${head}`,
+    updateMemory: head => `Recuerdo actualizado: ${head}`,
+    confirmMemory: head => `Recuerdo confirmado: ${head}`,
+    deleteMemory: head => `Recuerdo eliminado: ${head}`,
+    addRule: (name, rule) => `Nueva regla: ${name} (vista 1 vez): ${rule}`,
+    confirmRule: (name, count) => `Regla confirmada: ${name} → vista ${count} veces`,
+    updateRule: name => `Regla actualizada: ${name}`,
+    deleteRule: name => `Regla eliminada: ${name}`,
+    addProcedure: (name, steps) => `Nuevo procedimiento: ${name} (${steps} pasos, visto 1 vez)`,
+    confirmProcedure: (name, count) => `Procedimiento confirmado: ${name} → visto ${count} veces`,
+    updateProcedure: name => `Procedimiento actualizado: ${name}`,
+    deleteProcedure: name => `Procedimiento eliminado: ${name}`,
+    inProject: (name, where) => `Ahora en el repo: ${name} → ${where}`,
+    notInProject: name => `No se mueve al repo (dijiste que no): ${name}`,
+    guardApproved: (id, rule) => `Guard #${id} activado (dijiste que sí): ${rule}`,
+    guardDeclined: (id, rule) => `Guard #${id} rechazado (dijiste que no): ${rule}`,
+  },
+
+  reject: {
+    over: (k, max) => `${k} supera ${max} caracteres`,
+    overJoin: ', ',
+    idNot: kind => `el id no es ${kind}#`,
+    noId: id => `no existe el id ${id}`,
+    whereMissing: where => `${where} no está en el repo`,
+    buried: title => `"${title}" fue eliminado por el usuario y no hay una nueva cita del usuario que lo recupere`,
+    badType: type => `tipo inválido (${type})`,
+    missing: names => `falta ${names}`,
+    quoteNotFound: 'la cita no está en los mensajes del usuario',
+    quoteMissing: type => `las entradas de ${type} necesitan una cita del usuario`,
+    badOp: op => `operación desconocida (${op})`,
+    badSteps: (min, max) => `steps debe tener entre ${min} y ${max} cadenas no vacías`,
+    noMarker: marker => `no se encontró el marcador ${marker}`,
+    badJson: msg => `JSON inválido (${msg})`,
+    notObject: 'no es un objeto JSON',
+    secret: 'parece un secreto',
+    badState: v => `estado inválido (${v})`,
+    badFiles: 'files no es una lista',
+    badList: field => `${field} no es una lista`,
+    tooMany: (k, max) => `${k} tiene más de ${max} elementos`,
+    overTotal: max => `la nota de progreso supera ${max} caracteres en total`,
+    noRecord: '(contenido no registrado)',
+    sample: (why, line) => `${why}: ${line}`,
+  },
+
+  cmd: {
+    unknown: sub => `Subcomando desconocido "${sub}"`,
+    usageHead: 'Uso:',
+    usageLines: [
+      '  /handoff                  estado',
+      '  /handoff now              crear un handoff y ejecutar /clear ahora',
+      '  /handoff dry              handoff de prueba, sin /clear',
+      '  /handoff distill          actualizar ahora las notas de este espacio de trabajo',
+      '  /handoff resume           continuar desde el handoff de ausencia en una conversación nueva (hace /clear)',
+      '  /handoff continue         descartar el handoff de ausencia y enviar el mensaje conservado en la conversación antigua',
+      '  /handoff resend [source-session-id] reenviar un handoff no entregado; especifica su origen tras un reinicio',
+      '  /handoff away pause|resume pausar o reanudar el trabajo en segundo plano de esta sesión; las notas siguen activas',
+      '  /handoff refresh on|off   activar o desactivar la actualización de caché en inactividad',
+      '  /handoff distill on|off   activar o desactivar las notas en segundo plano',
+      '  /handoff panel            mostrar u ocultar el panel sobre el campo de entrada: últimos cambios, borrar notas incorrectas, aprobar guards, ajustes',
+      '  /handoff guard           listar guards; suggest crea borradores a partir de reglas repetidas; on|off|drop N; mode N deny|remind',
+    ],
+    context: (tokens, threshold, window) => `context ${tokens} / threshold ${threshold} (window ${window})`,
+    refresh: (on, n, max, timer) => `Actualización de caché ${on}, ${n}/${max} actualizaciones en este periodo inactivo, temporizador ${timer ? 'en espera' : 'sin iniciar'}`,
+    away: state => `Handoff de ausencia: ${state === 'none' ? 'ninguno' : state === 'yes' ? 'sí' : 'sí (un mensaje conservado)'}`,
+    latest: last => `Último handoff: ${last ? `${last.at} ${last.kind}, context ${last.tokens}` : 'ninguno'}`,
+    latestFailure: (at, kind, reason) => `Último fallo: ${at} ${kind}, ${reason}`,
+    undelivered: 'Handoff sin entregar: sí (/handoff resend para enviarlo de nuevo)',
+    deferred: deferral => `Handoff retrasado: ${deferral}`,
+    background: (tasks, oneShot, recurring) => `En segundo plano (último Stop): ${tasks} tarea${s(tasks)}, ${oneShot} programación${s(oneShot)} única, ${recurring} programación${s(recurring)} recurrente`,
+    busy: 'Hay otro handoff en curso',
+    nowStarted: 'Creando el handoff, después /clear y envío',
+    dryFailed: 'La prueba falló, consulta el registro anterior para ver el motivo',
+    dryDone: tokens => `Prueba terminada (sin /clear), context ${tokens}`,
+    distillSet: arg => `Notas en segundo plano configuradas a ${arg}`,
+    distillUsage: 'Uso: /handoff distill (actualizar ahora) o /handoff distill on|off',
+    distilling: 'Ya se están actualizando las notas',
+    distillNone: 'Notas no actualizadas: no hay mensajes nuevos desde la última actualización o falló',
+    distillDone: 'Notas actualizadas',
+    refreshNow: on => `Actualmente ${on}. Uso: /handoff refresh on|off`,
+    refreshSet: (arg, minutes) => `Actualización de caché configurada a ${arg}${arg === 'off' ? ` (se creará un handoff de ausencia tras ${minutes} minutos inactivos)` : ''}`,
+    noAway: 'No hay handoff de ausencia',
+    resumeIntro: 'La conversación anterior quedó inactiva y se creó un handoff, así que esta es una conversación nueva para continuarla. Lee el handoff, dime en unas líneas cuál es el estado actual y el siguiente paso según tu comprensión y espera las instrucciones del usuario.',
+    resumeIntroHeld: 'La conversación anterior quedó inactiva y se creó un handoff, así que esta es una conversación nueva para continuarla. Responde al mensaje del usuario al final, usando el handoff como contexto.',
+    resumeHeld: '---\nPrimer mensaje del usuario al volver:',
+    resumeFailedLog: r => `falló /clear o el envío: ${r}`,
+    resumeClearFailed: 'Falló /clear. El handoff de ausencia se conserva, puedes ejecutar /handoff resume de nuevo',
+    resuming: 'Se va a ejecutar /clear y enviar el handoff de ausencia',
+    resendIntro: 'Reenviando el handoff anterior. Léelo, dime en unas líneas cuál es el estado actual y el siguiente paso según tu comprensión y espera las instrucciones del usuario. No empieces a trabajar todavía.',
+    nothingToResend: 'No hay ningún handoff para reenviar en esta sesión',
+    pendingUnbound: 'Este registro pendiente antiguo no tiene un origen de espacio de trabajo y no se puede reenviar con seguridad; se conserva sin cambios',
+    awayUsage: 'Uso: /handoff away pause|resume (solo esta sesión; las actualizaciones de notas siguen activas)',
+    commandFailed: err => `El comando falló; no se informó de la finalización: ${err}`,
+    awayChanged: paused => paused ? 'Trabajo en segundo plano pausado para esta sesión. Las solicitudes ya enviadas no se pueden cancelar y aún pueden consumir tokens; los resultados tardíos se ignoran. Las actualizaciones de notas siguen activas' : 'Trabajo en segundo plano reanudado para esta sesión; el temporizador inactivo vuelve a empezar ahora',
+    resendFailed: err => `falló el reenvío: ${err}`,
+    resending: 'Reenviando el handoff (sin /clear)',
+    discarded: 'Handoff de ausencia descartado, se permanece en la conversación antigua',
+    discardedSend: 'Handoff de ausencia descartado, se envía tu último mensaje en la conversación antigua',
+    sendHeldFailed: err => `no se pudo enviar el mensaje conservado: ${err}`,
+  },
+
+  panel: {
+    title: ' · Notas y guards del proyecto',
+    close: 'Cerrar',
+    more: 'Más',
+    less: 'Menos',
+    del: 'Eliminar',
+    confirmDel: 'Confirmar',
+    cancel: 'Cancelar',
+    keep: 'Conservar',
+    off: 'Desactivar',
+    approve: 'Aprobar',
+    draftBtn: 'Crear guards',
+    buttonsCells: 32,
+    tabGuard: n => `Guards ${n}`,
+    tabMemory: n => `Recuerdos ${n}`,
+    tabRules: (r, p = 0) => (p > 0 ? `Reglas ${r} / Proc ${p}` : `Reglas ${r}`),
+    tabDistill: 'Última actualización',
+    tabSettings: 'Ajustes',
+    settingsHint: 'Los valores establecidos aquí prevalecen sobre settings.json y se aplican a todos los espacios de trabajo. Pulsa Más para ver los detalles',
+    source: { panel: 'panel', file: 'settings.json', default: 'default' },
+    on: 'activo',
+    offValue: 'inactivo',
+    toggleBtn: 'Cambiar',
+    resetBtn: 'Restablecer',
+    minutes: n => `${n} min`,
+    settingName: {
+      auto_handoff: 'Hacer handoff en el umbral',
+      threshold: 'Umbral de handoff',
+      window_ratio: 'Ratio del umbral en ventanas pequeñas',
+      refresh: 'Mantener la caché caliente durante la ausencia',
+      idle_minutes: 'Tiempo inactivo antes de actualizar',
+      max_refresh: 'Actualizaciones por periodo inactivo',
+      away_handoff: 'Handoff de ausencia',
+      distill: 'Notas del proyecto (segundo plano)',
+      distill_every: 'Mensajes entre actualizaciones de notas',
+      min_tokens: 'Conversación más pequeña tratada',
+      notes_model: 'Modelo para las notas',
+      resume_hint: 'Decir a los chats nuevos dónde te detuviste',
+      retry_nudge: 'Recordatorio de fallo repetido',
+      done_check: 'Comprobar antes de "hecho"',
+      reply_language: 'Recordatorio de idioma de respuesta',
+      language: 'Idioma de los mensajes',
+    },
+    settingHelp: {
+      auto_handoff: 'Si está desactivado, no ocurre nada al llegar al umbral y entra en acción la compactación propia de Claude Code',
+      threshold: 'Hacer handoff a una conversación nueva cuando el context alcanza este número de tokens (requiere el handoff automático activado)',
+      window_ratio: 'En ventanas más pequeñas que el umbral, hacer el handoff en esta fracción de la ventana',
+      refresh: 'Mientras estás ausente, enviar de vez en cuando una solicitud pequeña para que la caché no caduque',
+      idle_minutes: 'Minutos desde el último uso de la caché antes de actualizarla (la caché caduca a los 60)',
+      max_refresh: 'Tras este número de actualizaciones, escribir un handoff de ausencia para retomarlo al volver',
+      away_handoff: 'Cuando se agotan las actualizaciones o están desactivadas, escribir un handoff de ausencia y ofrecer /handoff resume o continue al volver; desactivado no hace nada',
+      distill: 'Actualizar las notas del proyecto en segundo plano cada N mensajes, en inactividad y antes de un handoff',
+      distill_every: 'Actualizar las notas tras este número de tus mensajes; menos significa más actualidad pero más solicitudes',
+      min_tokens: 'Las conversaciones pequeñas son baratas de reconstruir: sin actualización, notas ni handoff de ausencia',
+      notes_model: 'Modelo para las notas en segundo plano (al menos Sonnet 5.5); settings.json puede indicar otro modelo',
+      resume_hint: 'A un chat nuevo en la misma carpeta en un plazo de 7 días se le dice dónde se detuvo el anterior',
+      retry_nudge: 'Cuando una herramienta falla dos veces seguidas por el mismo motivo, pedir a Claude que cambie de enfoque',
+      done_check: 'Cuando Claude dice que ha terminado tras editar código sin una prueba o comprobación que pase, pedirle que verifique una vez',
+      reply_language: "Recordar a Claude una vez cuando su explicación no esté en este idioma; auto sigue el idioma de Claude Code",
+      language: "Idioma de la línea de estado, los avisos y el panel; auto sigue el idioma de Claude Code y luego el del sistema",
+    },
+    noGuards: 'Aún no hay guards. Cuando una regla aparece 3 o más veces puedes pedir al modelo que cree uno.',
+    guardMeta: (id, mode, hits) => `#${id} · ${mode} · ${hits} activación${s(hits)}`,
+    blockLabel: 'Bloquea ',
+    allowLabel: 'Permite ',
+    replay: (calls, hits) => `Comparación de prueba con esta conversación: ${hits} de ${calls} llamada${s(calls)} a herramientas`,
+    recentHits: 'Activaciones recientes (si hay muchos falsos positivos, limita o desactiva):',
+    suggesting: 'Pidiendo borradores al modelo…',
+    candidates: n => `${n} regla${s(n)} apareció 3 o más veces sin guard `,
+    memoryHint: (shown, total) => `Últimos ${shown} de ${total} · las preferencias y correcciones pasan completas a las conversaciones nuevas, los hechos y ubicaciones solo como títulos`,
+    archived: (n, days) => `${n} archivados: sin confirmar durante más de ${days} días, no se llevan a conversaciones nuevas`,
+    noRules: 'Aún no hay reglas',
+    ruleCount: n => `${n}x`,
+    proceduresHint: n => `${n} procedimiento${s(n)} · no se llevan a conversaciones nuevas; a las 3 o más veces se pide a la IA que los convierta en skills del proyecto`,
+    inProject: project => (project.startsWith('en el repo') ? project : 'fuera del repo'),
+    distillLine: (at, why, n) => `${at} · ${why} · ${n} cambio${s(n)}`,
+    noDistill: 'Aún no hay actualizaciones de notas',
+    footer: file => `Tras ctrl+x tab, pulsa 1–5 para cambiar de pestaña · ${file}`,
+    typeLabel: { user: 'Preferencia', feedback: 'Corrección', project: 'Hecho', reference: 'Ubicación' },
+  },
+}
+
+export type Messages = typeof en
 const en: Messages = {
   ind: '  ',
   bullet: '- ',
@@ -413,4 +805,5 @@ const en: Messages = {
   },
 }
 
-const MSG: Record<Lang, Messages> = { 'zh-TW': zh, en }
+const zh = en
+const MSG: Record<Lang, Messages> = { 'zh-TW': zh, en, es }
