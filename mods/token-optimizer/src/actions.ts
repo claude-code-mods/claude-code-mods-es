@@ -38,9 +38,9 @@ const DASHBOARD_BUSY_GRACE_MS = 30_000
  */
 export const DASHBOARD_ARGS = ['dashboard', '--user'] as const
 /** The band's note line while the dashboard opens. */
-export const DASHBOARD_OPENING = 'Opening the dashboard.'
+export const DASHBOARD_OPENING = 'Abriendo el panel.'
 /** The note after it failed, shown for NOTE_MS. */
-export const DASHBOARD_FAILED = 'Could not open the dashboard.'
+export const DASHBOARD_FAILED = 'No se pudo abrir el panel.'
 
 export type Busy = 'clean' | 'fresh-capture' | 'fresh-clear' | 'dashboard' | null
 
@@ -146,7 +146,7 @@ export function noteNow(ui: UiState, now: number): string | null {
 }
 
 /** Clean up's note when its /compact left no sign that a compaction happened, and gave no reason. */
-export const CLEAN_UNCONFIRMED = 'Clean up could not confirm a compaction.'
+export const CLEAN_UNCONFIRMED = 'La limpieza no pudo confirmar una compactación.'
 
 /**
  * What the band saw around Clean up's /compact. `landed`: its own
@@ -176,7 +176,7 @@ export function cleanUpOutcome(ev: CompactEvidence): { ok: true } | { ok: false;
   if (ev.landed || windowReset) return { ok: true }
   const said = ev.said.trim().split('\n')[0]?.trim() ?? ''
   if (said === '') return { ok: false, line: CLEAN_UNCONFIRMED }
-  return { ok: false, line: `Clean up skipped: ${said.replace(/\.$/, '')}.` }
+  return { ok: false, line: `Limpieza omitida: ${said.replace(/\.$/, '')}.` }
 }
 
 /** The live window's tokens from a `$.session.usage()` reading, null when the engine has none. */
@@ -251,12 +251,12 @@ export type WarmOutcome =
 
 /** One line for the Keep warm outcome; a lapsed cache names what the warm-up cost. */
 export function warmToast(o: WarmOutcome): string {
-  if (!o.ok) return `Keep warm did not run: ${o.reason}.`
-  if (o.lapsed) return `The cache had already dropped, so the warm-up re-read ${tokens(o.contextTokens)} tokens at full price.`
+  if (!o.ok) return `Mantener caliente no se ejecutó: ${o.reason}.`
+  if (o.lapsed) return `La caché ya había caducado, así que la precalentación volvió a leer ${tokens(o.contextTokens)} tokens a precio completo.`
   // The receipt: what the warm-up read from the cache, and that the clock restarted.
-  const read = o.cacheRead && o.cacheRead > 0 ? `: re-read ${tokens(o.cacheRead)} tokens from the cache at a tenth of the price` : ''
-  const clock = o.lifetimeS ? ` The clock is back to ${Math.round(o.lifetimeS / 60)}m.` : ''
-  return `Cache kept warm${read}.${clock}`
+  const read = o.cacheRead && o.cacheRead > 0 ? `: volvió a leer ${tokens(o.cacheRead)} tokens de la caché a una décima parte del precio` : ''
+  const clock = o.lifetimeS ? ` El temporizador vuelve a ${Math.round(o.lifetimeS / 60)} min.` : ''
+  return `Caché mantenida caliente${read}.${clock}`
 }
 
 const TYPED = new Set(['composer', 'sdk', 'bridge', 'unclassified'])

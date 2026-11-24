@@ -439,7 +439,7 @@ async function handoffThatFits($: EngineInterface, h: Handoff, as?: { sessionId:
   if (fate === 'attach') return h
   if (fate === 'skip') return null
   await dropHandoff($)
-  const line = `Start fresh's saved hand-off was discarded: ${fate.drop}.`
+  const line = `Se descartó el traspaso guardado de Empezar de cero: ${fate.drop}.`
   await setUi($, u => withNote(u, line, now))
   toast($, line)
   return null
@@ -447,7 +447,7 @@ async function handoffThatFits($: EngineInterface, h: Handoff, as?: { sessionId:
 
 /** The refusal for a press while our compaction or clear still runs. */
 function stillRunning(kind: 'compact' | 'clear'): string {
-  return kind === 'compact' ? 'Still finishing the last clean-up.' : 'Still clearing.'
+  return kind === 'compact' ? 'Todavía se está terminando la última limpieza.' : 'Todavía se está borrando.'
 }
 
 /**
@@ -517,10 +517,10 @@ async function disarm($: EngineInterface): Promise<void> {
 }
 
 const BUSY_WORDS: Record<Exclude<Busy, null>, string> = {
-  clean: 'Clean up',
-  'fresh-capture': 'Start fresh',
-  'fresh-clear': 'Start fresh',
-  dashboard: 'Opening the dashboard',
+  clean: 'Limpiar',
+  'fresh-capture': 'Empezar de cero',
+  'fresh-clear': 'Empezar de cero',
+  dashboard: 'Abriendo el panel',
 }
 
 /** A busy state ends by itself: a step label never outlives its work. */
@@ -539,7 +539,7 @@ async function expireBusy($: EngineInterface, busy: Exclude<Busy, null>, since: 
   // The clear waits for the turn to end and can still land: the hand-off stays
   // for the conversation it creates, within 10 minutes of the save.
   const line =
-    busy === 'fresh-clear' ? 'Start fresh clears when the current turn ends.' : busy === 'dashboard' ? DASHBOARD_FAILED : `${BUSY_WORDS[busy]} timed out.`
+    busy === 'fresh-clear' ? 'Empezar de cero borra cuando termina el turno actual.' : busy === 'dashboard' ? DASHBOARD_FAILED : `${BUSY_WORDS[busy]} tardó demasiado.`
   await setUi($, u => withNote(withBusy(u, null, now), line, now))
   // The dashboard link fails by its note alone.
   if (busy !== 'dashboard') toast($, line)
@@ -573,7 +573,7 @@ async function cleanUp($: EngineInterface, kind: 'clean' | 'clean-first'): Promi
     return
   }
   if (await isTurnRunning($)) {
-    toast($, 'Clean up waits until the turn finishes.')
+    toast($, 'La limpieza espera a que termine el turno.')
     return
   }
   await setUi($, u => withBusy(u, 'clean', now))
@@ -606,7 +606,7 @@ async function runCompact($: EngineInterface, since: number, kind: 'clean' | 'cl
   // Claimed with no await between the check and the claim; recorded before the call.
   const mine = await claimCall($, 'compact')
   if (!mine) {
-    skip = skipped('it could not be recorded')
+    skip = skipped('no se pudo registrar')
   } else {
     try {
       // The command, as if typed: $.session.compact() is refused in a headless
@@ -640,7 +640,7 @@ async function runCompact($: EngineInterface, since: number, kind: 'clean' | 'cl
     await setUi($, u => withNote(withBusy(u, null, now), line, now))
     toast($, line)
   } else {
-    await setUi($, u => withNote(withBusy(u, null, now), 'Cleaned up.', now))
+    await setUi($, u => withNote(withBusy(u, null, now), 'Limpieza completada.', now))
   }
   $.clock.after(0, () => void attempt(() => refresh($), undefined))
 }
@@ -651,11 +651,11 @@ async function keepWarm($: EngineInterface): Promise<void> {
   await disarm($)
   const clock = (await attempt(() => read($, clockAtom), null)) ?? initialClock()
   if (warmInFlight || clock.warming) {
-    toast($, 'A warm-up is already running.')
+    toast($, 'Ya se está realizando un precalentamiento.')
     return
   }
   if (!canKeepWarm(clock, now)) {
-    toast($, clock.working || (await isTurnRunning($)) ? 'Keep warm waits until the turn finishes.' : 'The cache is too close to dropping to keep it warm.')
+    toast($, clock.working || (await isTurnRunning($)) ? 'Mantener caliente espera a que termine el turno.' : 'La caché está a punto de caducar; no se puede mantener caliente.')
     return
   }
   warmInFlight = true
@@ -692,14 +692,14 @@ async function runWarm($: EngineInterface, known: number | null, gen: number): P
   try {
     const session = await attempt(() => read($, sessionAtom), null); const sid = cleanId(await attempt(() => $.session.id(), '')); const path = transcriptFor(sid); const snapshot = path ? await attempt(() => $.fs.stat(path), null) : null; const actionId = `${sid}-${await $.clock.now()}-${Math.random().toString(36).slice(2)}`
     // A recorded 0 is no size at all: fall back to the session's own.
-    const contextTokens = known || session?.contextTokens || 0; let receiptFailed = false; if (!await bookModAction(dataIo($), { action: 'warm-prepare', action_id: actionId, session_id: sid, timestamp: (await $.clock.now()) / 1000, transcript_path: path, byte_size: snapshot?.size, transcript_mtime: snapshot ? snapshot.mtimeMs / 1000 : null })) { await feedClock($, { type: 'warm-failed' }); toast($, 'Keep warm did not run: its cost could not be reserved.'); return }
-    const reply = await forkWithin($, BUSY_TIMEOUT_MS, async answer => { if (!answer.isAnswered && answer.reason === 'nothing-to-fork') { await bookModAction(dataIo($), { action: 'warm-cancel', action_id: actionId, session_id: sid, timestamp: (await $.clock.now()) / 1000 }); return } if (!('usage' in answer) || !answer.usage || !Object.values(answer.usage).some(n => typeof n === 'number' && n > 0)) { await logForkFailure(dataIo($), 'fork returned no usage'); return } const booked = await bookModAction(dataIo($), { action: 'warm', answered: answer.isAnswered, action_id: actionId, session_id: sid, timestamp: (await $.clock.now()) / 1000, transcript_path: path, byte_size: snapshot?.size, transcript_mtime: snapshot ? snapshot.mtimeMs / 1000 : null, usage: answer.usage }); receiptFailed = !booked; if (!booked) toast($, 'Warm-up cost could not be recorded in Token Optimizer.') })
+    const contextTokens = known || session?.contextTokens || 0; let receiptFailed = false; if (!await bookModAction(dataIo($), { action: 'warm-prepare', action_id: actionId, session_id: sid, timestamp: (await $.clock.now()) / 1000, transcript_path: path, byte_size: snapshot?.size, transcript_mtime: snapshot ? snapshot.mtimeMs / 1000 : null })) { await feedClock($, { type: 'warm-failed' }); toast($, 'Mantener caliente no se ejecutó: no se pudo reservar su coste.'); return }
+    const reply = await forkWithin($, BUSY_TIMEOUT_MS, async answer => { if (!answer.isAnswered && answer.reason === 'nothing-to-fork') { await bookModAction(dataIo($), { action: 'warm-cancel', action_id: actionId, session_id: sid, timestamp: (await $.clock.now()) / 1000 }); return } if (!('usage' in answer) || !answer.usage || !Object.values(answer.usage).some(n => typeof n === 'number' && n > 0)) { await logForkFailure(dataIo($), 'El coste de la precalentación no se pudo registrar en Token Optimizer.'); return } const booked = await bookModAction(dataIo($), { action: 'warm', answered: answer.isAnswered, action_id: actionId, session_id: sid, timestamp: (await $.clock.now()) / 1000, transcript_path: path, byte_size: snapshot?.size, transcript_mtime: snapshot ? snapshot.mtimeMs / 1000 : null, usage: answer.usage }); receiptFailed = !booked; if (!booked) toast($, 'El coste de la precalentación no se pudo registrar en Token Optimizer.') })
     // Cleared meanwhile: this warm-up says nothing about the new session.
     if (gen !== sessionGen) return
     const at = await $.clock.now()
     if (reply === null) {
       await feedClock($, { type: 'warm-failed' })
-      toast($, warmToast({ ok: false, reason: 'the request failed' }))
+      toast($, warmToast({ ok: false, reason: 'la petición falló' }))
     } else if (reply.isAnswered) {
       await feedClock($, { type: 'warm-done', at, cacheReadTokens: reply.usage.cache_read_input_tokens, contextTokens })
       const after = await attempt(() => read($, clockAtom), null)
@@ -709,7 +709,7 @@ async function runWarm($: EngineInterface, known: number | null, gen: number): P
         contextTokens,
         cacheRead: reply.usage.cache_read_input_tokens,
         lifetimeS: view(after ?? initialClock(), at, planDefault(session)).lifetime,
-      }) + (receiptFailed ? ' Cost could not be recorded in Token Optimizer.' : '')
+      }) + (receiptFailed ? ' No se pudo registrar el coste en Token Optimizer.' : '')
       toast($, line)
       // Also in the sentence for a few seconds, where the eye already is.
       await setUi($, u => withNote(u, line, at))
@@ -769,13 +769,13 @@ async function startFresh($: EngineInterface): Promise<void> {
   }
   if (await isTurnRunning($)) {
     await disarm($)
-    toast($, 'Start fresh waits until the turn finishes.')
+    toast($, 'Empezar de cero espera a que termine el turno.')
     return
   }
   const sid = cleanId(await attempt(() => $.session.id(), ''))
   if (!sid) {
     await disarm($)
-    toast($, 'Start fresh stopped: no session to save. Nothing was cleared.')
+    toast($, 'Empezar de cero se detuvo: no hay sesión que guardar. No se borró nada.')
     return
   }
   const gen = sessionGen
@@ -795,13 +795,13 @@ async function runFresh($: EngineInterface, sid: string, since: number, gen: num
     const ui = await attempt(() => read($, uiAtom), null)
     if (!ui || ui.busySince !== since) return
     const now = await $.clock.now()
-    const line = `Start fresh stopped: ${reason}. Nothing was cleared.`
+    const line = `Empezar de cero se detuvo: ${reason}. No se borró nada.`
     await setUi($, u => withNote(withBusy(u, null, now), line, now))
     toast($, line)
   }
 
   const root = await findTokenOptimizerRoot(io, await readHome(io))
-  if (!root) return stop('Token Optimizer was not found')
+  if (!root) return stop('Token Optimizer no encontrado')
   const port: HandoffPort = {
     run: (args, stdin) =>
       runMeasure(io, root, args, {
@@ -820,7 +820,7 @@ async function runFresh($: EngineInterface, sid: string, since: number, gen: num
   // The session changed under it (a typed /clear, a resume): clear nothing, and say so.
   const changed = async (): Promise<void> => {
     await standDown()
-    toast($, 'Start fresh stopped: the session changed.')
+    toast($, 'Empezar de cero se detuvo: la sesión cambió.')
   }
   if (!(await stillSession($, sid, gen))) return changed()
   const ui = await attempt(() => read($, uiAtom), null)
@@ -829,7 +829,7 @@ async function runFresh($: EngineInterface, sid: string, since: number, gen: num
   if (!result.ok) return stop(result.reason)
   // Our compaction or clear still running: never overlap it.
   const running = await runningCall($)
-  if (running) return stop(running === 'compact' ? 'the last clean-up is still running' : 'the last clear is still running')
+  if (running) return stop(running === 'compact' ? 'la última limpieza todavía se está ejecutando' : 'el último borrado todavía se está ejecutando')
   // A turn started during the capture: a queued clear would wipe it.
   if (await isTurnRunning($)) {
     await standDown()
@@ -845,7 +845,7 @@ async function runFresh($: EngineInterface, sid: string, since: number, gen: num
     // since the save" until the real stamp below lands.
     await $.store.set(HANDOFF_KEY, { ...result.handoff, createdAt: Number.MAX_SAFE_INTEGER, pendingSince: since })
   } catch {
-    return stop('the hand-off could not be kept on disk')
+    return stop('no se pudo conservar el traspaso en el disco')
   }
   try {
     handoff = { ...result.handoff, createdAt: await $.clock.now() }
@@ -890,10 +890,10 @@ async function runClear($: EngineInterface, since: number, handoff: Handoff, sid
     return
   }
   const running = await runningCall($)
-  if (running || engineCall) return fail(`Start fresh stopped: ${(running ?? engineCall) === 'compact' ? 'the last clean-up is still running' : 'the last clear is still running'}. Nothing was cleared.`)
+  if (running || engineCall) return fail(`Empezar de cero se detuvo: ${(running ?? engineCall) === 'compact' ? 'la última limpieza todavía se está ejecutando' : 'el último borrado todavía se está ejecutando'}. No se borró nada.`)
   // Claimed with no await between the check and the claim; recorded before the call.
   const mine = await claimCall($, 'clear')
-  if (!mine) return fail('Start fresh could not clear. Your conversation is unchanged.')
+  if (!mine) return fail('Empezar de cero no pudo borrar. Tu conversación no ha cambiado.')
   let cleared = false; const freshUsage = await attempt(() => $.session.usage(), null); const freshBefore = liveTokens(freshUsage) ?? (await attempt(() => read($, sessionAtom), null))?.contextTokens; const freshPath = transcriptFor(sid)
   try {
     await $.command.run({ command: 'clear' })
@@ -903,7 +903,7 @@ async function runClear($: EngineInterface, since: number, handoff: Handoff, sid
   } finally {
     await releaseCall($, mine)
   }
-  if (!cleared) return fail('Start fresh could not clear. Your conversation is unchanged.'); const freshAt = await $.clock.now(); const saveFresh = async () => cleanId(await $.session.id()) !== sid && await bookModAction(dataIo($), { action: 'fresh', action_id: `${sid}-${handoff.createdAt}-fresh`, session_id: sid, timestamp: freshAt / 1000, transcript_path: freshPath, before_tokens: freshBefore, handoff_tokens_estimate: Math.ceil(handoff.text.length / 2) }); if (!await attempt(saveFresh, false)) $.clock.after(STATUS_AFTER_TURN_MS, () => void attempt(async () => { if (!await saveFresh()) toast($, 'Start fresh could not be confirmed or recorded for accounting.') }, undefined))
+  if (!cleared) return fail('Start fresh could not clear. Your conversation is unchanged.'); const freshAt = await $.clock.now(); const saveFresh = async () => cleanId(await $.session.id()) !== sid && await bookModAction(dataIo($), { action: 'fresh', action_id: `${sid}-${handoff.createdAt}-fresh`, session_id: sid, timestamp: freshAt / 1000, transcript_path: freshPath, before_tokens: freshBefore, handoff_tokens_estimate: Math.ceil(handoff.text.length / 2) }); if (!await attempt(saveFresh, false)) $.clock.after(STATUS_AFTER_TURN_MS, () => void attempt(async () => { if (!await saveFresh()) toast($, 'Empezar de cero no pudo borrar. Tu conversación no ha cambiado.') }, undefined))
   // The hand-off now waits for the first prompt of a conversation started since the save.
   const now = await $.clock.now()
   await setUi($, u => (u.busy === 'fresh-clear' && u.busySince === since ? withBusy(u, null, now) : u))
@@ -974,7 +974,7 @@ async function act($: EngineInterface, id: ActionId | 'dashboard'): Promise<void
     else if (id === 'fresh') await startFresh($)
     else await keepWarm($)
   } catch {
-    toast($, 'That did not work. Try again in a moment.')
+    toast($, 'Eso no funcionó. Inténtalo de nuevo en un momento.')
   } finally {
     if (claim === mine) claim = null
   }
@@ -1166,14 +1166,14 @@ function detailRow(D: Desktop, m: Model, on: Handlers) {
   const sagging = q !== null && (q.score < QUALITY_FLOOR || q.recoveryStatus === 'needs_attention')
   const rowActions = [
     ...(sagging ? cardList.find(c => c.id === 'quality')?.actions ?? [] : []),
-    ...(m.canWarm && snap.cache.state === 'warning' ? [{ id: 'warm' as const, label: 'Keep warm' }] : []),
+    ...(m.canWarm && snap.cache.state === 'warning' ? [{ id: 'warm' as const, label: 'Mantener caliente' }] : []),
   ].filter(a => a.id !== say.action?.id && !(a.id === 'clean' && say.action?.id === 'clean-first'))
 
   const savingsNote =
     detail.savings.state === 'unavailable' || (snap.savingsLoading && !snap.savings) ? (
       <Box flexDirection="row" alignItems="center" columnGap={1}>
         {icon(D, 'saved', t.ink)}
-        <Text>{m.savingsReason ?? (snap.savingsLoading ? 'Still counting savings.' : detail.savings.reason) ?? 'Savings appear once Token Optimizer has measured some.'}</Text>
+        <Text>{m.savingsReason ?? (snap.savingsLoading ? 'Todavía se está contando el ahorro.' : detail.savings.reason) ?? 'El ahorro aparece cuando Token Optimizer lo haya medido.'}</Text>
       </Box>
     ) : savingsRetryNote(m.savingsRefreshFailed, m.savingsComputedAt, snap.now) ? <Text>{savingsRetryNote(m.savingsRefreshFailed, m.savingsComputedAt, snap.now)}</Text> : ''
 
@@ -1440,7 +1440,7 @@ export const register: Register = on => {
         return true
       }, false)
       if (kept) await attempt(() => update($, handoffAtom, () => handoff), undefined)
-      else toast($, `Start fresh's hand-off could not be kept. The checkpoint is still at ${handoff.checkpointPath}.`)
+      else toast($, `No se pudo conservar el traspaso de Empezar de cero. El punto de control sigue en ${handoff.checkpointPath}.`)
       throw error
     }
   })
@@ -1649,7 +1649,7 @@ export const register: Register = on => {
         (poseNow === 'idle' || poseNow === 'sleep') && animate
           ? (['right'] as const).map(gaze => {
               const source = clawdSvg('idle', mood, { animate, palette, gaze, fadeIn: false })
-              return { key: `gaze-${gaze}-${mood}`, source, alt: 'Clawd: watching your pointer', gaze }
+              return { key: `gaze-${gaze}-${mood}`, source, alt: 'Clawd: vigilando tu puntero', gaze }
             })
           : [],
     }

@@ -188,7 +188,7 @@ async function watchBridge($: EngineInterface): Promise<void> {
       continue
     }
     denials += 1
-    if (denials === DENIALS_BEFORE_LOGGING) $.ui.log(`terminal-browser: frame blit refused: ${result.deny}`)
+    if (denials === DENIALS_BEFORE_LOGGING) $.ui.log(`terminal-browser: blit de fotograma rechazado: ${result.deny}`)
     const now = Date.now()
     if (now - lastDeniedRedraw >= DENIED_REDRAW_MS) {
       lastDeniedRedraw = now
@@ -279,14 +279,14 @@ export const register: Register = (on, options) => {
       description: 'Abrir un navegador a la derecha',
       argumentHint: '[url]',
       immediate: true,
-    }).catch(err => $.ui.log(`terminal-browser: /browser not registered: ${err}`))
+    }).catch(err => $.ui.log(`terminal-browser: /browser no registrado: ${err}`))
     if (agentToolEnabled) {
       await $.tool.register({
         name: 'open',
         description: 'Open terminal-browser directly inside claude code. Control the open page with the terminal-browser action CLI.',
         inputSchema: { type: 'object', properties: { url: { type: 'string', description: 'The page to open, as a full url or a host name' } } },
-      }).catch(err => $.ui.log(`terminal-browser: open tool not registered: ${err}`))
-      await $.tool.register({ name: 'close', description: 'Close the terminal-browser pane.' }).catch(err => $.ui.log(`terminal-browser: close tool not registered: ${err}`))
+      }).catch(err => $.ui.log(`terminal-browser: herramienta open no registrada: ${err}`))
+      await $.tool.register({ name: 'close', description: 'Cierra el panel de terminal-browser.' }).catch(err => $.ui.log(`terminal-browser: herramienta close no registrada: ${err}`))
     }
     return r
   })
@@ -304,13 +304,13 @@ export const register: Register = (on, options) => {
   on('tool.call', { tool: new RegExp(`^${OPEN_TOOL}$`) }, async ($, e) => {
     const url = (e as { url?: unknown }).url
     const opened = await openBrowser($, typeof url === 'string' ? url : null)
-    if (!opened.ok) return { deny: `could not open the browser: ${opened.error}` }
+    if (!opened.ok) return { deny: `no se pudo abrir el navegador: ${opened.error}` }
     return { result: [{ type: 'text', text: `opened ${opened.url} ` }] }
   })
 
   on('tool.call', { tool: new RegExp(`^${CLOSE_TOOL}$`) }, async ($) => {
     const closed = await closeBrowser($)
-    return { result: [{ type: 'text', text: closed ? 'browser pane closed' : 'no browser pane was open (maybe the user closed it?)' }] }
+    return { result: [{ type: 'text', text: closed ? 'panel del navegador cerrado' : 'no había ningún panel de navegador abierto (¿quizá lo cerraste?)' }] }
   })
 
   on('ui.render', { component: 'Pane', requestId: PANE }, async ($, e) => {
