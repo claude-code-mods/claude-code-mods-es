@@ -1,0 +1,25 @@
+{
+  "name": "show-your-work",
+  "version": "1.1.0",
+  "description": "Muestra el trabajo terminado en la terminal: capturas de pantalla, vídeos de clics y comparaciones antes/después sincronizadas.",
+  "author": {
+    "name": "Umer Ansari",
+    "url": "https://github.com/iamumeransari"
+  },
+  "homepage": "https://github.com/iamumeransari/claude-show-your-work",
+  "repository": "https://github.com/iamumeransari/claude-show-your-work",
+  "license": "MIT",
+  "keywords": [
+    "screenshots",
+    "video",
+    "playwright",
+    "qa",
+    "kitty",
+    "ghostty",
+    "terminal"
+  ],
+  "types": "./types/index.d.ts",
+  "privacyPolicyUrl": "https://github.com/iamumeransari/claude-show-your-work/blob/main/PRIVACY.md",
+  "documentationUrl": "https://github.com/iamumeransari/claude-show-your-work#readme",
+  "termsOfServiceUrl": "https://github.com/iamumeransari/claude-show-your-work/blob/main/LICENSE"
+}

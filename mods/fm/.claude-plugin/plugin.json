@@ -1,0 +1,9 @@
+{
+  "name": "fm",
+  "version": "1.0.0",
+  "description": "Animación de navegación y transcripción exclusiva de la conversación, con una preferencia de modo calm compartida entre sesiones.",
+  "author": {
+    "name": "Firstmate",
+    "url": "https://github.com/kunchenguid/firstmate"
+  }
+}

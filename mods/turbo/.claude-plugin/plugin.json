@@ -1,0 +1,13 @@
+{
+  "name": "turbo",
+  "displayName": "Turbo",
+  "description": "Una fábrica de software agéntica con control humano: tú decides qué construir y juzgas el resultado; las skills lo construyen y lo entregan.",
+  "author": {
+    "name": "Tobias Hagemann",
+    "url": "https://github.com/tobihagemann"
+  },
+  "homepage": "https://github.com/tobihagemann/turbo",
+  "repository": "https://github.com/tobihagemann/turbo",
+  "license": "MIT",
+  "types": "./types/index.d.ts"
+}

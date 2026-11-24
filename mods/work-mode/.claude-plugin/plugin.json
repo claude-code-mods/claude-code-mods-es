@@ -1,0 +1,10 @@
+{
+  "name": "work-mode",
+  "version": "0.8.0",
+  "description": "Modos de sesión de /work-mode para Claude Code: auto (sin preguntas a mitad de tarea), out (delegar trabajo por lotes) y wrap (converger y terminar), con recordatorios de delegación.",
+  "types": "./types/index.d.ts",
+  "author": {
+    "name": "Dustin Yuchen Teng"
+  },
+  "license": "MIT"
+}

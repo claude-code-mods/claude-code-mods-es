@@ -1,0 +1,9 @@
+{
+  "name": "jev-auto-compact",
+  "version": "1.6.1",
+  "description": "Al 60 % de contexto, poda llamadas a herramientas obsoletas sin generar nada; omite en lugar de recurrir a un resumen LLM.",
+  "author": {
+    "name": "vexjoy-agent"
+  },
+  "license": "MIT"
+}

@@ -1,0 +1,9 @@
+{
+  "name": "lcu-approve",
+  "version": "0.6.0",
+  "description": "Aprobación por aplicación para el uso del ordenador: permitir esta conversación, permitir siempre o denegar, además de un panel de aplicaciones aprobadas.",
+  "author": {
+    "name": "LCU"
+  },
+  "types": "./types/index.d.ts"
+}

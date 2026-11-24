@@ -1,0 +1,122 @@
+{
+  "fm": {
+    "es": "Animación de navegación y transcripción exclusiva de la conversación, con una preferencia de modo calm compartida entre sesiones."
+  },
+  "terminal-browser": {
+    "es": "Un navegador dentro de Claude Code: previsualiza sitios y HTML y deja que el agente maneje el navegador integrado."
+  },
+  "pebrel-prompt-suggestions": {
+    "es": "Sugerencias nativas de prompt en el campo vacío a través del puente de sesión Pebrel."
+  },
+  "token-optimizer": {
+    "es": "Una barra de estado de optimización de tokens que muestra adónde van los tokens y cómo gastar menos."
+  },
+  "lcu-approve": {
+    "es": "Aprobación por aplicación para el uso del ordenador: permitir esta conversación, permitir siempre o denegar, además de un panel de aplicaciones aprobadas."
+  },
+  "fast-jev-compaction": {
+    "es": "Compresión guiada por Jev y literal para sesiones de Claude Code."
+  },
+  "lot-map": {
+    "es": "Un mapa en vivo junto al chat: memoria, archivos, shell, web, modelo, agentes, skills y hooks se iluminan al usarse."
+  },
+  "council": {
+    "es": "Consulta a varios agentes de IA a la vez para obtener perspectivas diversas, con un panel en streaming y una comprobación lateral opcional."
+  },
+  "codex-attachment-manager": {
+    "es": "Envía las imágenes anteriores como marcadores cortos y recupera los originales por identificador, para que las sesiones largas con imágenes conserven la caché de prompt."
+  },
+  "storybloq": {
+    "es": "Memoria del proyecto: tickets, incidencias, traspasos y lecciones guardados en una carpeta .story/ de tu repositorio."
+  },
+  "shared-session": {
+    "es": "Comparte una sesión con un enlace o con tu equipo; tus compañeros se unen desde su propio Claude Code y ven cada turno en directo."
+  },
+  "just-do-it": {
+    "es": "Continúa el trabajo autorizado hasta la verificación y la entrega, y muestra los problemas de configuración que hay que reparar."
+  },
+  "prismantis": {
+    "es": "Renderizado colorido y personalizable de las respuestas: tablas, encabezados, código, números, rutas y enlaces."
+  },
+  "filetree": {
+    "es": "Un árbol de archivos estilo IDE que muestra qué está haciendo Claude y dónde en tus archivos."
+  },
+  "jev-auto-compact": {
+    "es": "Al 60 % de contexto, poda llamadas a herramientas obsoletas sin generar nada; omite en lugar de recurrir a un resumen LLM."
+  },
+  "cache-tax": {
+    "es": "Mantiene caliente la caché de prompt de una hora durante las pausas, pregunta antes de un envío en frío y muestra el coste de reescritura."
+  },
+  "turbo": {
+    "es": "Una fábrica de software agéntica con control humano: tú decides qué construir y juzgas el resultado; las skills lo construyen y lo entregan."
+  },
+  "agent-standup-band": {
+    "es": "Una línea sobre el prompt cuando otra sesión local te necesita, y una notificación cuando termina."
+  },
+  "flightdeck": {
+    "es": "Un panel de agentes en vivo: signos vitales del modelo, arquitecto de guardia, comprobaciones de permisos, tarjetas de subagentes y registro de sesión."
+  },
+  "caliber-jev-compaction": {
+    "es": "Compresión guiada por Jev y literal para sesiones de Claude Code."
+  },
+  "mazyos": {
+    "es": "Un plugin de sistema de negocio en portugués: la memoria de tu empresa en cada sesión, identidad de marca en las salidas y 17 skills de marketing y SEO."
+  },
+  "start": {
+    "es": "Comandos de orquestación de flujos de trabajo para desarrollo de software agéntico."
+  },
+  "shunt": {
+    "es": "Una barra de uso de la pasarela shunt: gasto y hora de reinicio de cada ventana, además de un desglose completo con /shunt:usage."
+  },
+  "operator": {
+    "es": "Memoria persistente de proyectos y usuarios para desarrollo dirigido por agentes."
+  },
+  "carbon": {
+    "es": "Registra la huella de carbono de tus sesiones de Claude Code en la terminal y en la aplicación de escritorio."
+  },
+  "agentctl": {
+    "es": "Un plano de control de agentes para una sesión: alcance de tareas, evidencia y traspaso."
+  },
+  "multi-core": {
+    "es": "Usa modelos de ChatGPT, Cursor, OpenCode y Antigravity en una sola sesión, cambiando con /model."
+  },
+  "work-mode": {
+    "es": "Modos de sesión: auto (sin preguntas a mitad de tarea), out (delegar trabajo por lotes) y wrap (converger y terminar)."
+  },
+  "tokendoctor": {
+    "es": "Reproduce tus sesiones anteriores para mostrar cuánto habría ahorrado cada cambio y aplica solo lo que tú eliges."
+  },
+  "engineer": {
+    "es": "Un kit de metodología de ingeniería agéntica disciplinada: entrada, descubrimiento de criterios, especificación, planificación, implementación, verificación y endurecimiento."
+  },
+  "skins": {
+    "es": "Skins y quince temas para la transcripción, con tarjetas enriquecidas y una barra de uso; /skin las cambia en directo."
+  },
+  "show-your-work": {
+    "es": "Muestra el trabajo terminado en la terminal: capturas de pantalla, vídeos de clics y comparaciones antes/después sincronizadas."
+  },
+  "jevmem-pane": {
+    "es": "Un panel lateral que muestra qué recordó jevmem, qué decidió su guardia y qué guardó el último turno."
+  },
+  "ctx-handoff": {
+    "es": "Convierte lo que enseñas a Claude en notas del proyecto, detecta errores comunes, mantiene la caché caliente y reanuda sesiones largas."
+  },
+  "inbox": {
+    "es": "Reúne las preguntas, tareas, hallazgos y PR que te esperan en una sesión."
+  },
+  "lane-stack": {
+    "es": "Una cinta transportadora de gestor de producto en solitario: agentes orquestadores, manuales de carril y comandos de incorporación y reanudación."
+  },
+  "compact-adviser": {
+    "es": "Sugiere o ejecuta /compact al terminar un punto de control, evaluado por TypeSafe Jev."
+  },
+  "ripple": {
+    "es": "Elige el esfuerzo de razonamiento por prompt y un trabajador por tarea delegada, mantiene la caché caliente y muestra adónde fue cada solicitud."
+  },
+  "tavernweave-agent-skills": {
+    "es": "23 skills compartidas para tarjetas de personaje, trabajo de software y tareas cloud acotadas, además de un interruptor de modo Soul sobre el prompt."
+  },
+  "agent-usage-guard": {
+    "es": "Frena la expansión de subagentes, los prompts de contexto extenso y los bucles de reintento antes de que consuman tu ventana de uso."
+  }
+}

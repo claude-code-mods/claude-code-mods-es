@@ -1,0 +1,5 @@
+{
+  "name": "multi-core",
+  "description": "Usa modelos de ChatGPT, Cursor, OpenCode y Antigravity en una sola sesión de Claude Code, cambiando con /model; puedes delegar tareas a agentes nativos con nombre.",
+  "version": "0.0.0"
+}

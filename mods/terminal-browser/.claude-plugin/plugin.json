@@ -1,0 +1,24 @@
+{
+  "name": "terminal-browser",
+  "version": "0.0.2",
+  "description": "Un navegador dentro de Claude Code: previsualiza sitios y HTML y deja que el agente maneje el navegador integrado.",
+  "author": {
+    "name": "zenbu-labs"
+  },
+  "homepage": "https://github.com/zenbu-labs/terminal-browser/tree/main/claude-code-plugin",
+  "repository": "https://github.com/zenbu-labs/terminal-browser",
+  "license": "MIT",
+  "keywords": [
+    "browser",
+    "function-hooks"
+  ],
+  "types": "./hooks/browser.d.ts",
+  "userConfig": {
+    "agentTool": {
+      "type": "boolean",
+      "title": "为代理提供在 Claude Code 中打开/关闭 terminal-browser 的工具",
+      "description": "添加一个可供模型调用的工具，用于在浏览器面板中显示页面。默认关闭。",
+      "default": false
+    }
+  }
+}

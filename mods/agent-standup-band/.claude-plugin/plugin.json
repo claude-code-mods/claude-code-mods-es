@@ -1,0 +1,18 @@
+{
+  "name": "agent-standup-band",
+  "version": "1.47.1",
+  "description": "Una línea sobre el prompt cuando otra sesión local te necesita, y una notificación cuando termina.",
+  "author": {
+    "name": "Double Geste",
+    "url": "https://github.com/Atoll92"
+  },
+  "homepage": "https://agent-standup.com",
+  "repository": "https://github.com/Atoll92/agent-standup",
+  "license": "MIT",
+  "keywords": [
+    "agents",
+    "sessions",
+    "notifications",
+    "standup"
+  ]
+}

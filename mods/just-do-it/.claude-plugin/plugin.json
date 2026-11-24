@@ -1,0 +1,15 @@
+{
+  "name": "just-do-it",
+  "version": "0.1.0",
+  "description": "Continúa el trabajo autorizado hasta la verificación y la entrega, y muestra los problemas de configuración que hay que reparar.",
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "fleetConfigPath": {
+      "type": "file",
+      "title": "机群配置",
+      "description": "私有集群配置的可选绝对路径。留空则禁用集群检查。",
+      "required": false,
+      "default": ""
+    }
+  }
+}

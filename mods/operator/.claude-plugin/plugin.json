@@ -1,0 +1,11 @@
+{
+  "name": "operator",
+  "displayName": "Operator Memory",
+  "version": "0.2.0",
+  "description": "Memoria persistente de proyectos y usuarios para desarrollo dirigido por agentes.",
+  "author": {
+    "name": "Aerovato Research"
+  },
+  "repository": "https://github.com/aerovato/operator-memory",
+  "license": "BSD-3-Clause"
+}

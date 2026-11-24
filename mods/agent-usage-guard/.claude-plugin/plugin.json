@@ -1,0 +1,25 @@
+{
+  "name": "agent-usage-guard",
+  "description": "Frena la expansión de subagentes, los prompts de contexto extenso y los bucles de reintento antes de que consuman tu ventana de uso. Lee el uso de tu plan, cuenta los agentes de todas las sesiones y pregunta en el diálogo integrado de Claude Code.",
+  "version": "1.2.1",
+  "author": {
+    "name": "Riccardo Bartoli"
+  },
+  "homepage": "https://github.com/rbartoli/agent-usage-guard",
+  "repository": "https://github.com/rbartoli/agent-usage-guard",
+  "license": "MIT",
+  "icon": "./.claude-plugin/icon.png",
+  "types": "./types/index.d.ts",
+  "documentationUrl": "https://github.com/rbartoli/agent-usage-guard#readme",
+  "supportUrl": "https://github.com/rbartoli/agent-usage-guard/issues",
+  "privacyPolicyUrl": "https://github.com/rbartoli/agent-usage-guard#security-and-privacy",
+  "keywords": [
+    "mod",
+    "usage",
+    "rate-limit",
+    "subagents",
+    "context",
+    "guardrails",
+    "cost"
+  ]
+}

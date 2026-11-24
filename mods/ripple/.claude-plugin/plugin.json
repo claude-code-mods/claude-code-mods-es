@@ -1,0 +1,11 @@
+{
+  "name": "ripple",
+  "displayName": "ClaudeRipple",
+  "version": "0.7.0",
+  "description": "Elige el esfuerzo de razonamiento por prompt y un trabajador por tarea delegada, mantiene la caché caliente y muestra adónde fue cada solicitud.",
+  "author": {
+    "name": "ClaudeRipple"
+  },
+  "license": "GPL-3.0-only",
+  "types": "./types/index.d.ts"
+}

@@ -1,0 +1,18 @@
+{
+  "name": "skins",
+  "version": "0.5.16",
+  "description": "Skins de Claude Code: las filas de herramientas se pueden desplegar para ver entradas y respuestas, con código resaltado, diffs, tablas, fórmulas, Mermaid y tarjetas de shell, enlaces, plegado, barra de uso, modo concentración y 15 temas. /skin las cambia en directo.",
+  "author": {
+    "name": "hellosverre",
+    "url": "https://github.com/hellosverre"
+  },
+  "license": "MIT",
+  "keywords": [
+    "claude-code-mods",
+    "claude-mods",
+    "function-hooks",
+    "theme",
+    "skin"
+  ],
+  "types": "./types/index.d.ts"
+}
