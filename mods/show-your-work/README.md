@@ -4,6 +4,8 @@
 
 <h1 align="center">claude-show-your-work</h1>
 
+> Versión en español por el proyecto claude-code-mods-es. El README original en inglés está en [README.en.md](README.en.md).
+
 <p align="center">Mira, revisa e itera sobre el trabajo de tu agente sin salir del terminal.<br>Imágenes, vídeos y QA visual para Claude Code.</p>
 
 <p align="center">
