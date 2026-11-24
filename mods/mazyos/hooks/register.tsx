@@ -124,8 +124,8 @@ async function aposEditar(
   $.ui.invalidate('prompt.context')
   $.ui.toast(
     novo.instalado
-      ? `MazyOS: ${relativo} atualizado. Memória recarregada.`
-      : `MazyOS: ${relativo} atualizado.`,
+      ? `MazyOS: ${relativo} actualizado. Memoria recargada.`
+      : `MazyOS: ${relativo} actualizado.`,
   )
 }
 
@@ -137,7 +137,7 @@ export const register: Register = (on, options) => {
   on('session.start', async ($, e, next) => {
     await $.command.register({
       name: COMANDO,
-      description: 'Abre o painel do MazyOS: memória do negócio, foco atual e atalhos das skills.',
+      description: 'Abre el panel de MazyOS: memoria del negocio, foco actual y atajos de las skills.',
     })
     const ws = await recarregar($, comLinha, e.cwd)
 

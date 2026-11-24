@@ -91,8 +91,8 @@ export function parseReport(text: string): Parsed {
     return {
       problem:
         'La pasarela devolvió contenido que no es JSON en GET /usage.' +
-        'JSON. Check that ANTHROPIC_BASE_URL points at the gateway itself and ' +
-        'not at a proxy in front of it.',
+        'JSON. Comprueba que ANTHROPIC_BASE_URL apunta a la pasarela misma y ' +
+        'no a un proxy delante de ella.',
     }
   }
 
@@ -105,8 +105,8 @@ export function parseReport(text: string): Parsed {
   if (pool === null) {
     return {
       problem:
-        'the gateway answered GET /usage without a pool aggregate. ' +
-        'This build may be older than the endpoint the mod reads.',
+        'la pasarela respondió a GET /usage sin un agregado de pool. ' +
+        'Esta versión puede ser anterior al endpoint que lee el módulo.',
     }
   }
 

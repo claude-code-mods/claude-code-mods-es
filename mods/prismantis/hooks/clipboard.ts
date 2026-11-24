@@ -226,11 +226,11 @@ export const clipboardCommand = (backend: ClipboardBackend, html: string, text: 
   ? {
     stdin: ascii(JSON.stringify({ html, text: text.replace(/\r?\n/g, '\r\n') })),
     argv: powershell(systemRoot, WIN_TABLE_COPY),
-    failure: 'Windows clipboard helper failed',
+    failure: 'Falló el auxiliar de portapapeles de Windows',
   }
   : backend === 'macos'
-    ? { ...osascript(MAC_TABLE_COPY, JSON.stringify({ html, text })), failure: 'macOS clipboard helper failed' }
-    : { stdin: JSON.stringify({ html, text }), argv: ['copyq', 'eval', LINUX_TABLE_COPY, '-'], failure: 'CopyQ failed; install and start CopyQ in the graphical session' }
+    ? { ...osascript(MAC_TABLE_COPY, JSON.stringify({ html, text })), failure: 'Falló el auxiliar de portapapeles de macOS' }
+    : { stdin: JSON.stringify({ html, text }), argv: ['copyq', 'eval', LINUX_TABLE_COPY, '-'], failure: 'Falló CopyQ; instala e inicia CopyQ en la sesión gráfica' }
 
 export const drawsImages = (backend: ClipboardBackend | null): boolean => backend === 'macos' || backend === 'windows'
 
@@ -299,6 +299,6 @@ export const artPicture = (text: string, colors: ArtColors, hues?: Ink[][]): Art
 export const imageCommand = (backend: ClipboardBackend, text: string, colors: ArtColors, systemRoot?: string, hues?: Ink[][]): HelperCommand => {
   const json = JSON.stringify(artPicture(text, colors, hues))
   return backend === 'windows'
-    ? { stdin: ascii(json), argv: powershell(systemRoot, WIN_IMAGE_COPY), failure: 'Windows image helper failed' }
-    : { ...osascript(MAC_IMAGE_COPY, json), failure: 'macOS image helper failed' }
+    ? { stdin: ascii(json), argv: powershell(systemRoot, WIN_IMAGE_COPY), failure: 'Falló el auxiliar de imágenes de Windows' }
+    : { ...osascript(MAC_IMAGE_COPY, json), failure: 'Falló el auxiliar de imágenes de macOS' }
 }

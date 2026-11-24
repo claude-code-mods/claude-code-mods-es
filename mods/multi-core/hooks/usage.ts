@@ -236,6 +236,6 @@ function receiptEntry(value: unknown): string[] {
     return [];
   }
   return [
-    `  ${String(value.provider)} · ${String(value.model ?? 'modelo no informado')} · effort ${String(value.effort ?? 'unreported')} · ${String(value.endpoint ?? 'endpoint unreported')} · ${String(value.source)}`,
+    `  ${String(value.provider)} · ${String(value.model ?? 'modelo no informado')} · effort ${String(value.effort ?? 'no informado')} · ${String(value.endpoint ?? 'endpoint no informado')} · ${String(value.source)}`,
   ];
 }

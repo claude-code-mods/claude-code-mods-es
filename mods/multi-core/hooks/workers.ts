@@ -219,11 +219,11 @@ async function providerSpawn(
   }
   if (!selection) {
     return {
-      deny: reportable(`The Multi gateway did not resolve the ${event.subagentType} model.`),
+      deny: reportable(`La pasarela Multi no resolvió el modelo ${event.subagentType}.`),
     };
   }
   if (selection.refused || !selection.model) {
-    return { deny: selection.error ?? `The ${event.subagentType} model was not resolved.` };
+    return { deny: selection.error ?? `No se resolvió el modelo ${event.subagentType}.` };
   }
   // The task keeps the model's own description: the agent list names the CLI itself.
   return { event: { ...event, model: selection.model }, selection };

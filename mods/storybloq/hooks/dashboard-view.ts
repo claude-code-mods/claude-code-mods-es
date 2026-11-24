@@ -14,7 +14,7 @@ const UNTITLED = "(sin título)";
 const EMPTY_COLUMNS = {
   "board-open": { symbol: "◇", title: "Cola vacía", short: "Cola vacía", hint: "Añade la siguiente historia." },
   "board-inprogress": { symbol: "○", title: "Listo para empezar", short: "Listo para empezar", hint: "Empieza una historia desde «Pendiente»." },
-  "board-done": { symbol: "·", title: "Progress starts here", short: "Room to grow", hint: "Completed work gathers here." },
+  "board-done": { symbol: "·", title: "El progreso empieza aquí", short: "Por crecer", hint: "El trabajo terminado se reúne aquí." },
 } as const;
 type BoardColumnKey = keyof typeof EMPTY_COLUMNS;
 /**
@@ -48,7 +48,7 @@ const MIN_COLUMN_WIDTH = 12;
 * nonzero one carries and the short label it falls back to.
 */
 /** What the issues line says when every bucket is empty. */
-const NO_ISSUES = "issues: none";
+const NO_ISSUES = "incidencias: ninguna";
 const SEVERITY_ORDER = [
   { key: "critical", long: "Crítico", short: "Crítico", tone: "red" },
   { key: "high", long: "Alto", short: "Alto", tone: "yellow" },
@@ -200,7 +200,7 @@ export function rowBudget(e: any, stacked: boolean): {
 */
 function headingContent(dashboard: DashboardState, elements: any, label: string, count: number, width: number, stage: StageMark | null = null): unknown[] {
   const tail = ` ${count}`;
-  const emphasis = dashboard.motion.count(label === "In progress" ? "inProgress" : label === "Done" ? "done" : "open");
+  const emphasis = dashboard.motion.count(label === "En curso" ? "inProgress" : label === "Hecho" ? "done" : "open");
   const tag = headingTag(label, count, stage, width);
   return [
     paneText(dashboard, elements.Text, { children: truncate(label, Math.max(1, width - tail.length)) }),
@@ -388,7 +388,7 @@ function emptyColumnRows(dashboard: DashboardState, elements: any, column: Board
 export function inProgressBoard(dashboard: DashboardState, elements: any, width: number, body: number): unknown {
   const cards = dashboard.projection?.board.inProgress ?? [];
   const shown = Math.min(COLUMN_CARD_CAP, Math.max(0, body - (cards.length > body ? 1 : 0)));
-  return boardColumn(dashboard, elements, "board-inprogress", "In progress", COLUMN_STYLES.inProgress,
+  return boardColumn(dashboard, elements, "board-inprogress", "En curso", COLUMN_STYLES.inProgress,
     cards, width, shown, Math.max(1, Math.min(body, cards.length || 2)), sessionStage(dashboard, cards, shown));
 }
 
@@ -425,8 +425,8 @@ export function compactBoard(dashboard: DashboardState, elements: any, board: Si
     flexDirection: "column",
     children: [
       line("board-open", "Pendiente", COLUMN_STYLES.open, board.open),
-      line("board-inprogress", "In progress", COLUMN_STYLES.inProgress, board.inProgress, sessionStage(dashboard, board.inProgress, 0)),
-      line("board-done", "Done", COLUMN_STYLES.done, board.done),
+      line("board-inprogress", "En curso", COLUMN_STYLES.inProgress, board.inProgress, sessionStage(dashboard, board.inProgress, 0)),
+      line("board-done", "Hecho", COLUMN_STYLES.done, board.done),
     ],
   });
 }
@@ -452,7 +452,7 @@ export function narrowBoard(dashboard: DashboardState, elements: any, board: Sid
   const fallback = inProgress.length === 0;
   const cards = fallback ? (board.open as readonly SidebarBoardCard[]) : inProgress;
   const stage = sessionStage(dashboard, inProgress, NARROW_BOARD_CARDS);
-  const stageRow = fallback && headingTag("In progress", 0, stage, width) !== "";
+  const stageRow = fallback && headingTag("En curso", 0, stage, width) !== "";
   const limit = stageRow ? NARROW_BOARD_CARDS - 1 : NARROW_BOARD_CARDS;
   const rows: unknown[] = [];
   if (stageRow) {
@@ -460,14 +460,14 @@ export function narrowBoard(dashboard: DashboardState, elements: any, board: Sid
       key: "narrow-stage-heading",
       ...COLUMN_STYLES.inProgress,
       wrap: "truncate",
-      children: headingContent(dashboard, elements, "In progress", 0, width, stage),
+      children: headingContent(dashboard, elements, "En curso", 0, width, stage),
     }));
   }
   rows.push(paneText(dashboard, elements.Text, {
     key: "narrow-heading",
     ...(fallback ? COLUMN_STYLES.open : COLUMN_STYLES.inProgress),
     wrap: "truncate",
-    children: headingContent(dashboard, elements, fallback ? "Open" : "In progress", cards.length, width, fallback ? null : stage),
+    children: headingContent(dashboard, elements, fallback ? "Pendiente" : "En curso", cards.length, width, fallback ? null : stage),
   }));
   if (cards.length === 0) {
     rows.push(...emptyColumnRows(dashboard, elements, fallback ? "board-open" : "board-inprogress", width, 1, false));
@@ -535,8 +535,8 @@ export function boardNode(dashboard: DashboardState, elements: any, board: Sideb
     gap: stacked ? 0 : COLUMN_GAP,
     children: [
       boardColumn(dashboard, elements, "board-open", "Pendiente", COLUMN_STYLES.open, board.open, widths[0]!, shown, height),
-      boardColumn(dashboard, elements, "board-inprogress", "In progress", COLUMN_STYLES.inProgress, board.inProgress, widths[1]!, shown, height, sessionStage(dashboard, board.inProgress, shown)),
-      boardColumn(dashboard, elements, "board-done", "Done", COLUMN_STYLES.done, board.done, widths[2]!, shown, height),
+      boardColumn(dashboard, elements, "board-inprogress", "En curso", COLUMN_STYLES.inProgress, board.inProgress, widths[1]!, shown, height, sessionStage(dashboard, board.inProgress, shown)),
+      boardColumn(dashboard, elements, "board-done", "Hecho", COLUMN_STYLES.done, board.done, widths[2]!, shown, height),
     ],
   });
 }
@@ -587,7 +587,7 @@ export function compactLineNode(dashboard: DashboardState, elements: any, column
   const runs: unknown[] = [wordmarkNode(dashboard, elements)];
   let used = 9;
   if (room >= 30) {
-    const status = item ? "In progress" : "Ready";
+    const status = item ? "En curso" : "Listo";
     runs.push(text({ dimColor: true, children: "  │  " }));
     runs.push(text({ color: item ? "cyan" : undefined, children: status }));
     used += 5 + status.length;

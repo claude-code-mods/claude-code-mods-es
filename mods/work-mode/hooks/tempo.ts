@@ -480,7 +480,7 @@ export function registerTempo(on: On): void {
         parsed = parseTempo(pickedArgs(answer, cfg))
       } catch (err) {
         // Dismissed, or nobody to ask: fall through to the plain status line.
-        $.ui.log(`tempo picker unavailable: ${String(err).slice(0, 300)}`, { to: 'debug' })
+        $.ui.log(`selector de ritmo no disponible: ${String(err).slice(0, 300)}`, { to: 'debug' })
       }
     }
     const usage = 'Usa /work-mode con auto, out, wrap (en cualquier orden) u off.'

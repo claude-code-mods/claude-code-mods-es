@@ -104,7 +104,7 @@ export const register = (on: On) => {
     }
     const row = await issuedRow(rowGateway($), event.input, event.tool_use_id);
     return row
-      ? { decision: 'allow' as const, reason: 'A row the Multi gateway issued for this call.' }
+      ? { decision: 'allow' as const, reason: 'Una fila emitida por la pasarela Multi para esta llamada.' }
       : { decision: 'deny' as const, reason: refusal };
   });
   on('ui.render', { component: 'ToolUse' }, async ($, event, next) => {

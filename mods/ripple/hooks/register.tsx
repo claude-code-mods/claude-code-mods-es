@@ -1102,7 +1102,7 @@ async function requestPick($: EngineInterface, e: AgentSpawnInput, s: Settings):
   // The decision behind a pick is otherwise only in the agents panel; one debug line per pick keeps
   // it checkable: the tier it was given, the rung it landed on and what ran.
   const entry = { task: e.description.slice(0, 200), domain: value.domain, level: value.level, kind: value.kind ?? 'do', rule: value.rule, rung: value.rung, position: value.position, skipped: value.skipped, target: value.target, model: model ?? null, effort: value.effort, by, ...(ladderLine ? { fallbacks } : {}), ...(mode ? { mode: mode.name } : {}), ...(fallbackReason ? { fallbackReason } : {}) }
-  await $.ui.log('ClaudeRipple worker pick: ' + JSON.stringify(entry), { to: 'debug' })
+  await $.ui.log('Selección de worker de ClaudeRipple: ' + JSON.stringify(entry), { to: 'debug' })
   // The brief itself is never logged (it can hold anything); its length is. To read a pick again,
   // its brief is in the session's own transcript under the same description. A model's reason is
   // kept, short, so a wrong source can be found.
@@ -2837,8 +2837,8 @@ export const register: Register = on => {
     if ((e.trigger === 'precompute' || e.trigger === 'auto') && !e.agentId && currentTurn === null) {
       try {
         if (!await read($, busy) && await warmHolds($)) {
-          await $.ui.log('ClaudeRipple: idle compaction skipped, keep warm holds this chat\'s cache', { to: 'debug' })
-          return { skip: 'keep warm holds this chat\'s cache' }
+          await $.ui.log('ClaudeRipple: compactación en espera omitida; mantener caliente conserva la caché de este chat', { to: 'debug' })
+          return { skip: 'mantener caliente conserva la caché de este chat' }
         }
       } catch (error) { await report($, 'session.compact warm', error) }
     }

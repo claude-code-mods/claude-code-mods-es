@@ -366,13 +366,13 @@ const drawable = (lines: readonly string[]): FigureDecision => {
 
 const decide = (raw: readonly string[]): FigureDecision => {
   const tooLong = raw.findIndex(line => line.length > RAW_MAX_LINE)
-  if (tooLong >= 0) return { note: `figure line ${tooLong + 1} is ${raw[tooLong]!.length} characters long` }
-  if (raw.length > FIGURE_MAX_LINES * 2) return { note: `figure has ${raw.length} lines, at most ${FIGURE_MAX_LINES}` }
+  if (tooLong >= 0) return { note: `la línea ${tooLong + 1} de la figura tiene ${raw[tooLong]!.length} caracteres` }
+  if (raw.length > FIGURE_MAX_LINES * 2) return { note: `la figura tiene ${raw.length} líneas, como máximo ${FIGURE_MAX_LINES}` }
   const first = leadingBlanks(raw)
   const lines = withoutTrailingBlanks(raw.slice(first))
-  if (lines.length > FIGURE_MAX_LINES) return { note: `figure has ${lines.length} lines, at most ${FIGURE_MAX_LINES}` }
+  if (lines.length > FIGURE_MAX_LINES) return { note: `la figura tiene ${lines.length} líneas, como máximo ${FIGURE_MAX_LINES}` }
   const [finding] = checkFigure(lines, first)
-  return finding ? { note: `figure line ${finding.line}: ${finding.message}` } : drawable(lines)
+  return finding ? { note: `línea ${finding.line} de la figura: ${finding.message}` } : drawable(lines)
 }
 
 export const drawFigure = (el: ElementTable, style: Style, block: { lines: readonly string[]; isOpen?: true }, columns: number, key: string): { element?: RenderElement; art?: string; hues?: () => Ink[][]; note?: string } | null => {

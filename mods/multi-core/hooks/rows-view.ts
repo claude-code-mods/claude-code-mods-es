@@ -363,8 +363,8 @@ export function errorBody(tags: Tags, output: string): RenderElement[] {
  * it is drawn in the theme's `inactive` tone and says so.
  */
 export function unconfirmedBody(tags: Tags, output: string): RenderElement[] {
-  const detail = output.trim() || 'the native run reported no completion for this action.';
-  const lines = textLines(`Unconfirmed: ${detail.charAt(0).toLowerCase()}${detail.slice(1)}`);
+  const detail = output.trim() || 'la ejecución nativa no informó de la finalización de esta acción.';
+  const lines = textLines(`Sin confirmar: ${detail.charAt(0).toLowerCase()}${detail.slice(1)}`);
   const shown = lines.slice(0, errorLines);
   return [
     ...shown.map((line) => tags.Text({ color: 'inactive', children: line })),

@@ -488,10 +488,10 @@ const lastCopy = (run: () => Promise<string>): Promise<string | null> => {
 const copyNow = async ($: EngineInterface, style: Style, content: string, surface: RenderSurface, rich?: (() => string) | 'png', hues?: Hues): Promise<string> => {
   const backend = style.htmlCopy
   const failure = rich && backend ? await runHelper($, backend, richCommand(style, backend, content, rich, hues)) : undefined
-  if (failure === null) return rich === 'png' ? 'Copied as image' : 'Copied formatted table'
+  if (failure === null) return rich === 'png' ? 'Copied as image' : 'Tabla con formato copiada'
   const result = await $.ui.copy({ text: content, surface })
   if (!result.isCopied) return `Copy failed: ${result.reason}`
-  return failure ? `Copied as plain text (${failure})` : 'Copied'
+  return failure ? `Copiado como texto sin formato (${failure})` : 'Copiado'
 }
 
 const drawMarkdown = ($: EngineInterface, el: ReturnType<EngineInterface['ui']['resolve']>, style: Style, blocks: ReturnType<typeof parse>, columns: number, math: Map<number, Typeset> = new Map(), pictures: Map<number, Picture> = new Map(), reply?: string, open?: string[], notes?: { id: string; press: boolean }): RenderElement[] => {
@@ -504,7 +504,7 @@ const drawMarkdown = ($: EngineInterface, el: ReturnType<EngineInterface['ui']['
         {...(style.copyButtonStyle === 'dim' ? { plain: true as const, dimColor: true } : { variant: 'primary' as const })}
         label={label}
         onPress={async press => {
-          const said = await copied(press.surface).catch(() => 'Copy failed')
+          const said = await copied(press.surface).catch(() => 'Error al copiar')
           if (said) $.ui.toast(said)
         }}
       />
@@ -571,9 +571,9 @@ const clearDesktop = async ($: EngineInterface): Promise<void> => {
 
 const setTheme = async ($: EngineInterface, picked: Picked, name: string): Promise<string> => {
   const deny = await saveOption($, 'theme', name)
-  if (deny) return `Could not switch theme: ${deny}`
+  if (deny) return `No se pudo cambiar el tema: ${deny}`
   if (name !== 'random') await paintDesktop($, picked.options, name)
-  if (name !== 'random' || picked.options.theme !== 'random') return `Theme set to ${name}.`
+  if (name !== 'random' || picked.options.theme !== 'random') return `Tema establecido a ${name}.`
   const others = RANDOM_THEMES.filter(t => t !== picked.theme)
   picked.theme = others[Math.floor(Math.random() * others.length)]!
   const style = picked.latex.style
@@ -581,11 +581,11 @@ const setTheme = async ($: EngineInterface, picked: Picked, name: string): Promi
   picked.latex.color = ratexColor(style.theme.diagramText ?? style.theme.codeText ?? '#808080')
   $.ui.invalidate('ui.render')
   await paintDesktop($, picked.options, picked.theme)
-  return `Theme set to random: ${picked.theme} for now.\nkeep it: /prismantis theme ${picked.theme}`
+  return `Tema establecido al azar: ${picked.theme} por ahora.\nkeep it: /prismantis theme ${picked.theme}`
 }
 
 const saveSetupPick = async ($: EngineInterface, picked: Picked, step: SetupStep, value: string): Promise<string> =>
-  step.key === 'theme' ? setTheme($, picked, value) : saveOption($, step.key, value).then(deny => (deny ? `Could not save ${step.key}: ${deny}` : `${step.title} set to ${value}.`))
+  step.key === 'theme' ? setTheme($, picked, value) : saveOption($, step.key, value).then(deny => (deny ? `No se pudo guardar ${step.key}: ${deny}` : `${step.title} establecido a ${value}.`))
 
 const SETUP_PANE = 'prismantis-setup'
 
@@ -617,10 +617,10 @@ const pickInPane = async ($: EngineInterface, picked: Picked, at: number, value:
   const steps = setupSteps(PRESET_NAMES)
   const step = steps[at]!
   const nextStep = at + 1 === ESSENTIAL_STEPS ? undefined : steps[at + 1]
-  const done = `${step.title} set to ${value}.`
+  const done = `${step.title} establecido a ${value}.`
   if (nextStep) await showSetupStep($, at + 1, nextStep, currentOf(nextStep))
   else await $.ui.close({ id: SETUP_PANE })
-  $.ui.toast(nextStep ? done : `${done} ${at + 1 === ESSENTIAL_STEPS ? SETUP_ESSENTIALS_DONE : 'Setup done.'}`)
+  $.ui.toast(nextStep ? done : `${done} ${at + 1 === ESSENTIAL_STEPS ? SETUP_ESSENTIALS_DONE : 'Configuración lista.'}`)
   const saved = await saveSetupPick($, picked, step, value)
   if (saved === done) return
   $.ui.toast(saved)
@@ -686,8 +686,8 @@ const SETUP_NPM_TEST = [
 const toolOutputSample = (el: ReturnType<EngineInterface['ui']['resolve']>, style: Style, value: string, id: string, columns: number): RenderElement[] => {
   const row = (key: string, input: Record<string, string>, isErrored: boolean) => <el.Box key={`${id}${key}`}>{renderToolRow(el, style, { tool: 'Bash', input, isRunning: false, isErrored, isInterrupted: false }, columns)}</el.Box>
   const statusRow = row('s', { command: 'git status' }, false)
-  const testRow = row('t', { command: 'npm test', description: 'Run the tests' }, false)
-  const buildRow = row('r', { command: 'npm run build', description: 'Build the app' }, true)
+  const testRow = row('t', { command: 'npm test', description: 'Ejecutar las pruebas' }, false)
+  const buildRow = row('r', { command: 'npm run build', description: 'Compilar la app' }, true)
   const failure = renderFailure(el, style, SETUP_BUILD_ERROR.join('\n'), `${id}e`) ?? <el.Box key={`${id}e`} />
   if (value === 'rows') return [statusRow, testRow, buildRow, failure]
   if (value === 'quiet') return [statusRow, testRow, <el.Box key={`${id}to`}>{renderShellResult(el, style, { stdout: SETUP_NPM_TEST.join('\n'), stderr: '' })}</el.Box>, buildRow, failure]
@@ -919,7 +919,7 @@ export const register: Register = (on, options) => {
     const started = await next(e)
     await paintDesktop($, options, picked.theme)
     await $.command
-      .register({ name: 'prismantis', description: 'Switch the prismantis theme, pick styles from samples, copy the last reply, or show the demo', argumentHint: '[theme [<name> | random] | setup [<step> [<pick>]] | copy [code] | demo]' })
+      .register({ name: 'prismantis', description: 'Cambia el tema de prismantis, elige estilos con ejemplos, copia la última respuesta o muestra la demo', argumentHint: '[theme [<name> | random] | setup [<step> [<pick>]] | copy [code] | demo]' })
       .catch(() => undefined)
     return started
   })
@@ -936,25 +936,25 @@ export const register: Register = (on, options) => {
     if (sub === 'demo') return { text: showcaseText(PRESET_NAMES) + languageShowcase(await localeOf($, name)) }
     if (sub === 'setup') return { text: await setup($, picked, e.origin, name, third) }
     if (sub === 'copy') {
-      if (name && name !== 'code') return { text: `Unknown copy target "${name}". Use /prismantis copy, or /prismantis copy code for the last code block.` }
+      if (name && name !== 'code') return { text: `Destino de copia desconocido «${name}». Usa /prismantis copy o /prismantis copy code para copiar el último bloque de código.` }
       const reply = (await $.session.messages()).findLast(m => m.role === 'assistant' && m.text.trim())
-      if (!reply) return { text: 'Nothing to copy yet.' }
+      if (!reply) return { text: 'Todavía no hay nada que copiar.' }
       const code = name === 'code' ? nestedBlocks(parseCached(reply.text)).findLast(b => b.kind === 'code' && !/^(mermaid|figure)$/i.test(b.lang)) : undefined
-      if (name === 'code' && code?.kind !== 'code') return { text: 'The last reply has no code block.' }
+      if (name === 'code' && code?.kind !== 'code') return { text: 'La última respuesta no tiene bloque de código.' }
       const text = code?.kind === 'code' ? code.lines.join('\n') : reply.text
       const said = await lastCopy(async () => {
         const result = await $.ui.copy({ text })
-        return result.isCopied ? `Copied the last ${code ? 'code block' : 'reply'}.` : `Copy failed: ${result.reason}`
+        return result.isCopied ? `Se copió el último ${code ? 'bloque de código' : 'mensaje'}.` : `Error al copiar: ${result.reason}`
       })
-      return { text: said ?? 'A newer copy replaced this one.' }
+      return { text: said ?? 'Una copia más reciente sustituyó esta.' }
     }
     if (sub === 'demo-rtl') {
       await probe($, style, probes)
       return { text: rtlShowcaseText() }
     }
     if (sub !== 'theme') return { text: helpText(PRESET_NAMES) }
-    if (!name) return { text: options.theme === 'random' ? `current: ${picked.theme} (random)\nkeep it: /prismantis theme ${picked.theme}` : `current: ${picked.theme}` }
-    if (!THEME_ARGS.includes(name)) return { text: `Unknown theme "${name}". Themes: ${PRESET_NAMES.join(', ')}, random` }
+    if (!name) return { text: options.theme === 'random' ? `actual: ${picked.theme} (aleatorio)\nkeep it: /prismantis theme ${picked.theme}` : `current: ${picked.theme}` }
+    if (!THEME_ARGS.includes(name)) return { text: `Tema desconocido «${name}». Temas: ${PRESET_NAMES.join(', ')}, random` }
     return { text: await setTheme($, picked, name) }
   })
 
