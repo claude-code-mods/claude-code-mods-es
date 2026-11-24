@@ -59,9 +59,12 @@ export function parseCommand(raw) {
   return { kind: 'goal', text }
 }
 
-// A limited English / Traditional Chinese copy heuristic over the goal text — not locale detection.
+// A limited English / Spanish / Traditional Chinese copy heuristic over the goal text — not locale detection.
 export function languageOf(goal) {
-  return /\p{Script=Han}/u.test(String(goal ?? '')) ? 'zh' : 'en'
+  const text = String(goal ?? '')
+  if (/\p{Script=Han}/u.test(text)) return 'zh'
+  if (/[¿¡áéíóúñü]/i.test(text) || /\b(por favor|necesito|quiero|ayúdame|haz|revisa|corrige|explica|crea|busca|dime)\b/i.test(text)) return 'es'
+  return 'en'
 }
 
 // A path for a POSIX shell, single-quoted: the only character needing care inside is `'` itself.
@@ -82,6 +85,13 @@ export function draftingRequest({ goal, worktree, base, root, lang }) {
   const helper = `node ${shellQuote(helperPath(root))} --worktree ${shellQuote(worktree)} --stdin`
   const baseText = base ? `"${base}"` : 'null'
   if (lang === 'zh') {
+    return [
+      `請為這件事起草 agentctl 任務範圍：「${goal}」`,
+      `先跑 ${helper.replace(' --stdin', ' --help')} 看欄位，讀專案後提出最窄範圍（編輯路徑、檢查指令、驗收）。有不清楚的地方就問我並等我回答——回答前不要寫 proposal，也別自己加權限。`,
+      `用 ${helper} 寫入（base 為 ${baseText}；heredoc 分隔字加引號且不在 JSON 內），只寫 proposal，然後等我確認。`,
+    ].join('\n')
+  }
+  if (lang === 'es') {
     return [
       `Redacta un alcance de tarea de agentctl para: "${goal}"`,
       `Primero ejecuta ${helper.replace(' --stdin', ' --help')} para ver los campos. Lee el proyecto y propón el alcance más estrecho (rutas de edición, comandos de comprobación, aceptación). Si algo no está claro, pregúntame y espera mi respuesta: no escribas el proposal ni añadas permisos por tu cuenta antes de que responda.`,
@@ -118,6 +128,27 @@ const COPY = {
     },
   },
   zh: {
+    filled: (bound) => `已把請 Claude 起草範圍的請求放進輸入框——按 Enter 送出。${bound ? '接受新範圍之前，目前的任務照舊生效。' : '目前尚未綁定任何範圍。'}`,
+    mixed: (bound) => `請求接在你剛才打的字後面，兩者都在輸入框裡；送出前請先整理。${bound ? '接受新範圍之前，目前的任務照舊生效。' : '目前尚未綁定任何範圍。'}`,
+    copy: (bound) => `把這段送給 Claude 讓它起草範圍（${bound ? '接受新範圍之前，目前的任務照舊生效' : '目前尚未綁定任何範圍'}）：`,
+    typo: (v) => `你是要用「/agentctl ${v}」嗎？要開始任務，請描述它：/agentctl <你要做的事>`,
+    extra: (v) => `「/agentctl ${v}」不接受這些參數。${v === 'proposal' ? '它只顯示等待中的草稿；要起草，請描述工作：/agentctl <你要做的事>' : '見 /agentctl help。'}`,
+    acceptLine: (d) => `確認此範圍：/agentctl accept ${d} ——只會綁定範圍，不會開始任何工作。`,
+    accepted: '範圍已綁定。下一步：請 Claude 開始這項工作。',
+    runChecks: (checks) => `要留下證據，請照原樣執行每條檢查：${checks.join(' · ')} ——加 pipe、redirect 或外層包裝就不算；多加參數可能只檢查到一部分。`,
+    wholeScope: '完整範圍：/agentctl policy',
+    noTaskLast: '目前沒有綁定任務，所以還沒有交接紀錄。開始一個：/agentctl <你要做的事>',
+    noHandover: '這個任務還沒有存過交接：/agentctl handoff 會存一份。',
+    next: {
+      none: '下一步：描述工作——/agentctl <你要做的事>。內建規則（直接 git push、production 寫入）現在就會擋。',
+      proposal: (d) => `下一步：看 /agentctl proposal，再 /agentctl accept ${d}`,
+      task: '下一步：請 Claude 開始工作；/agentctl handoff 會存下目前進度。',
+      taskThenChecks: (checks) => `下一步：請 Claude 開始工作，完成後逐字執行檢查：${checks.join(' · ')}。檢查都是最新的之後：/agentctl handoff`,
+      rerun: (checks) => `下一步：這些檢查在目前的程式碼上不是最新的——請 Claude 逐字執行：${checks.join(' · ')}。之後：/agentctl handoff`,
+      checksCurrent: '下一步：宣告的檢查在目前的程式碼上都是最新的——/agentctl handoff 會存下交接。',
+    },
+  },
+  es: {
     filled: (bound) => `Hay una solicitud para que Claude redacte el alcance en tu campo de prompt: pulsa Enter para enviarla. ${bound ? 'La tarea actual sigue vigente hasta que aceptes el nuevo alcance.' : 'Aún no hay nada vinculado.'}`,
     mixed: (bound) => `La solicitud se añadió después del texto que escribiste; ambos están en el campo. Edítalo antes de pulsar Enter. ${bound ? 'La tarea actual sigue vigente hasta que aceptes el nuevo alcance.' : 'Aún no hay nada vinculado.'}`,
     copy: (bound) => `Envía esto a Claude para que redacte el alcance (${bound ? 'la tarea actual sigue vigente hasta que aceptes la nueva' : 'nada está vinculado aún'}):`,
@@ -138,10 +169,11 @@ const COPY = {
       checksCurrent: 'Siguiente: todas las comprobaciones declaradas están actualizadas en este árbol — /agentctl handoff guarda la entrega.',
     },
   },
+
 }
 
 export function copy(lang) {
-  return COPY[lang === 'zh' ? 'zh' : 'en']
+  return COPY[lang] ?? COPY.en
 }
 
 // A check as a line Claude can run as written: quoted so it reads back as the declared argv, never
@@ -167,21 +199,39 @@ export function nextForTask(t, progress) {
 export function helpText(lang, advanced) {
   if (lang === 'zh') {
     return advanced ? [
-      '\u9032\u968e：',
-      '  /agentctl task show | set <json> | clear — \u76f4\u63a5\u6aa2\u8996\u6216\u8a2d\u5b9a\u4efb\u52d9',
-      '  /agentctl policy — \u76ee\u524d\u7bc4\u570d\u8207\u9650\u5236',
-      '  /agentctl events [n] — \u6700\u8fd1\u7684\u62d2\u7d55\u8207\u4ea4\u7d66 host \u7684\u547c\u53eb',
-      '  /agentctl handoff · last — \u5b58\u4e0b\u4ea4\u63a5 · \u986f\u793a\u4e0a\u6b21\u7684\u4ea4\u63a5',
-      '  /agentctl stop — \u53d6\u6d88\u76ee\u524d\u56de\u5408\u4e26\u5b58\u4e0b\u4ea4\u63a5',
-      '  /agentctl status --details · discard — \u5b8c\u6574\u72c0\u614b · \u4e1f\u68c4\u8349\u7a3f',
+      '進階：',
+      '  /agentctl task show | set <json> | clear — 直接檢視或設定任務',
+      '  /agentctl policy — 目前範圍與限制',
+      '  /agentctl events [n] — 最近的拒絕與交給 host 的呼叫',
+      '  /agentctl handoff · last — 存下交接 · 顯示上次的交接',
+      '  /agentctl stop — 取消目前回合並存下交接',
+      '  /agentctl status --details · discard — 完整狀態 · 丟棄草稿',
     ].join('\n') : [
-      'agentctl \u8b93 Claude \u5728\u4f60\u78ba\u8a8d\u7684\u7bc4\u570d\u5167\u5de5\u4f5c，\u4e26\u8a18\u9304\u6aa2\u67e5\u8b49\u64da。',
-      '  /agentctl <\u4f60\u8981\u505a\u7684\u4e8b> — Claude \u8d77\u8349\u7bc4\u570d（\u4e0d\u6703\u7d81\u5b9a）',
-      '  /agentctl accept <digest> — \u4f60\u78ba\u8a8d\u7bc4\u570d（\u4e0d\u6703\u958b\u59cb\u5de5\u4f5c）',
-      '  /agentctl — \u76ee\u524d\u72c0\u614b\u8207\u4e0b\u4e00\u6b65',
-      '\u66f4\u591a：/agentctl help advanced',
+      'agentctl 讓 Claude 在你確認的範圍內工作，並記錄檢查證據。',
+      '  /agentctl <你要做的事> — Claude 起草範圍（不會綁定）',
+      '  /agentctl accept <digest> — 你確認範圍（不會開始工作）',
+      '  /agentctl — 目前狀態與下一步',
+      '更多：/agentctl help advanced',
     ].join('\n')
   }
+  if (lang === 'es') {
+    return advanced ? [
+      'Avanzado:',
+      '  /agentctl task show | set <json> | clear — ver o definir la tarea directamente',
+      '  /agentctl policy — alcance y límites actuales',
+      '  /agentctl events [n] — refusos recientes y llamadas entregadas al host',
+      '  /agentctl handoff · last — guardar la entrega · mostrar la última',
+      '  /agentctl stop — cancelar el turno actual y guardar la entrega',
+      '  /agentctl status --details · discard — estado completo · descartar el borrador',
+    ].join('\n') : [
+      'agentctl permite a Claude trabajar dentro del alcance que confirmas y registra la evidencia de las comprobaciones.',
+      '  /agentctl <lo que estás haciendo> — Claude redacta el alcance (sin vincularlo)',
+      '  /agentctl accept <digest> — confirmas el alcance (no inicia trabajo)',
+      '  /agentctl — estado actual y siguiente paso',
+      'Más: /agentctl help advanced',
+    ].join('\n')
+  }
+
   return advanced ? [
     'Advanced:',
     '  /agentctl task show | set <json> | clear — view or set the task directly',
@@ -200,7 +250,7 @@ export function helpText(lang, advanced) {
 }
 
 // What the box should suggest while a proposal waits (found live on 2.1.292: the host's own guess —
-// "\u78ba\u8a8d" — took the box, so Tab + Enter sent that word to Claude instead of accepting). Only the
+// "確認" — took the box, so Tab + Enter sent that word to Claude instead of accepting). Only the
 // host's own guess is replaced, and only while a proposal is waiting; a plugin's suggestion, ours
 // included, passes unchanged.
 export function suggestionWhileWaiting(originKind, pendingDigest) {

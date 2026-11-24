@@ -380,11 +380,11 @@ export function summarize(sessions) {
   if (big > 0.3) {
     findings.push({
       id: 'late-compaction', severity: 'warn',
-      title: `主线程 ${Math.round(big * 100)}% 的费用花在上下文超过 ${BIG_CONTEXT / 1000}K token 的时候`,
+      title: `El ${Math.round(big * 100)} % del coste del hilo principal se gastó con más de ${BIG_CONTEXT / 1000}K tokens en contexto`,
       detail:
-        (avgPre ? `压缩平均在约 ${Math.round(avgPre / 1000)}K token 时发生。` : '') +
-        '每一轮都会重发整个上下文，所以长对话后期的轮次花费最多。' +
-        '更小的 autoCompactWindow 会更早压缩；在不相关的任务之间执行 /clear 可以重新开始。',
+        (avgPre ? `La compactación se ejecutó de media en unos ${Math.round(avgPre / 1000)}K tokens. ` : '') +
+        'Cada turno reenvía todo el contexto, así que los turnos finales de una conversación larga cuestan más. ' +
+        'Una ventana autoCompactWindow menor compacta antes; /clear entre tareas no relacionadas empieza de cero.',
       doc: 'https://code.claude.com/docs/en/model-config.md#set-the-auto-compact-window',
     })
   }
@@ -397,12 +397,12 @@ export function summarize(sessions) {
     const forks = expensive.some((a) => a.type === 'fork')
     findings.push({
       id: 'subagents-on-top-model', severity: 'warn',
-      title: `Opus 或 Fable 上的子代理占了总费用的 ${Math.round(share(expensive.reduce((n, a) => n + a.top, 0)) * 100)}%`,
+      title: `Los subagentes en Opus o Fable representaron el ${Math.round(share(expensive.reduce((n, a) => n + a.top, 0)) * 100)} % de todo el coste`,
       detail:
-        expensive.map((a) => `${a.type}：${a.runs} 次运行，${Math.round(share(a.top) * 100)}%`).join('；') +
-        '。CLAUDE_CODE_SUBAGENT_MODEL 可以为没有单独指定模型的子代理设置模型，' +
-        '名为 Explore 的代理可以覆盖内置的那个（`tokendoctor-audit` 会检查这两项）。' +
-        (forks ? ' 分叉总是运行在主会话的模型上，因此花费与主线程相同。' : ''),
+        expensive.map((a) => `${a.type}: ${a.runs} ejecuciones, ${Math.round(share(a.top) * 100)} %`).join('; ') +
+        '. CLAUDE_CODE_SUBAGENT_MODEL fija el modelo de los subagentes sin modelo propio, y un agente ' +
+        'llamado Explore anula el integrado (`tokendoctor-audit` comprueba ambos casos).' +
+        (forks ? ' Las bifurcaciones siempre usan el modelo de la sesión principal y cuestan lo mismo que el hilo principal.' : ''),
       doc: 'https://code.claude.com/docs/en/sub-agents.md#choose-a-model',
     })
   }
@@ -411,11 +411,11 @@ export function summarize(sessions) {
   if (long.length) {
     findings.push({
       id: 'long-sessions', severity: 'info',
-      title: `${long.length} 个会话运行了 ${LONG_SESSION_TURNS} 轮以上`,
+      title: `${long.length} sesiones superaron ${LONG_SESSION_TURNS} turnos`,
       detail:
-        `它们占总费用的 ${Math.round(share(long.reduce((n, s) => n + s.cost, 0)) * 100)}%。` +
-        '长会话会把旧工作留在上下文里；在任务之间执行 /clear 或开新会话，' +
-        '比反复压缩同一段对话更便宜。',
+        `Representaron el ${Math.round(share(long.reduce((n, s) => n + s.cost, 0)) * 100)} % del coste total. ` +
+        'Una sesión larga conserva trabajo antiguo en el contexto; /clear entre tareas o una sesión nueva ' +
+        'sale más barato que compactar una y otra vez la misma conversación.',
       doc: 'https://code.claude.com/docs/en/costs.md#manage-context-proactively',
     })
   }
@@ -424,10 +424,10 @@ export function summarize(sessions) {
   if (idle && share(idle.cost) > 0.01) {
     findings.push({
       id: 'idle-cache-rebuilds', severity: 'info',
-      title: `提示缓存过期后重建了 ${idle.n} 次`,
+      title: `Se reconstruyó la caché de prompting ${idle.n} veces tras caducar`,
       detail:
-        `缓存 TTL 后回来会重写整个上下文（这里占总费用的 ${Math.round(share(idle.cost) * 1000) / 10}%）。` +
-        '长时间离开前先执行 /clear 或 /compact，可以让下一条消息更便宜。',
+        `Al volver tras caducar la caché se reescribe todo el contexto (aquí, el ${Math.round(share(idle.cost) * 1000) / 10} % del coste total). ` +
+        'Ejecuta /clear o /compact antes de una pausa larga para abaratar el siguiente mensaje.',
       doc: 'https://code.claude.com/docs/en/prompt-caching.md',
     })
   }
@@ -439,12 +439,12 @@ export function summarize(sessions) {
     const slid = kinds.slide.length >= 3 ? ` After the ${kinds.slide.length} slides: ${per(kinds.slide).toFixed(1)}.` : ''
     findings.push({
       id: 'rereads-after-compaction', severity: 'info',
-      title: `总结之后，Claude 平均又读了 ${per(kinds.summary).toFixed(1)} 个文件`,
+      title: `Tras un resumen, Claude volvió a leer de media ${per(kinds.summary).toFixed(1)} archivos`,
       detail:
-        `在 ${kinds.summary.length} 次总结之前读过、并在随后 ${REREAD_WINDOW} 个请求内再次读取的文件。${slid} ` +
-        '重读是总结丢失上下文后模型又取回来的内容，这部分开销不会体现在总结的 token 数里。' +
-        'CLAUDE.md 中的 `# Compact instructions` 小节可以告诉总结要保留哪些文件，' +
-        '而在任务之间压缩（在自然的停顿处执行 `/compact`）能减少半成品工作的丢失。',
+        `Archivos leídos antes de cada uno de los ${kinds.summary.length} resúmenes y releídos en las siguientes ${REREAD_WINDOW} peticiones.${slid} ` +
+        'Una relectura es contexto que el resumen perdió y el modelo recuperó; ese coste no aparece en el recuento de tokens del resumen. ' +
+        'Una sección `# Compact instructions` en CLAUDE.md puede indicar qué archivos conservar, y compactar entre tareas ' +
+        '(`/compact` en un punto natural) reduce la pérdida de trabajo a medias.',
       doc: 'https://code.claude.com/docs/en/costs.md#manage-context-proactively',
     })
   }
@@ -454,10 +454,10 @@ export function summarize(sessions) {
   if (reread.length) {
     findings.push({
       id: 'images-read-repeatedly', severity: 'info',
-      title: `${reread.length} 张图片被读取了 3 次或更多`,
+      title: `${reread.length} imágenes se leyeron 3 o más veces`,
       detail:
-        reread.slice(0, 5).map(([p, n]) => `${p.replace(homedir(), '~')}（${n} 次）`).join('；') +
-        '。每次读取都会把图片重新加入上下文。请用文字一次性描述要点，或只裁剪出有变化的部分。',
+        reread.slice(0, 5).map(([p, n]) => `${p.replace(homedir(), '~')} (${n}x)`).join('; ') +
+        '. Cada lectura vuelve a añadir la imagen al contexto. Describe lo importante por escrito una sola vez o recorta solo la parte que cambió.',
       doc: 'https://code.claude.com/docs/en/costs.md',
     })
   }

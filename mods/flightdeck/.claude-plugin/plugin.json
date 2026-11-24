@@ -31,13 +31,13 @@
       "title": "Etiqueta del arquitecto",
       "description": "Nombre mostrado para el rol de arquitecto",
       "type": "string",
-      "default": "架构师"
+      "default": "ARQUITECTO"
     },
     "gateLabel": {
       "title": "Etiqueta de la puerta",
       "description": "Nombre mostrado para el panel de permisos",
       "type": "string",
-      "default": "权限关卡"
+      "default": "CONTROL"
     },
     "panels": {
       "title": "Paneles",

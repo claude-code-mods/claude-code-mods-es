@@ -419,7 +419,7 @@ async function acceptCommand($, c, e, given) {
   // Scope comes only from the person at the prompt (FR-25).
   if (e.origin?.kind !== 'composer') return 'agentctl refused: a proposal can be accepted only from your own prompt.'
   const p = c.pending
-  if (!p) return 'No hay ninguna propuesta esperando. Para redactar una: /agentctl <lo que estás haciendo>'
+  if (!p) return c.lang === 'zh' ? '目前沒有等待中的草稿。要起草：/agentctl <你要做的事>' : c.lang === 'es' ? 'No hay ninguna propuesta esperando. Para redactar una: /agentctl <lo que estás haciendo>' : 'No proposal is waiting. To draft one: /agentctl <what you are doing>'
   if (!digestMatches(given, p.digest)) return `agentctl refused: ${sanitize(given, 30)} does not match the waiting proposal ${p.digest.slice(0, 8)}. Check /agentctl proposal.`
   const bound = await boundTask($, c)
   if ((bound?.id ?? null) !== p.effective.base || revisionOf(bound) !== p.baseRev) {
@@ -688,7 +688,7 @@ export function register(on) {
       return reply((await boundTask($, c)) ? t.noHandover : t.noTaskLast)
     }
     if (sub === 'proposal') {
-      if (!c.pending) return reply('No hay ninguna propuesta esperando. Para redactar una: /agentctl <lo que estás haciendo>')
+      if (!c.pending) return reply(c.lang === 'zh' ? '目前沒有等待中的草稿。要起草：/agentctl <你要做的事>' : c.lang === 'es' ? 'No hay ninguna propuesta esperando. Para redactar una: /agentctl <lo que estás haciendo>' : 'No proposal is waiting. To draft one: /agentctl <what you are doing>')
       await suggestAccept($, c)
       return reply(preview(c).join('\n'))
     }
