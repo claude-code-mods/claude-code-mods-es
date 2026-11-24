@@ -16,14 +16,14 @@ export function surfaceVerified(session) {
 
 // outcome: the classifier's; downstream: { decision, reason?, rule? } from next(e).
 export function combine(outcome, downstream, verified) {
-  const down = downstream && typeof downstream.decision === 'string' ? downstream : { decision: 'deny', reason: 'agentctl: no downstream verdict' }
-  if (outcome.outcome === 'deny' || outcome.outcome === 'unknown') return { decision: 'deny', reason: `agentctl refused: ${outcome.rule}` }
+  const down = downstream && typeof downstream.decision === 'string' ? downstream : { decision: 'deny', reason: 'agentctl: no hay veredicto posterior' }
+  if (outcome.outcome === 'deny' || outcome.outcome === 'unknown') return { decision: 'deny', reason: `agentctl rechazado: ${outcome.rule}` }
   if (down.decision === 'deny') return down
   if (outcome.outcome === 'pass') return down
   if (outcome.outcome === 'needs-user') {
     return verified
-      ? { decision: 'ask', reason: `agentctl: ${outcome.rule} — needs your approval` }
-      : { decision: 'deny', reason: `agentctl refused: ${outcome.rule} needs a person, and this surface has no verified approval dialog` }
+      ? { decision: 'ask', reason: `agentctl: ${outcome.rule} — necesita tu aprobación` }
+      : { decision: 'deny', reason: `agentctl rechazado: ${outcome.rule} necesita una persona y esta interfaz no tiene un diálogo de aprobación verificado` }
   }
-  return { decision: 'deny', reason: 'agentctl refused: unrecognised classification' }
+  return { decision: 'deny', reason: 'agentctl rechazado: clasificación no reconocida' }
 }

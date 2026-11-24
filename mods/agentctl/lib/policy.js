@@ -251,35 +251,35 @@ function classifyTool(task, call) {
 // ── Task validation (at `/agentctl task set`) ──────────────────────────────────────────────────────
 export function validateTask(task) {
   const errors = []
-  if (!task || typeof task !== 'object') return { ok: false, errors: ['task must be an object'] }
+  if (!task || typeof task !== 'object') return { ok: false, errors: ['la tarea debe ser un objeto'] }
   // A task id becomes a store key and is shown everywhere: a bounded identifier, never free text.
   if (task.id !== undefined && (typeof task.id !== 'string' || !/^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$/.test(task.id) || redactLike(task.id) !== task.id)) {
-    errors.push('id must be 1-64 letters, digits, dot, underscore or hyphen, and carry no credential')
+    errors.push('el id debe tener de 1 a 64 letras, dígitos, punto, guion bajo o guion, y no contener credenciales')
   }
-  if (!task.goal || typeof task.goal !== 'string') errors.push('goal is required')
-  if (!task.worktree || typeof task.worktree !== 'string' || !task.worktree.startsWith('/')) errors.push('worktree must be an absolute path')
+  if (!task.goal || typeof task.goal !== 'string') errors.push('el objetivo es obligatorio')
+  if (!task.worktree || typeof task.worktree !== 'string' || !task.worktree.startsWith('/')) errors.push('el árbol de trabajo debe ser una ruta absoluta')
   for (const k of ['executors', 'needsUser', 'forbid', 'allow', 'editRoots', 'tools']) {
-    if (task[k] !== undefined && !Array.isArray(task[k])) errors.push(`${k} must be an array`)
+    if (task[k] !== undefined && !Array.isArray(task[k])) errors.push(`${k} debe ser una matriz`)
   }
   if (errors.length) return { ok: false, errors }
-  for (const e of task.executors ?? []) if (!e || typeof e !== 'object' || !Array.isArray(e.argv) || e.argv.length === 0 || !e.argv.every((x) => typeof x === 'string')) errors.push('each executor needs a non-empty argv array')
-  for (const n of task.needsUser ?? []) if (!Array.isArray(n) || n.length === 0) errors.push('each needsUser entry must be a non-empty argv array')
+  for (const e of task.executors ?? []) if (!e || typeof e !== 'object' || !Array.isArray(e.argv) || e.argv.length === 0 || !e.argv.every((x) => typeof x === 'string')) errors.push('cada ejecutor necesita una matriz argv no vacía')
+  for (const n of task.needsUser ?? []) if (!Array.isArray(n) || n.length === 0) errors.push('cada entrada de needsUser debe ser una matriz argv no vacía')
   // A credential in a policy value would be stored and shown verbatim; such a task is refused.
   const secretLike = (argv) => argv.join(' ') !== redactLike(argv.join(' '))
-  for (const e of task.executors ?? []) if (Array.isArray(e?.argv) && secretLike(e.argv)) errors.push('an executor carries a credential-like value; keep secrets out of the task')
-  for (const n of task.needsUser ?? []) if (Array.isArray(n) && secretLike(n)) errors.push('a needsUser entry carries a credential-like value; keep secrets out of the task')
-  for (const f of task.forbid ?? []) if (secretLike(toWords(f))) errors.push('a forbid entry carries a credential-like value')
-  for (const k of ['allow', 'editRoots', 'tools']) for (const x of task[k] ?? []) if (secretLike([String(x)])) errors.push(`a ${k} entry carries a credential-like value`)
+  for (const e of task.executors ?? []) if (Array.isArray(e?.argv) && secretLike(e.argv)) errors.push('un ejecutor contiene un valor similar a una credencial; no incluyas secretos en la tarea')
+  for (const n of task.needsUser ?? []) if (Array.isArray(n) && secretLike(n)) errors.push('una entrada de needsUser contiene un valor similar a una credencial; no incluyas secretos en la tarea')
+  for (const f of task.forbid ?? []) if (secretLike(toWords(f))) errors.push('una entrada de forbid contiene un valor similar a una credencial')
+  for (const k of ['allow', 'editRoots', 'tools']) for (const x of task[k] ?? []) if (secretLike([String(x)])) errors.push(`una entrada de ${k} contiene un valor similar a una credencial`)
   // Edit roots stay inside the worktree: `../other` or an absolute path elsewhere would let the task
   // authorize writes the worktree does not own (found by an adversarial test).
   const wt = typeof task.worktree === 'string' ? normalizePath(task.worktree, '/') : null
   for (const r of task.editRoots ?? []) {
     const n = wt ? normalizePath(String(r), wt) : null
-    if (!n || !inside(n, wt)) errors.push(`edit root ${String(r).slice(0, 80)} is outside the worktree`)
+    if (!n || !inside(n, wt)) errors.push(`la raíz de edición ${String(r).slice(0, 80)} está fuera del árbol de trabajo`)
   }
-  if (typeof task.worktree === 'string' && secretLike([task.worktree])) errors.push('the worktree carries a credential-like value')
+  if (typeof task.worktree === 'string' && secretLike([task.worktree])) errors.push('el árbol de trabajo contiene un valor similar a una credencial')
   const classes = forbiddenClasses(task)
-  const overlap = (argv, label) => { const hit = matchForbidden(argv, classes); if (hit) errors.push(`${label} ${argv.join(' ')} overlaps forbidden class (${hit.rule})`) }
+  const overlap = (argv, label) => { const hit = matchForbidden(argv, classes); if (hit) errors.push(`${label} ${argv.join(' ')} solapa la clase prohibida (${hit.rule})`) }
   for (const e of task.executors ?? []) if (Array.isArray(e?.argv)) overlap(e.argv, 'executor')
   for (const n of task.needsUser ?? []) if (Array.isArray(n)) overlap(n, 'needsUser')
   return { ok: errors.length === 0, errors }

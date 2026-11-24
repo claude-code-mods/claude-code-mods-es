@@ -248,14 +248,14 @@ function saveText(s: State, now: number): string {
   if (!holds(s, now)) return `${KEEP_LABEL} ${cold == null ? 'no cuesta nada' : `ahorra ${fmtUsd(cold)}`}; al elegir ${SEND_LABEL}, keepwarm sigue desactivado (actívalo con /keepwarm).`
   if (pingFloor > 0) return `${KEEP_LABEL} ${cold == null ? 'no cuesta nada' : `ahorra ${fmtUsd(cold)}`}; al elegir ${SEND_LABEL}, keepwarm se activará durante ${fmtDuration(holdMs(s, now))} como máximo.` +
     (warm == null ? '' : ` Solo lecturas de caché, unos ${fmtUsd(warm)} cada vez.`) + (cold == null ? '' : ' Al llegar al límite de gasto inactivo, los pings pueden detenerse antes y la caché caducar.')
-  if (cold == null || warm == null) return `${KEEP_LABEL} pays nothing; after ${SEND_LABEL}, keepwarm holds the cache for ${fmtDuration(holdMs(s, now))}.`
-  return `${KEEP_LABEL} saves ${fmtUsd(cold)}; after ${SEND_LABEL}, keepwarm holds the cache for ${fmtDuration(holdMs(s, now))} ` +
-    `at about ${fmtUsd(warm)} a ping, so the next break does not cost ${fmtUsd(cold)} again.`
+  if (cold == null || warm == null) return `${KEEP_LABEL} no cuesta nada; al elegir ${SEND_LABEL}, keepwarm mantiene la caché durante ${fmtDuration(holdMs(s, now))}.`
+  return `${KEEP_LABEL} ahorra ${fmtUsd(cold)}; al elegir ${SEND_LABEL}, keepwarm mantiene la caché durante ${fmtDuration(holdMs(s, now))} ` +
+    `a unos ${fmtUsd(warm)} por ping, así que la próxima pausa no vuelve a costar ${fmtUsd(cold)}.`
 }
 
 function sendLabel(s: State): string {
   const cold = coldUsd(s)
-  return cold == null ? SEND_LABEL : `${SEND_LABEL}（${fmtUsd(cold)}）`
+  return cold == null ? SEND_LABEL : `${SEND_LABEL} (${fmtUsd(cold)})`
 }
 
 /** Asks in the engine's own dialog, Send anyway first; null when it is dismissed or no one can be asked. */
@@ -642,7 +642,7 @@ function underFloor(s: State): boolean {
 }
 
 function skipText(s: State): string {
-  return `Keepwarm omitió un ping: esta pausa ha costado ${fmtUsd(s.idleSpentUsd)}; el próximo ping costaría ${fmtUsd(nextPingUsd(s))}, alcanzando el límite de coste de reescritura (${fmtUsd(coldUsd(s))}) entre ${pingFloor}.` +
+  return `Keepwarm omitió un ping: esta pausa ha costado ${fmtUsd(s.idleSpentUsd)}; el próximo ping costaría ${fmtUsd(nextPingUsd(s))}, alcanzando el límite de coste de reescritura (${fmtUsd(coldUsd(s))}) / ${pingFloor}.` +
     ' La caché caducará; el próximo turno iniciará un presupuesto nuevo. Un límite de ping de 0 desactiva esta restricción.'
 }
 
@@ -681,7 +681,7 @@ function holds(s: State, now: number): boolean {
 /** What the guard says about keepwarm after a paid cold write; `then` is the wording of the refusal. */
 function holdNote(s: State, now: number, then: boolean): string {
   if (!holds(s, now)) return 'keepwarm sigue desactivado (actívalo con /keepwarm)'
-  if (pingFloor > 0) return `keepwarm se activará durante ${fmtDuration(holdMs(s, now))} como máximo` + (coldUsd(s) == null ? '' : ', but may stop sooner at the idle spending limit')
+  if (pingFloor > 0) return `keepwarm se activará durante ${fmtDuration(holdMs(s, now))} como máximo` + (coldUsd(s) == null ? '' : ', pero puede detenerse antes al alcanzar el límite de gasto inactivo')
   return then ? `keepwarm mantendrá la caché durante ${fmtDuration(holdMs(s, now))}` : `una vez activo, keepwarm mantendrá la caché durante ${fmtDuration(holdMs(s, now))}`
 }
 
@@ -744,7 +744,7 @@ function card(s: State, now: number): string {
   else lines.push(`Estado      caché caliente; quedan ${fmtDuration(s.lastRequestAt + TTL_MS - now)}`)
   lines.push(`Contexto    ${s.ctx.toLocaleString('en-US')} tokens`)
   lines.push(`Escritura en frío ${fmtUsd(coldUsd(s))} para reescribir (caché caliente ${fmtUsd(warmUsd(s))})`)
-  const always = s.always ? '（always）' : ''
+  const always = s.always ? ' (always)' : ''
   const idle = s.always ? `desactivado; se activará el próximo turno (${fmtDuration(s.alwaysMs)}, always)` : 'desactivado (actívalo con /keepwarm 6h00m)'
   lines.push(`Keepwarm   ${s.deadline ? (statusText(s, now) ?? '').replace(/^Keepwarm activo /, 'activo, ') + always : s.stopped ? `detenido: ${s.stopped}${always}` : idle}`)
   const pings = breakEvenPings(s)
@@ -857,7 +857,7 @@ export const register: Register = (on, options) => {
     })
     await $.command.register({
       name: 'cache-tax',
-      description: 'Estado de la caché del prompt, precio de arranque en frío y escrituras en frío de esta sesión; guard default|warn|refuse|test (cache-tax, the Mod)',
+      description: 'Estado de la caché del prompt, precio de arranque en frío y escrituras en frío de esta sesión; guard default|warn|refuse|test (cache-tax, el mod)',
       argumentHint: '[status | guard default | guard warn | guard refuse [dollars] | guard test]',
       immediate: true,
     })
@@ -944,7 +944,7 @@ export const register: Register = (on, options) => {
     if (words[0] !== 'status') {
       await startWindow($, s, window, every)
       const rolls = s.always && (window < s.alwaysMs || every !== PING_AFTER_MS)
-      return { text: armedText(s, now, window) + (rolls ? `. Always is on, so your next turn makes it at least ${fmtDuration(s.alwaysMs)} at one ping per ${fmtDuration(PING_AFTER_MS)}` : '') }
+      return { text: armedText(s, now, window) + (rolls ? `. Always está activo, así que tu próximo turno lo mantendrá al menos ${fmtDuration(s.alwaysMs)} con un ping cada ${fmtDuration(PING_AFTER_MS)}` : '') }
     }
     return { text: statusText(s, now) ?? 'Keepwarm desactivado' }
   })
@@ -1048,7 +1048,7 @@ export const register: Register = (on, options) => {
     // No dialog to answer (dismissed, or a run with no one to ask): refuse once, the resend pays.
     s.ackedAt = s.lastRequestAt
     if (s.lastResponseAt) await $.store.set(ackedKey(s), s.lastResponseAt)
-    const override = headless && sendHeadless && explicitRefuse && e.origin.kind === 'sdk' ? ' Prompt sin interfaz: send queda anulado por guard refuse. Usa /cache-tax guard default para restaurar el valor predeterminado.' : ''
+    const override = headless && sendHeadless && explicitRefuse && e.origin.kind === 'sdk' ? ' Prompts sin interfaz: envío anulado por guard refuse. Usa /cache-tax guard default para restaurar el valor predeterminado.' : ''
     const reason = `cache-tax: ${guardText(s, now)} Reenviar costaría esa cantidad y ${holdNote(s, now, true)}. O usa /clear y empieza desde un resumen.${override}`
     if (headless) $.ui.log(reason)
     return { drop: reason }

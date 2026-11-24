@@ -21,17 +21,17 @@ export function proposalPath(home, worktreeKey) {
 // is the task bound when the mod reads the file — the preview names it, and accept still refuses if
 // the binding changed after the preview.
 export function readProposal(text, { cwd, boundId }) {
-  if (typeof text !== 'string' || text.length === 0) return { ok: false, errors: ['the proposal file is empty'] }
+  if (typeof text !== 'string' || text.length === 0) return { ok: false, errors: ['el archivo de la propuesta está vacío'] }
   // Bytes, not UTF-16 code units: a non-ASCII draft is up to three times longer on disk.
-  if (new TextEncoder().encode(text).length > MAX_PROPOSAL_BYTES) return { ok: false, errors: [`the proposal is over ${MAX_PROPOSAL_BYTES} bytes`] }
+  if (new TextEncoder().encode(text).length > MAX_PROPOSAL_BYTES) return { ok: false, errors: [`la propuesta supera ${MAX_PROPOSAL_BYTES} bytes`] }
   let input
-  try { input = JSON.parse(text) } catch { return { ok: false, errors: ['the proposal is not JSON'] } }
-  if (!input || typeof input !== 'object' || Array.isArray(input)) return { ok: false, errors: ['the proposal must be a JSON object'] }
+  try { input = JSON.parse(text) } catch { return { ok: false, errors: ['la propuesta no es JSON'] } }
+  if (!input || typeof input !== 'object' || Array.isArray(input)) return { ok: false, errors: ['la propuesta debe ser un objeto JSON'] }
   // The worktree comes from the session; a proposal naming another one is refused, never re-pointed.
-  if (input.worktree !== undefined && input.worktree !== cwd) return { ok: false, errors: ['the proposal names another worktree'] }
+  if (input.worktree !== undefined && input.worktree !== cwd) return { ok: false, errors: ['la propuesta nombra otro árbol de trabajo'] }
   const base = input.base === undefined ? (boundId ?? null) : input.base
-  if (base !== null && typeof base !== 'string') return { ok: false, errors: ['base must be the bound task id or null'] }
-  if (base !== (boundId ?? null)) return { ok: false, stale: true, errors: [`stale: drafted against ${base ? `task ${sanitize(base, 64)}` : 'no task'}, but ${boundId ? `task ${sanitize(boundId, 64)}` : 'no task'} is bound now`] }
+  if (base !== null && typeof base !== 'string') return { ok: false, errors: ['base debe ser el id de la tarea vinculada o null'] }
+  if (base !== (boundId ?? null)) return { ok: false, stale: true, errors: [`obsoleta: redactada contra ${base ? `la tarea ${sanitize(base, 64)}` : 'ninguna tarea'}, pero ahora está vinculada ${boundId ? `la tarea ${sanitize(boundId, 64)}` : 'ninguna tarea'}`] }
   const { base: _b, id: _i, ...draft } = input
   const v = validateTask({ ...draft, worktree: cwd })
   if (!v.ok) return { ok: false, errors: v.errors.map((x) => sanitize(x, 200)) }

@@ -37,12 +37,12 @@ function flagAllowed(arg, allowed) {
 function checkGit(argv) {
   let i = 1
   while (i < argv.length && argv[i].startsWith('-')) {
-    if (!GIT_GLOBAL_OK.has(argv[i])) return { ok: false, why: `git option ${argv[i]} not allowed` }
+    if (!GIT_GLOBAL_OK.has(argv[i])) return { ok: false, why: `opción de git ${argv[i]} no permitida` }
     i++
   }
   const sub = argv[i]
   const spec = GIT[sub]
-  if (!spec) return { ok: false, why: `git ${sub ?? ''} is not an observational form` }
+  if (!spec) return { ok: false, why: `git ${sub ?? ''} no es una forma de observación` }
   const rest = argv.slice(i + 1)
   const positionals = []
   let afterDashDash = false
@@ -51,17 +51,17 @@ function checkGit(argv) {
     if (afterDashDash) { positionals.push(a); continue }
     if (a === '--') { afterDashDash = true; continue }
     if (a.startsWith('-')) {
-      if (!flagAllowed(a, spec.flags)) return { ok: false, why: `git ${sub} option ${a} not allowed` }
+      if (!flagAllowed(a, spec.flags)) return { ok: false, why: `opción ${a} de git ${sub} no permitida` }
       if (a === '-n' || a === '--contains') j++ // takes a value
       continue
     }
     positionals.push(a)
   }
   if (spec.positional === 'none-or-list-pattern' && positionals.length > 0 && !rest.includes('--list')) {
-    return { ok: false, why: 'git branch with a name would create, rename or delete a branch' }
+    return { ok: false, why: 'git branch con nombre crearía, renombraría o borraría una rama' }
   }
   if (spec.mustHave) {
-    for (const m of spec.mustHave) if (!rest.includes(m)) return { ok: false, why: `git ${sub} needs ${spec.mustHave.join(' ')} so no external diff or textconv program runs` }
+    for (const m of spec.mustHave) if (!rest.includes(m)) return { ok: false, why: `git ${sub} necesita ${spec.mustHave.join(' ')} para que no se ejecute un programa externo de diff o textconv` }
   }
   return { ok: true }
 }
@@ -89,8 +89,8 @@ function checkSimple(argv) {
 
 function checkSearch(argv, env) {
   if (argv[0] === 'rg') {
-    if (!argv.includes('--no-config')) return { ok: false, why: 'rg needs --no-config so RIPGREP_CONFIG_PATH cannot add options' }
-    if (env && Object.prototype.hasOwnProperty.call(env, 'RIPGREP_CONFIG_PATH')) return { ok: false, why: 'rg with RIPGREP_CONFIG_PATH set' }
+    if (!argv.includes('--no-config')) return { ok: false, why: 'rg necesita --no-config para que RIPGREP_CONFIG_PATH no pueda añadir opciones' }
+    if (env && Object.prototype.hasOwnProperty.call(env, 'RIPGREP_CONFIG_PATH')) return { ok: false, why: 'rg con RIPGREP_CONFIG_PATH definido' }
   }
   for (let j = 1; j < argv.length; j++) {
     const a = argv[j]
@@ -110,7 +110,7 @@ export const ADAPTER_COMMANDS = ['git', 'ls', 'cat', 'head', 'tail', 'wc', 'rg',
 // argv: string[] already tokenized. env: inline assignments that preceded the command.
 export function checkAdapter(argv, env = {}) {
   const cmd = argv[0]
-  if (Object.keys(env).length > 0) return { ok: false, why: 'inline environment assignments are not classified' }
+  if (Object.keys(env).length > 0) return { ok: false, why: 'las asignaciones de entorno en línea no se clasifican' }
   if (cmd === 'git') return checkGit(argv)
   if (cmd in SIMPLE) return checkSimple(argv)
   if (cmd === 'rg' || cmd === 'grep') return checkSearch(argv, env)

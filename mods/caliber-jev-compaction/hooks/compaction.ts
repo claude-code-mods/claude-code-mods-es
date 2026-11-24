@@ -236,9 +236,9 @@ export function summarize(result: CompactResult): string {
     stats.callsDropped > 0 ? `${stats.callsDropped} llamadas eliminadas` : '',
     stats.pinned > 0 ? `${stats.pinned} fijados` : '',
   ].filter(Boolean);
-  return `${percent(reductionRatio(result))} de reducción；${
+  return `${percent(reductionRatio(result))} de reducción; ${
     parts.join(', ') || 'sin llamadas a herramientas'
-  }; estado ~${stats.stateTokens} tokens (${stats.stateStage}), ${stats.requests} solicitudes`;
+  }; estado ~${stats.stateTokens} tokens (${stats.stateStage}) en ${stats.requests} solicitudes`;
 }
 
 const UI_LOG_MAX_CHARS = 4096;
@@ -272,7 +272,7 @@ export function decisionLogLines(
   return chunks.map((chunk, index) =>
     chunks.length === 1
       ? `registro de decisiones: ${chunk}`
-      : `registro de decisiones (${index + 1}/${chunks.length}）：${chunk}`,
+      : `registro de decisiones (${index + 1}/${chunks.length}): ${chunk}`,
   );
 }
 
@@ -345,19 +345,19 @@ export const register: Register = (on: On, options: PluginOptions) => {
       if (reductionRatio(result) < config.minReductionRatio) {
         notify(
           $,
-          `se recurre al resumen integrado（por debajo del mínimo de ${percent(config.minReductionRatio)}：${summarize(result)}）`,
+          `se recurre al resumen integrado (por debajo del mínimo de ${percent(config.minReductionRatio)}: ${summarize(result)})`,
         );
         return next(event);
       }
       notify(
         $,
-        `conservados ${messages.length}/${event.messages.length} mensajes, sin generar resumen（${summarize(result)}）`,
+        `se conservaron ${messages.length}/${event.messages.length} mensajes, sin generar resumen (${summarize(result)})`,
       );
       return { messages };
     } catch (error) {
       notify(
         $,
-        `se recurre al resumen integrado（${error instanceof Error ? error.message : String(error)}）`,
+        `se recurre al resumen integrado (${error instanceof Error ? error.message : String(error)})`,
       );
       return next(event);
     }
@@ -372,7 +372,7 @@ export const register: Register = (on: On, options: PluginOptions) => {
       await $.session.compact();
     } catch (error) {
       $.ui.log(
-        `Se omitió la compactación automática（${error instanceof Error ? error.message : String(error)}）`,
+        `Se omitió la compactación automática (${error instanceof Error ? error.message : String(error)})`,
       );
     } finally {
       compacting = false;

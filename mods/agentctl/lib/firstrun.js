@@ -99,32 +99,32 @@ export function draftingRequest({ goal, worktree, base, root, lang }) {
     ].join('\n')
   }
   return [
-    `Draft an agentctl task scope for: "${goal}"`,
-    `First run ${helper.replace(' --stdin', ' --help')} for the fields. Read the project and propose the narrowest scope (edit paths, check commands, acceptance). If something is unclear, ask me and wait for my answer — write no proposal before it, and never invent permissions.`,
-    `Write it with ${helper} (base ${baseText}; a quoted heredoc delimiter that does not occur in the JSON). Write the proposal only, then wait for me to accept.`,
+    `Redacta un alcance de tarea de agentctl para: "${goal}"`,
+    `Primero ejecuta ${helper.replace(' --stdin', ' --help')} para ver los campos. Lee el proyecto y propón el alcance más estrecho (rutas de edición, comandos de comprobación, aceptación). Si algo no está claro, pregúntame y espera mi respuesta: no escribas el proposal ni añadas permisos por tu cuenta antes de que responda.`,
+    `Escríbelo con ${helper} (base ${baseText}; un delimitador heredoc entre comillas que no aparezca en el JSON). Escribe solo el proposal y espera a que lo acepte.`,
   ].join('\n')
 }
 
 const COPY = {
   en: {
-    filled: (bound) => `A request for Claude to draft the scope is in your prompt box — press Enter to send it. ${bound ? 'The current task stays in force until you accept the new scope.' : 'Nothing is bound yet.'}`,
-    mixed: (bound) => `The request was added after text you typed meanwhile; both are in your prompt box. Edit it before you press Enter. ${bound ? 'The current task stays in force until you accept the new scope.' : 'Nothing is bound yet.'}`,
-    copy: (bound) => `Send this to Claude to have it draft the scope (${bound ? 'the current task stays in force until you accept the new one' : 'nothing is bound yet'}):`,
-    typo: (v) => `Did you mean "/agentctl ${v}"? To start a task, describe it: /agentctl <what you are doing>`,
-    extra: (v) => `"/agentctl ${v}" takes no such arguments. ${v === 'proposal' ? 'It shows a waiting draft; to make one, describe the work: /agentctl <what you are doing>' : 'See /agentctl help.'}`,
-    acceptLine: (d) => `Accept this scope: /agentctl accept ${d} — it binds the scope only; it does not start any work.`,
-    accepted: 'Scope bound. Next: ask Claude to start the work.',
-    runChecks: (checks) => `To leave evidence, run each check as written: ${checks.join(' · ')} — a pipe, redirect or wrapper keeps a run from counting, and added arguments may check less than declared.`,
-    wholeScope: '/agentctl policy shows the whole scope.',
-    noTaskLast: 'No task is bound, so there is no hand-over yet. Start one: /agentctl <what you are doing>',
-    noHandover: 'This task has no saved hand-over yet: /agentctl handoff saves one.',
+    filled: (bound) => `Hay una solicitud para que Claude redacte el alcance en tu campo de prompt: pulsa Enter para enviarla. ${bound ? 'La tarea actual sigue vigente hasta que aceptes el nuevo alcance.' : 'Aún no hay nada vinculado.'}`,
+    mixed: (bound) => `La solicitud se añadió después del texto que escribiste; ambos están en el campo. Edítalo antes de pulsar Enter. ${bound ? 'La tarea actual sigue vigente hasta que aceptes el nuevo alcance.' : 'Aún no hay nada vinculado.'}`,
+    copy: (bound) => `Envía esto a Claude para que redacte el alcance (${bound ? 'la tarea actual sigue vigente hasta que aceptes la nueva' : 'nada está vinculado aún'}):`,
+    typo: (v) => `¿Querías decir "/agentctl ${v}"? Para iniciar una tarea, descríbela: /agentctl <lo que estás haciendo>`,
+    extra: (v) => `"/agentctl ${v}" no acepta estos argumentos. ${v === 'proposal' ? 'Muestra un borrador en espera; para crear uno, describe el trabajo: /agentctl <lo que estás haciendo>' : 'Consulta /agentctl help.'}`,
+    acceptLine: (d) => `Acepta este alcance: /agentctl accept ${d} — solo vincula el alcance; no inicia ningún trabajo.`,
+    accepted: 'Alcance vinculado. Siguiente: pide a Claude que empiece el trabajo.',
+    runChecks: (checks) => `Para dejar evidencia, ejecuta cada comprobación tal como está escrita: ${checks.join(' · ')} — una tubería, redirección o envoltorio hace que no cuente, y añadir argumentos puede comprobar menos de lo declarado.`,
+    wholeScope: '/agentctl policy muestra el alcance completo.',
+    noTaskLast: 'No hay ninguna tarea vinculada, así que aún no hay entrega. Inicia una: /agentctl <lo que estás haciendo>',
+    noHandover: 'Esta tarea aún no tiene entrega guardada: /agentctl handoff guarda una.',
     next: {
-      none: 'Next: describe the work — /agentctl <what you are doing>. Built-in refusals (direct git push, production writes) apply even now.',
-      proposal: (d) => `Next: review /agentctl proposal, then /agentctl accept ${d}`,
-      task: 'Next: ask Claude to work; /agentctl handoff saves where things stand.',
-      taskThenChecks: (checks) => `Next: ask Claude to work, then to run the checks exactly as written: ${checks.join(' · ')}. Once they are current: /agentctl handoff`,
-      rerun: (checks) => `Next: not current on this tree — ask Claude to run exactly as written: ${checks.join(' · ')}. Then: /agentctl handoff`,
-      checksCurrent: 'Next: every declared check is current on this tree — /agentctl handoff saves the hand-over.',
+      none: 'Siguiente: describe el trabajo — /agentctl <lo que estás haciendo>. Las negativas integradas (git push directo, escrituras en producción) se aplican ya.',
+      proposal: (d) => `Siguiente: revisa /agentctl proposal y luego /agentctl accept ${d}`,
+      task: 'Siguiente: pide a Claude que trabaje; /agentctl handoff guarda el estado.',
+      taskThenChecks: (checks) => `Siguiente: pide a Claude que trabaje y ejecute las comprobaciones tal como están escritas: ${checks.join(' · ')}. Cuando estén actualizadas: /agentctl handoff`,
+      rerun: (checks) => `Siguiente: no está actualizado en este árbol — pide a Claude ejecutar tal como está escrito: ${checks.join(' · ')}. Luego: /agentctl handoff`,
+      checksCurrent: 'Siguiente: todas las comprobaciones declaradas están actualizadas en este árbol — /agentctl handoff guarda la entrega.',
     },
   },
   zh: {
@@ -180,7 +180,7 @@ export function copy(lang) {
 // shortened. An argv no quoting can carry is shown as its JSON array instead, which says to run it as
 // those words.
 export function checkLine(argv) {
-  return renderArgv(argv) ?? `${JSON.stringify(argv)} (as these words)`
+  return renderArgv(argv) ?? `${JSON.stringify(argv)} (como estas palabras)`
 }
 
 // The task's declared checks, as the command lines Claude must run as written.
@@ -219,7 +219,7 @@ export function helpText(lang, advanced) {
       'Avanzado:',
       '  /agentctl task show | set <json> | clear — ver o definir la tarea directamente',
       '  /agentctl policy — alcance y límites actuales',
-      '  /agentctl events [n] — refusos recientes y llamadas entregadas al host',
+      '  /agentctl events [n] — rechazos recientes y llamadas entregadas al host',
       '  /agentctl handoff · last — guardar la entrega · mostrar la última',
       '  /agentctl stop — cancelar el turno actual y guardar la entrega',
       '  /agentctl status --details · discard — estado completo · descartar el borrador',
@@ -233,19 +233,19 @@ export function helpText(lang, advanced) {
   }
 
   return advanced ? [
-    'Advanced:',
-    '  /agentctl task show | set <json> | clear — view or set the task directly',
-    '  /agentctl policy — the scope in force and its limits',
-    '  /agentctl events [n] — recent refusals and calls left to the host',
-    '  /agentctl handoff · last — save a hand-over · show the last one',
-    '  /agentctl stop — cancel the turn and save a hand-over',
-    '  /agentctl status --details · discard — full status · drop a draft',
+    'Avanzado:',
+    '  /agentctl task show | set <json> | clear — ver o definir la tarea directamente',
+    '  /agentctl policy — alcance y límites actuales',
+    '  /agentctl events [n] — rechazos recientes y llamadas entregadas al host',
+    '  /agentctl handoff · last — guardar la entrega · mostrar la última',
+    '  /agentctl stop — cancelar el turno actual y guardar la entrega',
+    '  /agentctl status --details · discard — estado completo · descartar el borrador',
   ].join('\n') : [
-    'agentctl keeps Claude inside a scope you confirm and records check evidence.',
-    '  /agentctl <what you are doing> — Claude drafts a scope (binds nothing)',
-    '  /agentctl accept <digest> — you confirm it (starts no work)',
-    '  /agentctl — where things stand and what to do next',
-    'More: /agentctl help advanced',
+    'agentctl permite a Claude trabajar dentro del alcance que confirmas y registra la evidencia de las comprobaciones.',
+    '  /agentctl <lo que estás haciendo> — Claude redacta el alcance (sin vincularlo)',
+    '  /agentctl accept <digest> — confirmas el alcance (no inicia trabajo)',
+    '  /agentctl — estado actual y siguiente paso',
+    'Más: /agentctl help advanced',
   ].join('\n')
 }
 

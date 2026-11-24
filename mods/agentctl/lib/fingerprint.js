@@ -44,7 +44,7 @@ export function parseStatus(out) {
     if (kind === '#') continue
     if (kind === '?') { changed.push(r.slice(2)); continue }
     if (kind === '!') continue
-    if (kind === 'u') { reasons.add('unmerged conflict'); changed.push(r.split(' ').slice(10).join(' ')); continue }
+    if (kind === 'u') { reasons.add('conflicto sin fusionar'); changed.push(r.split(' ').slice(10).join(' ')); continue }
     if (kind === '1' || kind === '2') {
       const f = r.split(' ')
       if (f[2] && f[2][0] === 'S') reasons.add('submodule')
@@ -53,7 +53,7 @@ export function parseStatus(out) {
       if (kind === '2') i++ // skip the original path field
       continue
     }
-    reasons.add('unparsed status record')
+    reasons.add('registro de estado no interpretado')
   }
   return { changed, reasons: [...reasons] }
 }
@@ -65,8 +65,8 @@ export function parseFlags(out) {
   for (const r of String(out ?? '').split('\0')) {
     if (!r) continue
     const tag = r[0]
-    if (tag === 'S') reasons.add('skip-worktree entries')
-    else if (tag >= 'a' && tag <= 'z') reasons.add('assume-unchanged entries')
+    if (tag === 'S') reasons.add('entradas de skip-worktree')
+    else if (tag >= 'a' && tag <= 'z') reasons.add('entradas de assume-unchanged')
   }
   return [...reasons]
 }
@@ -86,20 +86,20 @@ export function fold(results, changed = []) {
   // a reading. A missing read, a thrown read or any other exit is a failed observation, never "unborn".
   const h = results.head
   let head
-  if (!h) { head = 'unknown'; reasons.push('head: not read') }
-  else if (h.error) { head = 'unknown'; reasons.push(`head: ${h.error}`) }
+  if (!h) { head = 'desconocido'; reasons.push('head: no leído') }
+  else if (h.error) { head = 'desconocido'; reasons.push(`head: ${h.error}`) }
   else if (h.exitCode === 0) head = String(h.stdout ?? '').trim()
   else if (h.exitCode === 1 && !String(h.stdout ?? '').trim() && !String(h.stderr ?? '').trim()) head = 'unborn'
-  else { head = 'unknown'; reasons.push(`head: exit ${h.exitCode}`) }
+  else { head = 'desconocido'; reasons.push(`head: salida ${h.exitCode}`) }
   const index = part('index')
   const statusOut = part('status')
   const flagsOut = part('flags')
   const hashOut = changed.length ? part('hash') : ''
   const status = parseStatus(statusOut)
   reasons.push(...status.reasons, ...parseFlags(flagsOut))
-  if (changed.length > MAX_HASHED_PATHS) reasons.push(`more than ${MAX_HASHED_PATHS} changed paths`)
+  if (changed.length > MAX_HASHED_PATHS) reasons.push(`más de ${MAX_HASHED_PATHS} rutas modificadas`)
   if (changed.length && hashOut.trim().split('\n').filter(Boolean).length !== Math.min(changed.length, MAX_HASHED_PATHS)) {
-    reasons.push('hash-object did not answer for every path')
+    reasons.push('hash-object no respondió para todas las rutas')
   }
   const value = digest([head, index, statusOut, hashOut].join('\u0001'))
   return {
