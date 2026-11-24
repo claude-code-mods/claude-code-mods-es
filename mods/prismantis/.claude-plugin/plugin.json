@@ -22,19 +22,19 @@
     "enabled": {
       "type": "boolean",
       "title": "Enabled",
-      "description": "Draw replies with this mod. Off falls back to Claude Code's own renderer.",
+      "description": "Dibuja las respuestas con este mod. Si está desactivado, se usa el renderizador propio de Claude Code.",
       "default": true
     },
     "surfaces": {
       "type": "string",
       "title": "Surfaces",
-      "description": "Where this mod draws, as a comma-separated list of terminal, desktop, vscode and mobile, like terminal,vscode. The rest fall back to Claude Code's own renderer. Empty or all draws everywhere.",
+      "description": "Dónde dibuja este mod, como una lista separada por comas de terminal, desktop, vscode y mobile, por ejemplo terminal,vscode. Los demás lugares usan el renderizador propio de Claude Code. Vacío o all dibuja en todas partes.",
       "default": "all"
     },
     "theme": {
       "type": "string",
       "title": "Theme",
-      "description": "Base palette, from popular MIT-licensed themes. Light variants: catppuccin-latte, gruvbox-light, rose-pine-dawn, github-light, solarized-light. mono uses bold and dim only. random picks a dark color preset each time the mod loads (session start or reload).",
+      "description": "Paleta base, tomada de temas populares con licencia MIT. Variantes claras: catppuccin-latte, gruvbox-light, rose-pine-dawn, github-light, solarized-light. mono usa solo negrita y atenuado. random elige una paleta oscura aleatoria cada vez que se carga el mod (inicio de sesión o recarga).",
       "default": "catppuccin-mocha",
       "options": [
         "catppuccin-mocha",
@@ -62,7 +62,7 @@
     "desktopColors": {
       "type": "string",
       "title": "Desktop app colors",
-      "description": "match also paints the Claude Code desktop app (Code tab) in the theme's colors, and switches it to light mode for a light theme. Needs Claude Code 2.1.324 or later; the terminal and VS Code keep their own colors. It replaces any other mod's desktop theme, and turning it back to off restores the app's own look. off leaves the app as it is.",
+      "description": "match también pinta la app de escritorio de Claude Code (pestaña Code) con los colores del tema y la cambia a modo claro para un tema claro. Necesita Claude Code 2.1.324 o posterior; el terminal y VS Code conservan sus propios colores. Sustituye el tema de escritorio de cualquier otro mod, y volver a off restaura la apariencia propia de la app. off deja la app como está.",
       "default": "off",
       "options": [
         "off",
@@ -72,7 +72,7 @@
     "headingStyle": {
       "type": "string",
       "title": "Heading style",
-      "description": "Terminals have one font size, so headings get weight instead: banner (a box around H1, a heavy rule under H2), bold, underline, or uppercase H1.",
+      "description": "Los terminales tienen un solo tamaño de letra, así que los encabezados se distinguen por su peso: banner (una caja alrededor de H1, una línea gruesa bajo H2), bold, underline o H1 en mayúsculas.",
       "default": "banner",
       "options": [
         "bold",
@@ -84,7 +84,7 @@
     "tableStyle": {
       "type": "string",
       "title": "Table style",
-      "description": "box: every cell boxed, with a double line under the header. rules: a rule under the header and between rows. grid: heavier header rule, wider gaps. minimal: header rule only.",
+      "description": "box: cada celda en una caja, con una línea doble bajo la cabecera. rules: una línea bajo la cabecera y entre filas. grid: línea de cabecera más gruesa, huecos más anchos. minimal: solo la línea de la cabecera.",
       "default": "box",
       "options": [
         "box",
@@ -96,7 +96,7 @@
     "tableLayout": {
       "type": "string",
       "title": "Table layout",
-      "description": "classic: today's look, columns share the width and shrink to the terminal. auto: the same, and a table too wide to fit even its longest words stacks each row as label and value pairs. compact: every column sits at its longest word, so the table stays narrow and long cells wrap. stacked: every table draws as label and value pairs. In the desktop app the lines of every layout draw as thin colored boxes to a share of the width.",
+      "description": "classic: la apariencia actual; las columnas comparten el ancho y se reducen para ajustarse al terminal. auto: igual, y una tabla demasiado ancha incluso para sus palabras más largas apila cada fila en pares etiqueta y valor. compact: cada columna se ajusta a su palabra más larga, así la tabla sigue estrecha y las celdas largas se ajustan a varias líneas. stacked: todas las tablas se dibujan como pares etiqueta y valor. En la app de escritorio, las líneas de cada diseño se dibujan como cajas de color delgadas que ocupan una parte del ancho.",
       "default": "classic",
       "options": [
         "classic",
@@ -108,7 +108,7 @@
     "statusMatrix": {
       "type": "string",
       "title": "Status matrix",
-      "description": "How the status cells of a table draw. A status column is the one whose cells are things like ✓, passed, failed or pending. off (the default) keeps tables as written. color: those cells draw in theme colors (green for a pass, red for a failure, amber for a warning, gray for a wait). summary: also draws a count line under the table, like `✓ 2 · ✗ 1 · ⚠ 1`. group: also reorders rows by status and draws a heavy rule where a group changes.",
+      "description": "Cómo se dibujan las celdas de estado de una tabla. Una columna de estado es aquella cuyas celdas contienen cosas como ✓, passed, failed o pending. off (el predeterminado) mantiene las tablas tal como están. color: esas celdas se dibujan con colores del tema (verde para un éxito, rojo para un fallo, ámbar para una advertencia, gris para una espera). summary: también dibuja una línea de recuento bajo la tabla, como `✓ 2 · ✗ 1 · ⚠ 1`. group: además reordena las filas por estado y dibuja una línea gruesa donde cambia el grupo.",
       "default": "off",
       "options": [
         "color",
@@ -120,7 +120,7 @@
     "testMatrix": {
       "type": "string",
       "title": "Test report",
-      "description": "A report line under a table that reads like test results: a status column of things like ✓ or failed next to durations like 120 ms. report draws the share of the run that passed, a count of every other kind of result and the time all of it took, in the theme's status colors; it replaces the statusMatrix count line when both draw. off (the default) keeps tables as written.",
+      "description": "Una línea de informe bajo una tabla que se lee como resultados de pruebas: una columna de estado con cosas como ✓ o failed junto a duraciones como 120 ms. report dibuja la proporción de la ejecución que pasó, un recuento de cada otro tipo de resultado y el tiempo que tardó todo, con los colores de estado del tema; sustituye la línea de recuento de statusMatrix cuando ambas se dibujan. off (el predeterminado) mantiene las tablas tal como están.",
       "default": "off",
       "options": [
         "report",
@@ -130,7 +130,7 @@
     "benchTable": {
       "type": "string",
       "title": "Benchmarks",
-      "description": "How a table that compares benchmarks draws: a column of changes like -10% or +3%. off (the default) keeps tables as written. color draws each change in the theme's colors, green for an improvement and red for a regression; timings read as lower is better, unless a header speaks of req/s, throughput or a score. trend also draws a sparkline of the runs under the table, each step colored by whether it improved.",
+      "description": "Cómo se dibuja una tabla que compara pruebas de rendimiento: una columna de cambios como -10 % o +3 %. off (el predeterminado) mantiene las tablas tal como están. color dibuja cada cambio con los colores del tema, verde para una mejora y rojo para una regresión; los tiempos se interpretan como que menor es mejor, salvo que una cabecera hable de req/s, rendimiento o una puntuación. trend también dibuja una minigráfica de las ejecuciones bajo la tabla, con cada paso coloreado según haya mejorado.",
       "default": "off",
       "options": [
         "trend",
@@ -141,7 +141,7 @@
     "schemaTable": {
       "type": "string",
       "title": "Schema",
-      "description": "How a table that describes a database schema draws: a column of fields beside a column of types. off (the default) keeps tables as written. types draws each type cell in the theme's colors by its family: text types like varchar in the string color, numeric types like int in the number color, booleans in the emphasis color, time types like timestamp in the link color. keys draws the constraint cells: PK in the accent color, FK in the link color, unique and index cells in gray. full does both.",
+      "description": "Cómo se dibuja una tabla que describe el esquema de una base de datos: una columna de campos junto a una columna de tipos. off (el predeterminado) mantiene las tablas tal como están. types dibuja cada celda de tipo con los colores del tema según su familia: los tipos de texto como varchar en el color de las cadenas, los numéricos como int en el color de los números, los booleanos en el color de énfasis y los tipos de tiempo como timestamp en el color de los enlaces. keys dibuja las celdas de restricciones: PK en el color de acento, FK en el color de los enlaces, unique y index en gris. full hace ambas cosas.",
       "default": "off",
       "options": [
         "full",
@@ -153,7 +153,7 @@
     "compareTable": {
       "type": "string",
       "title": "Comparison",
-      "description": "How a table that compares options draws: a column of scores beside a column of ranks. off (the default) keeps tables as written. rank draws the rank cells in the theme's colors: 1 in the accent color, 2 and 3 in the link color. pick draws the score cell of the top score in the theme's improvement color and bold, so it stands out in a theme where that color is also the number color. full does both.",
+      "description": "Cómo se dibuja una tabla que compara opciones: una columna de puntuaciones junto a una columna de puestos. off (el predeterminado) mantiene las tablas tal como están. rank dibuja las celdas de puesto con los colores del tema: 1 en el color de acento, 2 y 3 en el color de los enlaces. pick dibuja la celda de puntuación de la mejor puntuación con el color de mejora del tema y en negrita, para que destaque en un tema donde ese color también es el de los números. full hace ambas cosas.",
       "default": "off",
       "options": [
         "full",
@@ -165,7 +165,7 @@
     "apiTable": {
       "type": "string",
       "title": "API reference",
-      "description": "How an API reference table draws: a method column whose cells read like HTTP verbs. off (the default) keeps tables as written. verbs draws each method cell by what the verb does: reads like GET in the link color, writes like POST in the string color, DELETE in the removed color, other verbs in gray. auth draws the scheme cells of an auth column: Bearer, OAuth, API key and JWT in the accent color. full does both.",
+      "description": "Cómo se dibuja una tabla de referencia de API: una columna de métodos cuyas celdas se leen como verbos HTTP. off (el predeterminado) mantiene las tablas tal como están. verbs dibuja cada celda de método según lo que hace el verbo: las lecturas como GET en el color de los enlaces, las escrituras como POST en el color de las cadenas, DELETE en el color de lo eliminado y los demás verbos en gris. auth dibuja las celdas de esquema de una columna de autenticación: Bearer, OAuth, API key y JWT en el color de acento. full hace ambas cosas.",
       "default": "off",
       "options": [
         "full",
@@ -177,7 +177,7 @@
     "kvTable": {
       "type": "string",
       "title": "Key-value inspector",
-      "description": "How a table that lists configuration draws: a column of options beside columns of values, sources or defaults. off (the default) keeps tables as written. sources draws each source cell in the theme's colors by where it says the value comes from: env in the link color, config in the string color, default in gray. overrides draws the value cell in the accent color when the row's value differs from its default. full does both.",
+      "description": "Cómo se dibuja una tabla que enumera configuración: una columna de opciones junto a columnas de valores, orígenes o predeterminados. off (el predeterminado) mantiene las tablas tal como están. sources dibuja cada celda de origen con los colores del tema según dice de dónde viene el valor: env en el color de los enlaces, config en el color de las cadenas, default en gris. overrides dibuja la celda del valor en el color de acento cuando el valor de la fila difiere de su predeterminado. full hace ambas cosas.",
       "default": "off",
       "options": [
         "full",
@@ -189,7 +189,7 @@
     "groupTable": {
       "type": "string",
       "title": "Grouped table",
-      "description": "How a table that groups its rows draws: the first column whose cells repeat in runs, like a column of services or teams. off (the default) keeps tables as written. merge draws each group label once, in the accent color, and blanks the repeats under it. count also adds the group's size to the label, like api (2). full also draws a heavy rule where one group ends and the next begins. A column of numbers never groups, and a table already grouped by statusMatrix keeps its status grouping.",
+      "description": "Cómo se dibuja una tabla que agrupa sus filas: la primera columna cuyas celdas se repiten en secuencias, como una columna de servicios o equipos. off (el predeterminado) mantiene las tablas tal como están. merge dibuja cada etiqueta de grupo una sola vez, en el color de acento, y deja en blanco las repeticiones debajo. count también añade el tamaño del grupo a la etiqueta, como api (2). full también dibuja una línea gruesa donde termina un grupo y empieza el siguiente. Una columna de números nunca se agrupa, y una tabla ya agrupada por statusMatrix conserva su agrupación por estado.",
       "default": "off",
       "options": [
         "full",
@@ -201,7 +201,7 @@
     "promptStyle": {
       "type": "string",
       "title": "Your prompt style",
-      "description": "How the prompts you type draw in the transcript. bubble: on the right like a chat app, under You ⬤, in a rounded frame of the theme's green on a deep green fill, with Claude's replies in a bubble of their own while replyStyle is auto. framed: the same with no fill. wide: a rounded accent box across the full width. bar: an accent bar on the left. chevron: a bold accent › before the text. off: Claude Code's own look.",
+      "description": "Cómo se dibujan en la transcripción los avisos que escribes. bubble: a la derecha como en una app de chat, bajo You ⬤, en un marco redondeado del verde del tema sobre un relleno verde oscuro, con las respuestas de Claude en una burbuja propia mientras replyStyle es auto. framed: lo mismo sin relleno. wide: una caja de acento redondeada que ocupa todo el ancho. bar: una barra de acento a la izquierda. chevron: un › de acento en negrita antes del texto. off: la apariencia propia de Claude Code.",
       "default": "bubble",
       "options": [
         "bubble",
@@ -215,7 +215,7 @@
     "replyStyle": {
       "type": "string",
       "title": "Claude's reply style",
-      "description": "How Claude's replies draw in the transcript. auto: bubble while promptStyle is bubble, so both sides of the conversation draw as a chat, off with any other promptStyle. bubble: under ⬤ Claude, in a rounded frame of Claude's orange on a fill a step off the background. solid: the same fill to the edge, its top and bottom in half blocks, no frame. framed: the frame with no fill. off: a dot before the first line, no frame.",
+      "description": "Cómo se dibujan en la transcripción las respuestas de Claude. auto: burbuja mientras promptStyle es bubble, de modo que ambos lados de la conversación se dibujan como un chat; desactivado con cualquier otro promptStyle. bubble: bajo ⬤ Claude, en un marco redondeado del naranja de Claude sobre un relleno un paso apartado del fondo. solid: el mismo relleno hasta los bordes, arriba y abajo con media casilla, sin marco. framed: el marco sin relleno. off: un punto antes de la primera línea, sin marco.",
       "default": "auto",
       "options": [
         "auto",
@@ -228,7 +228,7 @@
     "bubbleLabels": {
       "type": "string",
       "title": "Bubble labels",
-      "description": "The You ⬤ label above your prompt bubble and the ⬤ Claude label above Claude's first bubble. large: ⬤, as Claude Code draws it. small: the dot ●. off: no labels, only the frames.",
+      "description": "La etiqueta You ⬤ sobre tu burbuja de aviso y la etiqueta ⬤ Claude sobre la primera burbuja de Claude. large: ⬤, tal como lo dibuja Claude Code. small: el punto ●. off: sin etiquetas, solo los marcos.",
       "default": "large",
       "options": [
         "large",
@@ -239,7 +239,7 @@
     "clock": {
       "type": "string",
       "title": "Clock times",
-      "description": "Shows when you sent each prompt and when each turn finished. 24h: 14:32. 12h: 2:32 PM. A time from another day gets its date. off: no times.",
+      "description": "Muestra cuándo enviaste cada aviso y cuándo terminó cada turno. 24h: 14:32. 12h: 2:32 PM. Una hora de otro día lleva su fecha. off: sin horas.",
       "default": "off",
       "options": [
         "off",
@@ -249,8 +249,8 @@
     },
     "toolStyle": {
       "type": "string",
-      "title": "Tool row style",
-      "description": "How tool rows (Ran, Read, Edited) sit next to Claude's sentences. chat: tool rows dimmed on the right, Claude on the left. tree-dim: tucked under the sentence with ⎿ and dimmed. tree-bold: tree-dim plus one-line sentences in bold. classic: the original look.",
+      "title": "Estilo de las filas de herramientas",
+      "description": "Cómo se sitúan las filas de herramientas (Ran, Read, Edited) junto a las frases de Claude. chat: filas de herramientas atenuadas a la derecha, Claude a la izquierda. tree-dim: recogidas bajo la frase con ⎿ y atenuadas. tree-bold: tree-dim más frases de una línea en negrita. classic: la apariencia original.",
       "default": "chat",
       "options": [
         "chat",
@@ -262,7 +262,7 @@
     "runningDot": {
       "type": "string",
       "title": "Running tool dot",
-      "description": "The dot of a tool call that is still running. ring: a still ◌. blink: ● blinking on and off every half second, as Claude Code's own does.",
+      "description": "El punto de una llamada a herramienta que sigue en ejecución. ring: un ◌ quieto. blink: ● parpadeando cada medio segundo, como hace el propio Claude Code.",
       "default": "ring",
       "options": [
         "ring",
@@ -272,13 +272,13 @@
     "unreadPrompts": {
       "type": "boolean",
       "title": "Unread prompts",
-      "description": "Draw a prompt you sent in the comment grey, blinking to the rule color, until the model starts answering the request that carries it, like Claude Code's own grey queued prompts. Slash commands are left alone.",
+      "description": "Dibuja un aviso que enviaste en gris de comentario, parpadeando hacia el color de las reglas, hasta que el modelo empieza a responder la petición que lo contiene, como los avisos en cola en gris propios de Claude Code. Los comandos slash no se tocan.",
       "default": false
     },
     "toolOutput": {
       "type": "string",
       "title": "Tool output",
-      "description": "How much of a tool call shows. full: what Claude Code shows. quiet: rows say in plain words what a call did, reads, searches and listings show only their row, other shell commands show their first lines, edits keep their diff, a failed call shows the last line of its error, and a refused call its full reason. rows: quiet, but a call that worked shows only its row, shell output included; edits keep their diff and failures their reason. Needs toolRows on.",
+      "description": "Cuánto se muestra de una llamada a herramienta. full: lo que muestra Claude Code. quiet: las filas dicen con palabras sencillas qué hizo una llamada; las lecturas, búsquedas y listados muestran solo su fila, otros comandos de shell muestran sus primeras líneas, las ediciones conservan su diff, una llamada fallida muestra la última línea de su error y una rechazada su motivo completo. rows: como quiet, pero una llamada que funcionó muestra solo su fila, incluida la salida de shell; las ediciones conservan su diff y los fallos su motivo. Necesita toolRows activado.",
       "default": "full",
       "options": [
         "full",
@@ -289,7 +289,7 @@
     "taskStyle": {
       "type": "string",
       "title": "Task list style",
-      "description": "How - [ ] and - [x] items draw. checks: [ ] and [✓] with done items dimmed and struck through. ticks: ○ and ✓, done items dimmed. box: □ and ✓, done items dimmed and struck through. progress: ticks with a done-count bar above each list.",
+      "description": "Cómo se dibujan los elementos - [ ] y - [x]. checks: [ ] y [✓], con los elementos terminados atenuados y tachados. ticks: ○ y ✓, terminados atenuados. box: □ y ✓, terminados atenuados y tachados. progress: ticks con una barra de recuento de terminados sobre cada lista.",
       "default": "checks",
       "options": [
         "checks",
@@ -301,7 +301,7 @@
     "listMarker": {
       "type": "string",
       "title": "List bullets",
-      "description": "How bullet list items draw. dots: • at the top level and ◦ nested. dash: - at every level, so a list you select with the mouse pastes as a markdown list into Slack, GitHub or a doc.",
+      "description": "Cómo se dibujan los elementos de una lista con viñetas. dots: • en el nivel superior y ◦ anidado. dash: - en todos los niveles, para que una lista seleccionada con el ratón se pegue como lista markdown en Slack, GitHub o un documento.",
       "default": "dots",
       "options": [
         "dots",
@@ -311,7 +311,7 @@
     "rtl": {
       "type": "string",
       "title": "Right-to-left terminal",
-      "description": "Hebrew and Arabic get a right-to-left layout (right aligned, bullets and quote bars on the right, tables mirrored), with the letters sent the way your terminal needs them. auto detects the terminal; pick one to force its handling, or off for none.",
+      "description": "El hebreo y el árabe reciben un diseño de derecha a izquierda (alineado a la derecha, viñetas y barras de cita a la derecha, tablas reflejadas), con las letras enviadas como las necesite tu terminal. auto detecta el terminal; elige uno para forzar su tratamiento o off para ninguno.",
       "default": "auto",
       "options": [
         "auto",
@@ -332,253 +332,253 @@
     "highlightNumbers": {
       "type": "boolean",
       "title": "Highlight numbers",
-      "description": "Color versions, IDs, counts and durations in prose and tables.",
+      "description": "Colorea versiones, identificadores, recuentos y duraciones en el texto y las tablas.",
       "default": true
     },
     "highlightPaths": {
       "type": "boolean",
       "title": "Highlight paths",
-      "description": "Color file paths like ~/src/app.ts or /var/log.",
+      "description": "Colorea las rutas de archivo como ~/src/app.ts o /var/log.",
       "default": true
     },
     "fullPaths": {
       "type": "boolean",
       "title": "Full paths",
-      "description": "Show a path that opens on click in full: ~/notes.md, ./src/app.ts and src/app.ts draw as their absolute path.",
+      "description": "Mostrar completa una ruta que se abre al hacer clic: ~/notes.md, ./src/app.ts y src/app.ts se dibujan como su ruta absoluta.",
       "default": false
     },
     "accentColor": {
       "type": "string",
       "title": "Accent",
-      "description": "Color for the reply bullet, H3+ headings and quote bars. Hex (#a6e3a1), rgb(166,227,161), ansi256(114) or a name (green). Empty uses the theme.",
+      "description": "Color de la viñeta de respuesta, los encabezados H3 y superiores y las barras de cita. Hex (#a6e3a1), rgb(166,227,161), ansi256(114) o un nombre (green). Vacío usa el tema.",
       "default": ""
     },
     "headingColor": {
       "type": "string",
       "title": "Heading",
-      "description": "Color for H1 and H2 headings. Hex (#a6e3a1), rgb(166,227,161), ansi256(114) or a name (green). Empty uses the theme.",
+      "description": "Color de los encabezados H1 y H2. Hex (#a6e3a1), rgb(166,227,161), ansi256(114) o un nombre (green). Vacío usa el tema.",
       "default": ""
     },
     "tableHeaderColor": {
       "type": "string",
       "title": "Table header",
-      "description": "Color for table header cells. Hex (#a6e3a1), rgb(166,227,161), ansi256(114) or a name (green). Empty uses the theme.",
+      "description": "Color de las celdas de la cabecera de las tablas. Hex (#a6e3a1), rgb(166,227,161), ansi256(114) o un nombre (green). Vacío usa el tema.",
       "default": ""
     },
     "tableRuleColor": {
       "type": "string",
       "title": "Table rule",
-      "description": "Color for table rules. Hex (#a6e3a1), rgb(166,227,161), ansi256(114) or a name (green). Empty uses the theme.",
+      "description": "Color de las reglas de las tablas. Hex (#a6e3a1), rgb(166,227,161), ansi256(114) o un nombre (green). Vacío usa el tema.",
       "default": ""
     },
     "tableTextColor": {
       "type": "string",
       "title": "Table text",
-      "description": "Color for plain text in table body cells, on screen and in the png copy. Hex, rgb(), ansi256() or a name. Empty keeps the terminal's own text color (the diagram text color in the png copy).",
+      "description": "Color del texto normal en las celdas del cuerpo de las tablas, en pantalla y en la copia png. Hex, rgb(), ansi256() o un nombre. Vacío conserva el color de texto propio del terminal (el color del texto de los diagramas en la copia png).",
       "default": ""
     },
     "numberColor": {
       "type": "string",
       "title": "Numbers",
-      "description": "Color for versions, IDs and counts. Hex (#a6e3a1), rgb(166,227,161), ansi256(114) or a name (green). Empty uses the theme.",
+      "description": "Color de versiones, identificadores y recuentos. Hex (#a6e3a1), rgb(166,227,161), ansi256(114) o un nombre (green). Vacío usa el tema.",
       "default": ""
     },
     "pathColor": {
       "type": "string",
       "title": "Paths",
-      "description": "Color for file paths. Hex (#a6e3a1), rgb(166,227,161), ansi256(114) or a name (green). Empty uses the theme.",
+      "description": "Color de las rutas de archivo. Hex (#a6e3a1), rgb(166,227,161), ansi256(114) o un nombre (green). Vacío usa el tema.",
       "default": ""
     },
     "linkColor": {
       "type": "string",
       "title": "Links",
-      "description": "Color for links and URLs. Hex (#a6e3a1), rgb(166,227,161), ansi256(114) or a name (green). Empty uses the theme.",
+      "description": "Color de los enlaces y las URL. Hex (#a6e3a1), rgb(166,227,161), ansi256(114) o un nombre (green). Vacío usa el tema.",
       "default": ""
     },
     "inlineCodeColor": {
       "type": "string",
       "title": "Inline code",
-      "description": "Color for `inline code`. Hex (#a6e3a1), rgb(166,227,161), ansi256(114) or a name (green). Empty uses the theme.",
+      "description": "Color de `código en línea`. Hex (#a6e3a1), rgb(166,227,161), ansi256(114) o un nombre (green). Vacío usa el tema.",
       "default": ""
     },
     "codeCommandColor": {
       "type": "string",
       "title": "Code command",
-      "description": "Color for the command word in shell blocks. Hex (#a6e3a1), rgb(166,227,161), ansi256(114) or a name (green). Empty uses the theme.",
+      "description": "Color de la palabra de comando en bloques de shell. Hex (#a6e3a1), rgb(166,227,161), ansi256(114) o un nombre (green). Vacío usa el tema.",
       "default": ""
     },
     "codeFlagColor": {
       "type": "string",
       "title": "Code flag",
-      "description": "Color for --flags in shell blocks. Hex (#a6e3a1), rgb(166,227,161), ansi256(114) or a name (green). Empty uses the theme.",
+      "description": "Color de las --flags en bloques de shell. Hex (#a6e3a1), rgb(166,227,161), ansi256(114) o un nombre (green). Vacío usa el tema.",
       "default": ""
     },
     "codeStringColor": {
       "type": "string",
       "title": "Code string",
-      "description": "Color for quoted strings in shell blocks. Hex (#a6e3a1), rgb(166,227,161), ansi256(114) or a name (green). Empty uses the theme.",
+      "description": "Color de las cadenas entre comillas en bloques de shell. Hex (#a6e3a1), rgb(166,227,161), ansi256(114) o un nombre (green). Vacío usa el tema.",
       "default": ""
     },
     "strongColor": {
       "type": "string",
       "title": "Bold text",
-      "description": "Color for **bold** text. Hex (#a6e3a1), rgb(166,227,161), ansi256(114) or a name (green). Empty uses the theme.",
+      "description": "Color del texto en **negrita**. Hex (#a6e3a1), rgb(166,227,161), ansi256(114) o un nombre (green). Vacío usa el tema.",
       "default": ""
     },
     "quoteColor": {
       "type": "string",
       "title": "Quote",
-      "description": "Color for block quotes. Hex (#a6e3a1), rgb(166,227,161), ansi256(114) or a name (green). Empty uses the theme.",
+      "description": "Color de las citas de bloque. Hex (#a6e3a1), rgb(166,227,161), ansi256(114) o un nombre (green). Vacío usa el tema.",
       "default": ""
     },
     "mermaidAscii": {
       "type": "boolean",
       "title": "Mermaid ASCII only",
-      "description": "Draw diagrams with + - | > instead of box-drawing characters, for fonts without them.",
+      "description": "Dibuja los diagramas con + - | > en lugar de caracteres de dibujo de cajas, para fuentes que no los tienen.",
       "default": false
     },
     "diagramColor": {
       "type": "string",
       "title": "Diagram lines",
-      "description": "Color for diagram boxes and arrows. Hex, rgb(), ansi256() or a name. Empty uses the theme.",
+      "description": "Color de las cajas y flechas de los diagramas. Hex, rgb(), ansi256() o un nombre. Vacío usa el tema.",
       "default": ""
     },
     "diagramTextColor": {
       "type": "string",
       "title": "Diagram text",
-      "description": "Color for diagram labels and LaTeX formulas. Hex, rgb(), ansi256() or a name. Empty uses the theme.",
+      "description": "Color de las etiquetas de los diagramas y las fórmulas LaTeX. Hex, rgb(), ansi256() o un nombre. Vacío usa el tema.",
       "default": ""
     },
     "toolRows": {
       "type": "boolean",
-      "title": "Tool rows",
-      "description": "Draw tool calls as one compact line: Ran gh pr view 12, Read ~/src/app.ts, Edited README.md. Results still draw below as usual.",
+      "title": "Filas de herramientas",
+      "description": "Dibuja las llamadas a herramientas como una línea compacta: Ran gh pr view 12, Read ~/src/app.ts, Edited README.md. Los resultados siguen dibujándose debajo como siempre.",
       "default": true
     },
     "emphasisColor": {
       "type": "string",
       "title": "Italic text",
-      "description": "Color for *italic* text. Hex, rgb(), ansi256() or a name. Empty uses the theme.",
+      "description": "Color del texto en *cursiva*. Hex, rgb(), ansi256() o un nombre. Vacío usa el tema.",
       "default": ""
     },
     "codeTextColor": {
       "type": "string",
       "title": "Code text",
-      "description": "Color for code block text. Hex, rgb(), ansi256() or a name. Empty uses the theme.",
+      "description": "Color del texto de los bloques de código. Hex, rgb(), ansi256() o un nombre. Vacío usa el tema.",
       "default": ""
     },
     "codeCommentColor": {
       "type": "string",
       "title": "Code comment",
-      "description": "Color for # comments in shell blocks. Hex, rgb(), ansi256() or a name. Empty uses the theme.",
+      "description": "Color de los comentarios # en bloques de shell. Hex, rgb(), ansi256() o un nombre. Vacío usa el tema.",
       "default": ""
     },
     "codeFillColor": {
       "type": "string",
       "title": "Code block fill",
-      "description": "Background of code blocks with codeStyle filled or card. Hex, rgb(), ansi256() or a name. Empty uses a shade a step off the background.",
+      "description": "Fondo de los bloques de código con codeStyle filled o card. Hex, rgb(), ansi256() o un nombre. Vacío usa un tono un paso apartado del fondo.",
       "default": ""
     },
     "codeBorderColor": {
       "type": "string",
       "title": "Code block frame",
-      "description": "Frame of code blocks with codeStyle framed or card. Hex, rgb(), ansi256() or a name. Empty uses the rule color.",
+      "description": "Marco de los bloques de código con codeStyle framed o card. Hex, rgb(), ansi256() o un nombre. Vacío usa el color de las reglas.",
       "default": ""
     },
     "ruleColor": {
       "type": "string",
       "title": "Rules",
-      "description": "Color for horizontal rules, diff card borders and chart gridlines. Hex, rgb(), ansi256() or a name. Empty uses the theme.",
+      "description": "Color de las reglas horizontales, los bordes de las tarjetas de diff y las líneas de rejilla de las gráficas. Hex, rgb(), ansi256() o un nombre. Vacío usa el tema.",
       "default": ""
     },
     "bulletColor": {
       "type": "string",
       "title": "Bullets",
-      "description": "Color for list bullets and numbers. Hex, rgb(), ansi256() or a name. Empty uses the theme.",
+      "description": "Color de las viñetas y números de listas. Hex, rgb(), ansi256() o un nombre. Vacío usa el tema.",
       "default": ""
     },
     "diffAddedColor": {
       "type": "string",
       "title": "Diff added",
-      "description": "Color for added diff lines: their + marks and count, and in hex the tint behind them, mixed into black or white so code text stays at 4.5:1. Hex, rgb(), ansi256() or a name. Empty uses the theme's green.",
+      "description": "Color de las líneas añadidas en un diff: sus marcas + y su recuento, y en hexadecimal el tinte detrás de ellas, mezclado con negro o blanco para que el texto del código mantenga un contraste de 4,5:1. Hex, rgb(), ansi256() o un nombre. Vacío usa el verde del tema.",
       "default": ""
     },
     "diffRemovedColor": {
       "type": "string",
       "title": "Diff removed",
-      "description": "Color for removed diff lines: their - marks and count, and in hex the tint behind them, mixed into black or white so code text stays at 4.5:1. Hex, rgb(), ansi256() or a name. Empty uses the theme's red.",
+      "description": "Color de las líneas eliminadas en un diff: sus marcas - y su recuento, y en hexadecimal el tinte detrás de ellas, mezclado con negro o blanco para que el texto del código mantenga un contraste de 4,5:1. Hex, rgb(), ansi256() o un nombre. Vacío usa el rojo del tema.",
       "default": ""
     },
     "promptFillColor": {
       "type": "string",
       "title": "Your bubble fill",
-      "description": "Fill behind your prompts with promptStyle bubble. Hex, rgb(), ansi256() or a name. Empty uses a deep shade of the theme's green, a pale one in a light theme.",
+      "description": "Relleno detrás de tus avisos con promptStyle bubble. Hex, rgb(), ansi256() o un nombre. Vacío usa un tono profundo del verde del tema, uno claro en un tema claro.",
       "default": ""
     },
     "promptBorderColor": {
       "type": "string",
       "title": "Your bubble frame",
-      "description": "Frame and You ⬤ label of your prompts with promptStyle bubble or framed, and the hue of its default fill. Hex, rgb(), ansi256() or a name. Empty uses the theme's green (the diff added color).",
+      "description": "Marco y etiqueta You ⬤ de tus avisos con promptStyle bubble o framed, y el tono de su relleno predeterminado. Hex, rgb(), ansi256() o un nombre. Vacío usa el verde del tema (el color de diff añadido).",
       "default": ""
     },
     "promptTextColor": {
       "type": "string",
       "title": "Your bubble text",
-      "description": "Text of your prompts with promptStyle bubble or framed. Hex, rgb(), ansi256() or a name. Empty uses the heading color, or the code text color where the heading color would not read on the fill.",
+      "description": "Texto de tus avisos con promptStyle bubble o framed. Hex, rgb(), ansi256() o un nombre. Vacío usa el color de los encabezados, o el color del texto del código cuando el color de los encabezados no se lee sobre el relleno.",
       "default": ""
     },
     "replyFillColor": {
       "type": "string",
       "title": "Claude's bubble fill",
-      "description": "Fill behind Claude's replies with replyStyle bubble or solid. Hex, rgb(), ansi256() or a name. Empty uses a midnight blue a step off the theme's background, a pale one in a light theme.",
+      "description": "Relleno detrás de las respuestas de Claude con replyStyle bubble o solid. Hex, rgb(), ansi256() o un nombre. Vacío usa un azul medianoche un paso apartado del fondo del tema, uno claro en un tema claro.",
       "default": ""
     },
     "alertNoteColor": {
       "type": "string",
       "title": "Note alert",
-      "description": "Box, bar and label of > [!NOTE] alerts. Hex, rgb(), ansi256() or a name. Empty uses the terminal's blue.",
+      "description": "Caja, barra y etiqueta de las alertas > [!NOTE]. Hex, rgb(), ansi256() o un nombre. Vacío usa el azul del terminal.",
       "default": ""
     },
     "alertTipColor": {
       "type": "string",
       "title": "Tip alert",
-      "description": "Box, bar and label of > [!TIP] alerts. Hex, rgb(), ansi256() or a name. Empty uses the terminal's green.",
+      "description": "Caja, barra y etiqueta de las alertas > [!TIP]. Hex, rgb(), ansi256() o un nombre. Vacío usa el verde del terminal.",
       "default": ""
     },
     "alertImportantColor": {
       "type": "string",
       "title": "Important alert",
-      "description": "Box, bar and label of > [!IMPORTANT] alerts. Hex, rgb(), ansi256() or a name. Empty uses the terminal's magenta.",
+      "description": "Caja, barra y etiqueta de las alertas > [!IMPORTANT]. Hex, rgb(), ansi256() o un nombre. Vacío usa el magenta del terminal.",
       "default": ""
     },
     "alertWarningColor": {
       "type": "string",
       "title": "Warning alert",
-      "description": "Box, bar and label of > [!WARNING] alerts. Hex, rgb(), ansi256() or a name. Empty uses the terminal's yellow.",
+      "description": "Caja, barra y etiqueta de las alertas > [!WARNING]. Hex, rgb(), ansi256() o un nombre. Vacío usa el amarillo del terminal.",
       "default": ""
     },
     "alertCautionColor": {
       "type": "string",
       "title": "Caution alert",
-      "description": "Box, bar and label of > [!CAUTION] alerts. Hex, rgb(), ansi256() or a name. Empty uses the terminal's red.",
+      "description": "Caja, barra y etiqueta de las alertas > [!CAUTION]. Hex, rgb(), ansi256() o un nombre. Vacío usa el rojo del terminal.",
       "default": ""
     },
     "replyBorderColor": {
       "type": "string",
       "title": "Claude's bubble frame",
-      "description": "Frame and ⬤ Claude label of Claude's replies with replyStyle bubble or framed. Hex, rgb(), ansi256() or a name. Empty uses Claude Code's own Claude orange.",
+      "description": "Marco y etiqueta ⬤ Claude de las respuestas de Claude con replyStyle bubble o framed. Hex, rgb(), ansi256() o un nombre. Vacío usa el naranja de Claude propio de Claude Code.",
       "default": ""
     },
     "pngBackgroundColor": {
       "type": "string",
       "title": "png copy background",
-      "description": "Background of the ▣ png copy of tables, diagrams and figures. Hex, rgb(), ansi256() or a name. Empty uses the theme's background, white when the theme has none. Set it to your terminal's background to paste what you see.",
+      "description": "Fondo de la copia png ▣ de tablas, diagramas y figuras. Hex, rgb(), ansi256() o un nombre. Vacío usa el fondo del tema, blanco si el tema no tiene fondo. Ajústalo al fondo de tu terminal para pegar lo que ves.",
       "default": ""
     },
     "diffStyle": {
       "type": "string",
       "title": "Diff style",
-      "description": "How edit and shell edit diffs draw. card: a rounded box with tinted lines. full: no box, each changed line tinted across the width. marks: no box and no tint, only the +/- marks in the theme's diff colors. bar: no box and no tint, a colored ▌ before each changed line. Every style highlights the code and marks the changed words.",
+      "description": "Cómo se dibujan los diffs de edición y de edición por shell. card: una caja redondeada con líneas teñidas. full: sin caja, cada línea cambiada teñida en todo el ancho. marks: sin caja ni tinte, solo las marcas +/- con los colores de diff del tema. bar: sin caja ni tinte, un ▌ coloreado antes de cada línea cambiada. Todos los estilos resaltan el código y marcan las palabras cambiadas.",
       "default": "card",
       "options": [
         "card",
@@ -590,7 +590,7 @@
     "codeStyle": {
       "type": "string",
       "title": "Code block style",
-      "description": "How code blocks draw in the terminal. plain: no frame, so a mouse selection copies only the code. framed: a rounded box. filled: a background, or the box in a theme with no colors to fill with. card: a rounded box on a background.",
+      "description": "Cómo se dibujan los bloques de código en el terminal. plain: sin marco, para que una selección con el ratón copie solo el código. framed: una caja redondeada. filled: un fondo, o la caja en un tema sin colores con los que rellenar. card: una caja redondeada sobre un fondo.",
       "default": "plain",
       "options": [
         "plain",
@@ -602,7 +602,7 @@
     "pieStyle": {
       "type": "string",
       "title": "Pie style",
-      "description": "How mermaid pie charts draw. round: a circle with a legend, a smooth picture in kitty and Ghostty (not under tmux) and text elsewhere, falling back to bars in ascii mode, with more slices than the theme has distinct colors (mono always) or in a narrow terminal. bars: one bar per slice, largest first, with its share.",
+      "description": "Cómo se dibujan los gráficos circulares de mermaid. round: un círculo con leyenda, una imagen fluida en kitty y Ghostty (no bajo tmux) y texto en los demás casos, que vuelve a barras en modo ascii, con más porciones de las que el tema tiene colores distintos (mono siempre) o en un terminal estrecho. bars: una barra por porción, primero la mayor, con su parte.",
       "default": "round",
       "options": [
         "round",
@@ -612,13 +612,13 @@
     "mermaid": {
       "type": "boolean",
       "title": "Mermaid diagrams",
-      "description": "Draw ```mermaid blocks as colored box art sized to the terminal. Off leaves the code as written.",
+      "description": "Dibuja los bloques ```mermaid como arte de cajas coloreadas ajustado al terminal. Desactivado deja el código tal como está.",
       "default": true
     },
     "folds": {
       "type": "string",
       "title": "Long blocks",
-      "description": "How long code blocks, diff cards, new-file previews and pasted text in your prompts start. closed: folded to their first lines with a +N more lines button. open: drawn whole (up to each one's line ceiling) with a show less button. Drawing them whole costs more nodes and time on every redraw.",
+      "description": "Cómo empiezan los bloques de código largos, las tarjetas de diff, las vistas previas de archivos nuevos y el texto pegado en tus avisos. closed: plegados a sus primeras líneas con un botón +N more lines. open: dibujados enteros (hasta el límite de líneas de cada uno) con un botón show less. Dibujarlos enteros cuesta más nodos y tiempo en cada redibujado.",
       "default": "closed",
       "options": [
         "closed",
@@ -628,13 +628,13 @@
     "copyButtons": {
       "type": "boolean",
       "title": "Copy buttons",
-      "description": "Put a copy button on code blocks, tables, diagrams, lists and quotes. Reach them with ctrl+x tab then Enter, or click where the terminal passes clicks through.",
+      "description": "Poner un botón de copiar en bloques de código, tablas, diagramas, listas y citas. Se alcanzan con ctrl+x tab y luego Enter, o haciendo clic donde el terminal deje pasar los clics.",
       "default": true
     },
     "copyButtonStyle": {
       "type": "string",
       "title": "Copy button style",
-      "description": "dim: bare ⧉ labels beside or above each block, drawn dim and at full strength under the pointer or the focus. inline: the same buttons in the accent color. hover: each block shows a dim ⧉ beside its first row, and the reply one in its bottom-right corner; the pointer on a ⧉ draws its buttons over it, so they take no line; ctrl+x tab does not reach them, and the mobile app, which has no pointer, shows them inline. Needs copyButtons on.",
+      "description": "dim: etiquetas ⧉ desnudas junto o sobre cada bloque, dibujadas atenuadas y a plena intensidad bajo el puntero o el foco. inline: los mismos botones en el color de acento. hover: cada bloque muestra un ⧉ atenuado junto a su primera fila, y el de la respuesta en la esquina inferior derecha; el puntero sobre un ⧉ dibuja sus botones encima, de modo que no ocupan línea; ctrl+x tab no los alcanza, y la app móvil, que no tiene puntero, los muestra en línea. Necesita copyButtons activado.",
       "default": "dim",
       "options": [
         "dim",
@@ -645,37 +645,37 @@
     "textCopyButtons": {
       "type": "boolean",
       "title": "Copy buttons on lists and quotes",
-      "description": "Put a copy button on lists, quotes and alerts. Off keeps the buttons on code blocks, tables, diagrams and whole replies. Needs copyButtons on.",
+      "description": "Poner un botón de copiar en listas, citas y alertas. Desactivado conserva los botones en bloques de código, tablas, diagramas y respuestas completas. Necesita copyButtons activado.",
       "default": true
     },
     "sectionCopyButtons": {
       "type": "boolean",
       "title": "Copy buttons on headings",
-      "description": "Put a copy button on each heading that copies its section as markdown: every block under it up to the next heading of the same or a higher level. A heading whose section is empty, or is one block that has its own button, gets none. Needs copyButtons on.",
+      "description": "Poner un botón de copiar en cada encabezado que copie su sección como markdown: todos los bloques bajo él hasta el siguiente encabezado del mismo nivel o superior. Un encabezado cuya sección esté vacía, o sea un solo bloque que ya tiene su propio botón, no recibe ninguno. Necesita copyButtons activado.",
       "default": false
     },
     "issueHint": {
       "type": "boolean",
       "title": "Issue hint",
-      "description": "On your first prompt and every tenth after it, tell the model it can offer, after asking you, to open a minimal repro issue on prismantis when you say something drew wrong. About 35 tokens each time.",
+      "description": "En tu primer aviso y cada décimo después de él, dile al modelo que puede ofrecerte, después de preguntarte, abrir un issue de reproducción mínima en prismantis cuando digas que algo se dibujó mal. Unos 35 tokens cada vez.",
       "default": true
     },
     "keyPointHint": {
       "type": "boolean",
       "title": "Key point hint",
-      "description": "Attach a short note, read by the model and never shown, to each prompt you type or another plugin sends, asking for each reply's key points in bold. Set strongColor too if bold looks close to the body text. About 80 tokens per prompt.",
+      "description": "Adjuntar una nota breve, que el modelo lee y nunca se muestra, a cada aviso que escribas o que envíe otro plugin, pidiendo que los puntos clave de cada respuesta vayan en negrita. Configura también strongColor si la negrita se parece al texto normal. Unos 80 tokens por aviso.",
       "default": false
     },
     "diagramHints": {
       "type": "boolean",
       "title": "Diagram hints",
-      "description": "Attach a short note, read by the model and never shown, to each prompt you type or another plugin sends, saying tables, code, mermaid diagrams, charts and figures render here, and LaTeX formulas when the renderer runs. About 630 tokens per prompt (about 275 for the main part, about 360 for figures), about 80 more with LaTeX. Off when mermaid is off.",
+      "description": "Adjuntar una nota breve, que el modelo lee y nunca se muestra, a cada aviso que escribas o que envíe otro plugin, indicando que las tablas, el código, los diagramas mermaid, las gráficas y las figuras se renderizan aquí, y las fórmulas LaTeX cuando el renderizador esté activo. Unos 630 tokens por aviso (unos 275 para la parte principal, unos 360 para las figuras), unos 80 más con LaTeX. Desactivado cuando mermaid está desactivado.",
       "default": true
     },
     "latex": {
       "type": "boolean",
       "title": "LaTeX math",
-      "description": "Draw $$ and ```math formulas as typeset images in kitty and Ghostty (not under tmux) with RaTeX's renderer, installed as ratex-render on your PATH. Off runs nothing. Formulas that can't be drawn stay as text.",
+      "description": "Dibuja las fórmulas $$ y ```math como imágenes compuestas en kitty y Ghostty (no bajo tmux) con el renderizador de RaTeX, instalado como ratex-render en tu PATH. Desactivado no ejecuta nada. Las fórmulas que no se pueden dibujar siguen siendo texto.",
       "default": false
     }
   }
