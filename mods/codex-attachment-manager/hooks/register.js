@@ -42,19 +42,19 @@ const PAUSE_CHECK_MS = 25 * 60 * 1000
 
 const WORDS = {
   zh: {
-    title: 'Recursos de contexto',
-    open: 'Abrir el panel de recursos', copy: 'Copiar enlace', copied: 'Enlace copiado',
-    opened: 'El panel se ha abierto en el navegador propio de Claude.',
-    hint: 'El panel es una página que ofrece el motor local, la misma que en Codex: allí puedes marcar imágenes, previsualizarlas, filtrarlas y activar la selección automática. Ábrela en un navegador con el enlace de arriba o copia el enlace y pégalo en uno.',
-    summary: (images, off) => `${images} imágenes en esta sesión${off ? `, ${off} no enviadas` : ''}`,
+    title: '上下文素材',
+    open: '打开素材面板', copy: '复制链接', copied: '已复制链接',
+    opened: '面板已在 Claude 自带的浏览器里打开。',
+    hint: '面板是本机引擎提供的网页，和 Codex 里的面板相同：勾选、预览、筛选、自动选图都在那里。点上面的链接在浏览器里打开，或复制链接粘贴到浏览器。',
+    summary: (images, off) => `本会话 ${images} 张图片${off ? `，${off} 张不发送` : ''}`,
     routing: {
-      on: (port) => `Las solicitudes de esta sesión pasan por el motor local (puerto ${port})`,
-      waiting: 'Esperando a que se inicie el motor local…',
-      'other-endpoint': 'Esta sesión usa otra dirección de endpoint y no se ha modificado: las marcas no surten efecto',
-      provider: 'Esta sesión usa un proveedor de modelos de terceros y no se ha modificado: las marcas no surten efecto',
-      'engine-old': 'El motor en ejecución es demasiado antiguo para usar rutas independientes: cierra Codex, ejecuta cam install y abre una sesión nueva',
-      'no-engine': 'El motor local no está en ejecución; esta sesión conecta directamente: las marcas no surten efecto',
-      failed: 'No se pudo cambiar el endpoint; esta sesión conecta directamente: las marcas no surten efecto',
+      on: (port) => `本会话的请求经过本机引擎（端口 ${port}）`,
+      waiting: '正在等待本机引擎启动…',
+      'other-endpoint': '本会话使用别的服务地址，没有接管：勾选不会生效',
+      provider: '本会话使用第三方模型服务，没有接管：勾选不会生效',
+      'engine-old': '运行中的引擎版本较旧，不支持独立线路：关掉 Codex 后运行 cam install，再开新会话',
+      'no-engine': '本机引擎没有启动，本会话直连：勾选不会生效',
+      failed: '切换请求地址没有成功，本会话直连：勾选不会生效',
     },
   },
   en: {
@@ -74,6 +74,22 @@ const WORDS = {
     },
   },
   ja: {
+    title: 'コンテキスト素材',
+    open: '素材パネルを開く', copy: 'リンクをコピー', copied: 'リンクをコピーしました',
+    opened: 'Claude 内蔵のブラウザーでパネルを開きました。',
+    hint: 'パネルはローカルエンジンが提供するページで、Codex のパネルと同じです。画像の選択、プレビュー、絞り込み、自動選択ができます。上のリンクを開くか、コピーしてブラウザーに貼り付けてください。',
+    summary: (images, off) => `このセッションの画像 ${images} 枚${off ? `、未送信 ${off} 枚` : ''}`,
+    routing: {
+      on: (port) => `このセッションはローカルエンジン（ポート ${port}）に接続しています`,
+      waiting: 'ローカルエンジンの起動を待っています…',
+      'other-endpoint': 'このセッションは別の接続先を使用しています。画像の選択は反映されません',
+      provider: 'このセッションは外部のモデルサービスを使用しています。画像の選択は反映されません',
+      'engine-old': '実行中のエンジンが古く、個別の接続経路に対応していません。Codex を終了して cam install を実行し、新しいセッションを開始してください',
+      'no-engine': 'ローカルエンジンが起動していないため、直接接続しています。画像の選択は反映されません',
+      failed: '接続先の切り替えに失敗したため、直接接続しています。画像の選択は反映されません',
+    },
+  },
+  es: {
     title: 'Recursos de contexto',
     open: 'Abrir el panel de recursos', copy: 'Copiar enlace', copied: 'Enlace copiado',
     opened: 'El panel se ha abierto en el navegador propio de Claude.',
@@ -89,6 +105,18 @@ const WORDS = {
       failed: 'No se pudo cambiar el endpoint; esta sesión conecta directamente: las marcas no surten efecto',
     },
   },
+}
+
+// The panel reports a short code from Claude Desktop's locale (zh, ja, es or en); keep a complete dictionary for
+// each, and accept the common locale aliases too. Unknown codes still fall back to English.
+function wordsFor(lang) {
+  if (!lang) return 'en'
+  const value = String(lang).trim().toLowerCase()
+  if (value.startsWith('zh')) return 'zh'
+  if (value.startsWith('ja')) return 'ja'
+  if (value.startsWith('es')) return 'es'
+  if (value.startsWith('en')) return 'en'
+  return WORDS[value] ? value : 'en'
 }
 
 // What the pane shows, kept between redraws: the routing state, whether /cam opened the page in Claude's browser, and
@@ -367,12 +395,12 @@ async function openPane($) {
   copied = false
   paneOpened = true
   await loadOverview($, false)
-  await $.ui.open({ id: PANE, title: (WORDS[overview?.lang] ?? WORDS.en).title, focus: true, closeOnEscape: true })
+  await $.ui.open({ id: PANE, title: (WORDS[wordsFor(overview?.lang)] ?? WORDS.en).title, focus: true, closeOnEscape: true })
 }
 
 async function drawPane($, e) {
   const { Box, Text, Button, Link } = $.ui.resolve(e)
-  const w = WORDS[overview?.lang] ?? WORDS.en
+  const w = WORDS[wordsFor(overview?.lang)] ?? WORDS.en
   const url = panelUrl(await $.session.id())
   const routing = routingState
   const status = routing?.active ? w.routing.on(routing.port) : w.routing[routing?.reason ?? 'waiting'] ?? w.routing.waiting

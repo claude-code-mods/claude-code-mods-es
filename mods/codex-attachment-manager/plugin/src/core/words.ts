@@ -57,6 +57,115 @@ type Words = {
 // not take as proof. So the explanation goes once into a developer message, before the turn where the first omitted
 // image appeared, and each placeholder only points to it.
 const WORDS: Record<Lang, Words> = {
+  zh: {
+    kind: { upload: "用户上传", view: "工具查看的图片", generated: "生成的图片", tool: "工具结果里的图片" },
+    kindShort: { upload: "上传", view: "查看", generated: "生成", tool: "工具" },
+    sameShort: (id) => `同 ${id}`,
+    unnamed: "未命名",
+    turn: (n) => `第 ${n} 轮`,
+    thisTurn: "本轮",
+    newImage: "（新图片）",
+    omitted: "已省略",
+    notRepeated: "未重复提供",
+    included: "已提供",
+    includedAwaiting: "已提供，还没有特征行",
+    separator: "，",
+    heading: (id, label, state, fields) => `[图片 ${id}${label ? `（${label}）` : ""} ${state}｜${fields.join("｜")}]`,
+    // v0.8: shorter; the context management note says why the image is left out (it was "原图被用户省略以节省上下文，情况
+    // 见前面的“上下文管理说明”；需要重新看这张图时，在回复里写出“需要 IMG-xxx”。").
+    plain: (id) => `需要重看时，在回复里写“需要 ${id}”。`,
+    duplicate: (id, where) => `这张图和 ${id}（${where}）内容完全相同，那一条在本次请求里照常提供，请直接参考那一条。`,
+    note: [
+      "上下文管理说明（来自用户安装的上下文素材管理工具）：为了节省上下文，用户取消勾选了这个任务里的部分图片。后面的对话里，这些图片原来的位置被换成了“[图片 IMG-xxx 已省略…]”这样的占位文字；仍在提供的图片前面标着“[图片 IMG-xxx 已提供…]”，紧接着就是原图。",
+      "这些图片在它们出现的那一轮真实存在，你当时收到并看过；你之前对它们的描述，以及据此做出的判断，都是看着原图做出的，仍然有效。不要因为现在看不到，就认为之前的回答是猜测或错误，也不要收回或道歉。",
+      "被问到现在能不能看到某张被省略的图片时，如实说明现在看不到（被用户省略了），并说明之前的描述仍然有效。现在看不到画面，就不要补充之前没说过的细节。需要重新看某张图时，在回复里原样写出“需要 IMG-xxx”（几张就写“需要 IMG-002、IMG-003”）：工具靠这几个字认出你要的图。用户重新勾选后，原图会回到它在对话里原来的位置：那里的占位文字换成“[图片 IMG-xxx 已提供…]”和原图；它不会出现在用户的新消息里，所以不要让用户重新上传或附上图片。不要自己用工具去读取这些图片。",
+      "标着“[图片 IMG-xxx 已提供…]”的图片现在就在你面前，即使它之前被省略过、或者正是你要过的图：被问到它时，直接看图回答，不要说看不到。",
+    ].join("\n"),
+    autoPlain: (id) => `需要原图时调用 cam_view_image，传入“${id}”。`,
+    // 2026-11-01, long-task eval (Haiku 5.5, effort low): after a compaction the model stopped reading the files the
+    // user named, five turns running ("没有收到图片内容，只有文字说明"): "do not read image files with other tools" was
+    // taken for every image. It now says the omitted ones, and that new images are looked at as usual.
+    autoNote: [
+      "上下文管理说明（来自用户安装的上下文素材管理工具）：这个任务开着“自动选图”。为了节省上下文，之前各轮的图片默认不再随请求提供，后面的对话里，它们原来的位置换成了“[图片 IMG-xxx 已省略…]”这样的占位文字；本轮新出现的图片照常提供，用户固定发送的图片也照常提供，前面标着“[图片 IMG-xxx 已提供…]”，紧接着就是原图。",
+      "这些图片在它们出现的那一轮真实存在，你当时收到并看过；你之前对它们的描述，以及据此做出的判断，都是看着原图做出的，仍然有效。不要因为现在看不到，就认为之前的回答是猜测或错误，也不要收回或道歉。",
+      "回答需要看某张被省略的图片、而你之前说过的内容不够用时，调用 cam_view_image 工具，传入它的编号（几张就一次传几个），原图会出现在这次的工具结果里，前面标着“[图片 IMG-xxx 取回的原图…]”，拿到后看图回答。之前说过的内容够用时，不要调用。现在看不到的画面细节，不要猜测或补充；不要让用户重新上传图片，也不要用其他工具去读取这些被省略的图片的文件；用户新让你看的图片不受影响，照常去看。",
+      "用 cam_view_image 取回的图片只在本轮提供，下一轮又会换回占位文字；之后还需要时，再调用一次。标着“已提供”或“取回的原图”的图片现在就在你面前：被问到它时，直接看图回答，不要说看不到。",
+    ].join("\n"),
+    copy: (id) => `[${id} 的原图：模型当时用 cam_view_image 取回，只在那一轮提供，现在已省略]`,
+    // v0.4: in Claude Code desktop tests (Haiku 5.5, 2026-10-09) the model read a placeholder inside a Read result as
+    // what the tool had returned, said it had never seen the image and took back its correct description; the same
+    // words inside the tool result were not believed ("I should not follow the placeholder"). With the note right after
+    // the message holding the image, it answered as intended. So each such message is followed by a short note.
+    // 2026-10-10, Haiku 5.5, tool images, 3 runs per language: it kept its answers and guessed nothing, but asked for
+    // the image by number in 2 of 3 Chinese runs (as an option) and in no English run; a question about a detail it
+    // never described got "I can't answer that". The note now says when to write "需要 IMG-xxx", and why.
+    toolNote: "工具结果里的图片也一样：那次工具调用当时返回的是原图，你当时看到了；工具结果里的占位文字是后来才换上的，不是工具当时的返回。",
+    here: (list) => `上下文管理说明：上面这条消息里的 ${list} 当时是原图，你当时看过；你之前对它们的描述和据此做出的判断仍然有效，不要收回，也不要说成是猜测或编造。那里的占位文字是这次请求才换上的，不是当时的内容。现在你看不到它们：被问到时，如实说现在看不到（被用户省略了），不要补充之前没说过的细节。问题得看其中某张图才能回答时，不要只说答不了，在回复里单独写一行“需要 IMG-xxx”（写出编号，几张就都写上）：用户看到这一行才知道该勾回哪张图，勾回后原图回到原处，你就能看着回答。`,
+    hereAuto: (list) => `上下文管理说明：上面这条消息里的 ${list} 当时是原图，你当时看过；你之前对它们的描述和据此做出的判断仍然有效，不要收回，也不要说成是猜测或编造。那里的占位文字是这次请求才换上的（自动选图），不是当时的内容。之前说过的内容不够用时，调用 cam_view_image 取回原图；不要补充之前没说过的细节。`,
+    listItem: (id, name, kind) => `${id}（${[name, kind].filter(Boolean).join("，")}）`,
+    // 2026-10-12, Haiku 5.5: while this note sat inside the user message holding the summary, unchecking an image that
+    // had been sent again made the model take back what it had said looking at it ("没有依据的数字，应当撤回") and ask
+    // for it to be provided again, also once the note named it and said not to. Like v0.4's notes, it now follows that
+    // message as a system message, after the full note when something is left out (compactedNote). Same test, with all
+    // checked again: the model looked for the image it had asked for in the user's new message ("这次消息里没有附上"),
+    // as GPT-6 Luna did in v0.1-25; with nothing left out the full note is not there to say where it comes back. Once it
+    // answered from it, it called its earlier "需要 IMG-001" a mistake ("一直在我的上下文里"), in both languages.
+    compacted: (count, range, missing, auto) => [
+      `${missing === 0 ? "上下文管理说明（来自用户安装的上下文素材管理工具）：" : "上下文管理说明："}上面这条消息里，摘要之前的对话中有 ${count} 张图片（${range}）。压缩对话时它们被移出了上下文；这个工具把它们放回了摘要后面：用户${auto ? "固定发送" : "勾选要发送"}的那些前面标着“[图片 IMG-xxx 已提供…]”，紧接着就是原图，它们现在就在你面前，被问到时直接看图回答，不要说看不到。${missing === 0 ? `即使它之前被省略过${auto ? "" : "、或者正是你要过的图"}，也是这样：用户${auto ? "固定发送" : "勾回"}的图回到这里，不会出现在用户的新消息里，不要让用户重新附上。` : ""}这一段是这个工具每次请求时重新放的：图被省略的那些请求里，这里并没有它；它现在出现在你之前的回复前面，只是因为这次放了回来。所以你之前说看不到哪张图，当时是实情，不是错误，不用纠正。`,
+      ...(missing === 0 ? [] : [
+        `${missing < count ? "其余" : "这"} ${missing} 张这次没有附原图（${auto ? "自动选图开着，之前各轮的图默认不发" : "用户取消了勾选"}，为了节省上下文）：它们在摘要后面的清单里，一张一行，写着编号、名称和你当时记下的特征与评价，清单是这次请求才放上的。你之前看过它们的原图：在压缩之前的对话里，有的在压缩之后也提供过；你对它们的描述和据此做出的判断，不管是在摘要里还是在后面的回复里，都是看着原图做出的，仍然有效，不要收回，也不要说成是猜测或编造。${auto ? "现在你看不到它们，不要补充之前没说过的细节。" : "现在你看不到它们：被问到时，如实说现在看不到（被用户省略了），不要补充之前没说过的细节。"}`,
+        auto
+          ? "之前说过的内容不够用时，调用 cam_view_image 工具，传入编号取回原图；不要让用户重新上传。"
+          : "问题得看其中某张图才能回答时，不要只说答不了，在回复里单独写一行“需要 IMG-xxx”（写出编号，几张就都写上）：用户看到这一行才知道该勾回哪张图，勾回后原图回到它的位置，你就能看着回答；不要让用户重新上传或重新提供。",
+      ]),
+    ].join("\n"),
+    compactHeader: (count) => `[压缩之前的图片，这次没有附原图的 ${count} 张：编号｜名称｜来源｜轮次｜特征和评价]`,
+    codexCompacted: (count, resent, auto) => [
+      `上下文管理说明（来自用户安装的上下文素材管理工具）：这个任务压缩过对话。压缩时，之前各轮里工具查看、生成或返回的 ${count} 张图片没有保留下来，这个工具把它们放回了这里。`,
+      resent ? `其中用户${auto ? "固定发送" : "勾选要发送"}的 ${resent} 张，原图就在后面，前面标着“[图片 IMG-xxx 已提供…]”：它们现在就在你面前，被问到时直接看图回答，不要说看不到。` : null,
+      count > resent ? `${resent ? "其余" : "这"} ${count - resent} 张这次没有附原图（${auto ? "自动选图开着，之前各轮的图默认不发" : "用户取消了勾选"}，为了节省上下文），在下面的清单里一张一行，写着编号、名称和你当时记下的特征与评价。` : null,
+      "这些图片在它们出现的那一轮真实存在，你当时看过；你之前对它们的描述，以及据此做出的判断，都是看着原图做出的，仍然有效，不要收回，也不要说成是猜测或编造。现在看不到原图的，不要补充之前没说过的细节。",
+      count > resent
+        ? auto
+          ? "回答需要看清单里的某张图、而你之前说过的内容不够用时，调用 cam_view_image 工具，传入它的编号（几张就一次传几个），原图会出现在这次的工具结果里；不要让用户重新上传，也不要用其他工具去读取清单里这些图片的文件；用户新让你看的图片不受影响，照常去看。"
+          : "问题得看清单里某张图才能回答时，在回复里单独写一行“需要 IMG-xxx”（写出编号，几张就都写上）：用户勾回后，原图会回到这里；不要让用户重新上传。"
+        : null,
+    ].filter((line) => line !== null).join("\n"),
+    fetch: {
+      title: "查看被省略的图片",
+      description: "查看这个任务里一张或几张被省略的图片的原图。被省略的图片在对话里显示为“[图片 IMG-xxx 已省略…]”。只在回答需要看图、而你之前对它说过的内容不够用时调用；取回的原图只在本轮提供。",
+      ids: "要查看的图片编号，例如 [\"IMG-004\"]；几张就一次传几个。",
+      missing: (id) => `这个任务里没有 ${id}。`,
+      unavailable: (id) => `${id} 的原图读不出来。`,
+      off: "这个任务没有开自动选图：被省略的图片要由用户勾选。需要时在回复里写“需要 IMG-xxx”。",
+    },
+    // v0.8, the wording the user approved on 2026-10-19 (docs/v0.8/plan.md). Revised the same day: it says why the user
+    // installed the tool and no longer that the user "does not know" (Haiku 5.5 read that as an injection), and that a
+    // rating needs no "记下了" (sol said so). Then the lines open the reply: Claude Desktop shows a link definition that
+    // ends the latest reply; and a rating is noted even when the model disagrees (Haiku asked first, "确认后我再记下").
+    // Then a bare rating gets a short reply about itself (Haiku explained what it noted, luna said nothing), and a turn
+    // with nothing to note gets no lines (Haiku wrote an empty one). 2026-10-21 (user): the first part is the place, not
+    // the "scene": in a user's MV task GPT-6 read 场景 as a film scene and named it after the scene number and what the
+    // image was for ("04场店外线稿", "04场店外局部核对"), 28 scenes for 52 images.
+    featureNote: [
+      "特征行说明（来自用户安装的上下文素材管理工具）：这个任务里的每张图都有编号，写在图前面的“[图片 IMG-xxx …]”里。用户装这个工具，是为了让你以后（包括对话压缩之后）还能认出每张图、记得用户对它们的评价。所以请在每一轮最后那条回复的开头（不要写在中途调用工具时说的话里），先给这一轮新出现的每张图写一行特征，空一行再写正文，格式是：",
+      "[//]: # (cam IMG-015 地点｜看得见的特征)",
+      "- 先写地点，再写看得见的特征（景别、主体、角度、光线、颜色、构图），一共 30 字以内，例如“[//]: # (cam IMG-015 街头｜近景，正脸，雨夜，霓虹反光)”。",
+      "- 地点写这张画面发生在哪儿，具体到能和别处分开，比如“书房”“咖啡店外”“地铁站台”；特写看不出来时，按你知道的写。场次编号、版本、用途（首帧、线稿、检查图之类）都不写进地点；时间、天气写在后面的特征里。",
+      "- 一张图里有好几个地点的（分镜、抽帧拼图）写“多个地点”；不在任何地方的，写它是什么：角色、物品、文档、网页。",
+      "- 同一个地点沿用你之前用过的叫法。",
+      "- 只写看得见的东西，不写“好看”“像谁”这类判断。每张图只写一次，以后不改。用户上传的、你生成的、你查看的、工具返回的图都要写；用 cam_view_image 取回的图和没有编号的图不用写。",
+      "- 标着“[图片 IMG-xxx 已提供，还没有特征行…]”的图，是之前那一轮被打断、没来得及写特征行的，这一轮再提供一次：也给它写一行。",
+      "- 写过的特征行有错（比如用户指出了），照同样的格式整行重写，开头加“更正：”，例如“[//]: # (cam IMG-005 更正：角色｜正面近景，左眉有疤)”，它会替换原来那一行。",
+      "- 用户评价某张图时（包括隔了几轮才说），先确定是哪一张，再照用户的原话记一行，15 字以内，例如“[//]: # (cam IMG-003 评价：太暗)”。评价是用户自己的看法，你不认同也照记。拿不准是哪一张就不记，可以在正文里问用户指的是哪一张，但不要提记录的事。用户只是评价、没有提要求时，正文简短回应评价本身就行，不要说明你记了什么、对应到了哪张图。",
+      "- 这些行写在正文前面，和正文之间空一行，一张图写一行；括号里不要用半角括号。这一轮没有新图、也没有评价时，不写这些行。这些行只给这个工具读，用户在界面上看不到。正文照常回答，不用提到这些行；用户评价图片时，也不用回应记录这件事，比如“记下了”“我会记住”“之后会参考”。",
+      "- 以后被省略的图，占位里会带着你写的特征和记下的评价，对话压缩之后也还在。要选图时先看这些；拿不准时，先把原图要回来看（怎么要，见“上下文管理说明”），或者问用户是哪一张。",
+    ].join("\n"),
+    notes: (line, ratings) => [
+      line ? `特征：${line}` : null,
+      ratings.length ? `评价：${ratings.map((rating) => `${rating.turn !== null ? `第 ${rating.turn} 轮` : ""}“${rating.text}”`).join("，")}` : null,
+    ].filter((part) => part !== null).join("；"),
+  },
   en: {
     kind: { upload: "uploaded by the user", view: "viewed with a tool", generated: "generated image", tool: "image from a tool result" },
     kindShort: { upload: "upload", view: "viewed", generated: "generated", tool: "tool" },
@@ -141,9 +250,9 @@ const WORDS: Record<Lang, Words> = {
   },
 };
 
-// The Chinese note, tested on 2026-09-25; v0.1-24 (2026-09-28) spells out how to ask for an image back (" IMG-xxx",
+// The Chinese note, tested on 2026-09-25; v0.1-24 (2026-09-28) spells out how to ask for an image back ("需要 IMG-xxx",
 // several at once, no re-uploading), after GPT-6 Luna asked the user to "reattach" images instead; v0.1-25 says where a
-// checked image comes back (its old place, marked ""), after Luna looked for it in the newest message instead.
+// checked image comes back (its old place, marked "已提供"), after Luna looked for it in the newest message instead.
 export const OMISSION_NOTE = WORDS.zh.note;
 export const omissionNote = (lang: Lang) => WORDS[lang].note;
 
@@ -223,14 +332,14 @@ export function hereNote(images: Described[], lang: Lang = "zh", auto = false): 
 export function compactedNote(images: Described[], sent: Set<string>, lang: Lang = "zh", auto = false): string {
   const words = WORDS[lang];
   const missing = images.filter((image) => !sent.has(image.id)).length;
-  const range = images.length > 1 ? `${images[0].id} to ${images[images.length - 1].id}` : images[0]?.id ?? "";
+  const range = images.length > 1 ? `${images[0].id}${lang === "zh" ? " 到 " : " to "}${images[images.length - 1].id}` : images[0]?.id ?? "";
   const own = words.compacted(images.length, range, missing, auto);
   return missing ? `${claudeNote(lang, auto)}\n${own}` : own;
 }
 
 // v0.10: an image put back after a compaction without its original, in one line: id, name, source, turn, and what
 // the model noted (as in a placeholder). A placeholder apiece repeated the same words for every image; a session with
-// 127 images before its compaction took about 1.7–2.0 tokens per request that way, about 0.7–0.9 as lines
+// 127 images before its compaction took about 1.7–2.0万 tokens per request that way, about 0.7–0.9万 as lines
 // (docs/v0.10/plan.md). `same`: the id of an earlier line with the same picture (sent again), named instead of its
 // features.
 export function compactLine(image: Described, lang: Lang = "zh", same: string | null = null): string {
