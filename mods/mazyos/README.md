@@ -163,7 +163,7 @@ lista.
 - `/mazyos:email-profissional` redacta un correo electrónico a partir de lo que cuentes.
 
 Las skills que crees para tu negocio están en `.claude/skills/` de tu
-pasta, fuera del plugin, y las invocas como `/<nome>`.
+pasta, fuera del plugin, y las invocas como `/<nombre>`.
 
 ---
 
@@ -227,7 +227,7 @@ templates/        perfis de CLAUDE.md, catálogos e o esqueleto do workspace
 ```bash
 claude plugin validate .     # manifesto, marketplace e hooks
 claude plugin test .         # testes do mod
-claude --plugin-dir .        # numa pasta de negócio, carrega este checkout
+claude --plugin-dir .        # en una carpeta de negocio, carga este checkout
 ```
 ---
 
