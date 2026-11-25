@@ -3,7 +3,7 @@
   "owner": {
     "name": "LiarMTTT"
   },
-  "description": "TavernWeaveX无限月读 2.4.0: 23 shared skills with host capability checks and resumable project handoffs; Claude Code gets the Host Front Door hook, the tavernweave agent and a Soul mode switch.",
+  "description": "TavernWeaveX Tsukuyomi Infinito 2.4.0: 23 habilidades compartidas con comprobación de capacidades del host y traspasos de proyecto reanudables; Claude Code recibe el hook Host Front Door, el agente tavernweave y un interruptor de modo Soul.",
   "plugins": [
     {
       "name": "tavernweave-agent-skills",
@@ -11,7 +11,7 @@
         "source": "github",
         "repo": "LiarMTTT/TavernWeave"
       },
-      "description": "TavernWeaveX无限月读 2.4.0. Describe the card or software task; TW checks host capabilities, works within the agreed scope and records evidence for continuation."
+      "description": "TavernWeaveX Tsukuyomi Infinito 2.4.0. Describe la tarjeta o la tarea de software; TW comprueba las capacidades del host, trabaja dentro del alcance acordado y registra evidencias para continuar."
     }
   ]
 }

@@ -1,7 +1,7 @@
 {
   "name": "tavernweave-agent-skills",
   "version": "2.4.0",
-  "description": "TavernWeaveX无限月读 2.4.0: 23 shared skills for rolecards, software work and bounded cloud tasks, with capability checks and resumable handoffs across supported hosts, plus the TavernWeave X DSH plugin bundle.",
+  "description": "TavernWeaveXTsukuyomi Infinito 2.4.0: 23 habilidades compartidas para tarjetas de personaje, trabajo de software y tareas cloud acotadas, con comprobación de capacidades y traspasos reanudables en los hosts compatibles, además del paquete de plugins TavernWeave X DSH.",
   "author": {
     "name": "LiarMTTT"
   },
@@ -20,9 +20,9 @@
     }
   },
   "interface": {
-    "displayName": "TavernWeaveX无限月读",
-    "shortDescription": "角色卡与软件制作，支持云端任务续接",
-    "longDescription": "TavernWeaveX无限月读 2.4.0 provides 23 skills for rolecards and software projects, plus the TavernWeave X DSH plugin bundle for DeepSeek Harness. The same plugin serves local hosts and cloud task workflows, including dots where supported. It checks available files, tools and permissions before work, records bounded milestones in the existing project handoff, and verifies evidence before resuming. Cloud scheduling, runtimes, storage and plugin availability are supplied by the host. Local global-instruction setup is optional and is not a cloud prerequisite. Rolecard architecture, worldbooks, variables, frontend design, source-backed libraries and natural expression share the existing TavernWeave workflow. Real SillyTavern and device acceptance remain separate from source and package checks.",
+    "displayName": "TavernWeaveX Tsukuyomi Infinito",
+    "shortDescription": "Creación de tarjetas de personaje y software, con reanudación de tareas cloud",
+    "longDescription": "TavernWeaveXTsukuyomi Infinito 2.4.0 ofrece 23 habilidades para tarjetas de personaje y proyectos de software, además del paquete de plugins TavernWeave X DSH para DeepSeek Harness. El mismo plugin sirve para hosts locales y flujos de tareas cloud, incluidos los puntos cuando se admiten. Comprueba los archivos, herramientas y permisos disponibles antes de trabajar, registra hitos acotados en el traspaso de proyecto existente y verifica las evidencias antes de reanudar. La programación cloud, los entornos de ejecución, el almacenamiento y la disponibilidad de plugins los aporta el host. La configuración local de instrucciones globales es opcional y no es un requisito previo para la nube. La arquitectura de tarjetas de personaje, los worldbooks, las variables, el diseño de interfaz, las bibliotecas con fuentes y la expresión natural comparten el flujo de trabajo existente de TavernWeave. La aceptación real en SillyTavern y en dispositivos sigue siendo independiente de las comprobaciones de fuentes y paquetes.",
     "developerName": "LiarMTTT",
     "category": "Developer Tools",
     "capabilities": [
@@ -30,9 +30,9 @@
       "Write"
     ],
     "defaultPrompt": [
-      "用 TavernWeave 开始这项云端长任务。先核对可用素材、工具和续接记录，再在已授权范围内分阶段推进；每阶段保留成果和下一步。",
-      "我接手了这张角色卡，想沿原作继续更新；先帮我看懂原卡，再选第一次改动。",
-      "把这部作品整理成二创资料库，原作与同人分开；先核对代表样本，再分批继续并留下可恢复的交接记录。"
+      "Usa TavernWeave para iniciar esta tarea larga en la nube. Comprueba primero los materiales, herramientas y registros de continuación disponibles; después avanza por fases dentro del ámbito autorizado y conserva en cada fase los resultados y el siguiente paso.",
+      "Me hago cargo de esta tarjeta de personaje y quiero seguir actualizándola a partir del original; ayúdame primero a entender la tarjeta original y después elige la primera modificación.",
+      "Organiza esta obra en una biblioteca de material de creación derivada, separando el original del material de fans; comprueba primero una muestra representativa y después continúa por lotes dejando un registro de traspaso recuperable."
     ]
   }
 }

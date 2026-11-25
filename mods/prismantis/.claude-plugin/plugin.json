@@ -644,7 +644,7 @@
     },
     "textCopyButtons": {
       "type": "boolean",
-      "title": "Copy buttons on lists and quotes",
+      "title": "Botones de copia en listas y citas",
       "description": "Poner un botón de copiar en listas, citas y alertas. Desactivado conserva los botones en bloques de código, tablas, diagramas y respuestas completas. Necesita copyButtons activado.",
       "default": true
     },

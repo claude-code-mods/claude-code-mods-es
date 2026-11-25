@@ -1,10 +1,10 @@
-# TavernWeaveX无限月读
+# TavernWeaveX Tsukuyomi Infinito
 > Versión en español por el proyecto claude-code-mods-es. El README original en inglés está en [README.en.md](README.en.md).
 
 
 > **2.4.0 lanzamiento oficial**: se añade **adaptación nativa de Antigravity(AGY)**——plantilla de plugin host de AGY, archivos de instrucciones y adaptación persistente de cuatro bandas de preferencias de guía; y se alinean los manifiestos de los plugins de Codex y Claude y la descripción de marketplace con el manifiesto principal de instalación, restaurando la consistencia de versión. Los nombres y la cantidad de los 23 Skill no cambian. Los activos de lanzamiento y los archivos de verificación están en [v2.4.0 página oficial de lanzamiento](https://github.com/LiarMTTT/TavernWeave/releases/tag/v2.4.0). La instalación desde fuente verifica los 23 Skill según el manifiesto local; el alcance completo de validación está en CHANGELOG y el contrato DSH.
 
-> Esta versión se basa en **2.3.6** y añade la adaptación nativa de Antigravity, manteniendo los 23 Skill. El plugin de Claude Code introducido en 2.2.0 sigue ofreciendo inyección automática de Host Front Door, el `tavernweave` agent y el cambio de modo Soul situado sobre el cuadro de entrada; el paquete de plugin **TavernWeave X DSH** ahora incluye integrado el panel del cliente 神之手 (rueda, ventana flotante completa, Libro del Mundo, base de datos de diseño ＆ animación de frontend, gestión de proyectos/tarjetas), con una sola instalación; la entrada de diseño y escritura del Libro del Mundo sigue disponible. El paquete completo, el paquete de plugin y los archivos de verificación están en [v2.4.0 página oficial de lanzamiento](https://github.com/LiarMTTT/TavernWeave/releases/tag/v2.4.0); el origen y el registro de fusión están en [notas de actualización](docs/dual-task-upgrade.md).
+> Esta versión se basa en **2.3.6** y añade la adaptación nativa de Antigravity, manteniendo los 23 Skill. El plugin de Claude Code introducido en 2.2.0 sigue ofreciendo inyección automática de Host Front Door, el `tavernweave` agent y el cambio de modo Soul situado sobre el cuadro de entrada; el paquete de plugin **TavernWeave X DSH** ahora incluye integrado el panel del cliente Mano de Dios (rueda, ventana flotante completa, Libro del Mundo, base de datos de diseño ＆ animación de frontend, gestión de proyectos/tarjetas), con una sola instalación; la entrada de diseño y escritura del Libro del Mundo sigue disponible. El paquete completo, el paquete de plugin y los archivos de verificación están en [v2.4.0 página oficial de lanzamiento](https://github.com/LiarMTTT/TavernWeave/releases/tag/v2.4.0); el origen y el registro de fusión están en [notas de actualización](docs/dual-task-upgrade.md).
 
 <p align="center">
   <img src="docs/assets/tavernweave-v1-cover.png" alt="un telar digital situado en una taberna de fantasía que teje tarjetas de personaje, Libro del Mundo, materiales de diseño y módulos de ingeniería en un flujo de trabajo unificado" width="100%">
@@ -12,9 +12,9 @@
 
 <p align="center"><strong>Teje inspiración, materiales, código y validación en una tarjeta de personaje realmente mantenible.</strong></p>
 
-TavernWeaveX无限月读 (se mantiene la abreviatura TW) te ayuda a convertir tus ideas en tarjetas de personaje, páginas web o pequeñas herramientas que se puedan usar y seguir modificando. Puedes decir directamente qué quieres hacer o qué ha fallado; TW organiza los requisitos, propone un plan, crea y comprueba, y explica cómo probarlo a continuación. Organiza este trabajo mediante Skill que se cargan por tarea (capacidades de trabajo invocadas según la tarea), admite Codex y Claude Code, y también admite DeepSeek Harness a través del paquete de plugin **TavernWeave X DSH**; el paquete DSH también incluye el panel del cliente 神之手.
+TavernWeaveXTsukuyomi Infinito (se mantiene la abreviatura TW) te ayuda a convertir tus ideas en tarjetas de personaje, páginas web o pequeñas herramientas que se puedan usar y seguir modificando. Puedes decir directamente qué quieres hacer o qué ha fallado; TW organiza los requisitos, propone un plan, crea y comprueba, y explica cómo probarlo a continuación. Organiza este trabajo mediante Skill que se cargan por tarea (capacidades de trabajo invocadas según la tarea), admite Codex y Claude Code, y también admite DeepSeek Harness a través del paquete de plugin **TavernWeave X DSH**; el paquete DSH también incluye el panel del cliente Mano de Dios.
 
-El código fuente actual es **TavernWeaveX无限月读 2.4.0, lanzamiento oficial**, con adaptación nativa de Antigravity(AGY) y persistencia de cuatro bandas de preferencias de guía, y corrige la consistencia de versión entre hosts; en total hay 23 Skill nativos, con nombres y cantidad sin cambios. El plugin de Claude Code introducido en 2.2.0 sigue ofreciendo inyección automática de Host Front Door, el `tavernweave` agent y el cambio de modo Soul (consulta [plugin de Claude Code](#claude-code-plugin)); el paquete de plugin **TavernWeave X DSH** incluye integrado el panel del cliente 神之手, y la entrada de diseño y escritura del Libro del Mundo sigue disponible. El identificador de instalación de la máquina `tavernweave-agent-skills`, los nombres de las habilidades existentes y la dirección del repositorio se mantienen respecto a la versión original, para facilitar la comprobación de la actualización. El paquete completo y los archivos de verificación están en [v2.4.0 página oficial de lanzamiento](https://github.com/LiarMTTT/TavernWeave/releases/tag/v2.4.0); las páginas históricas de lanzamiento de [v2.2.0](https://github.com/LiarMTTT/TavernWeave/releases/tag/v2.2.0), [v2.1.0](https://github.com/LiarMTTT/TavernWeave/releases/tag/v2.1.0), [v1.9.1](https://github.com/LiarMTTT/TavernWeave/releases/tag/v1.9.1) y [v1.9.0](https://github.com/LiarMTTT/TavernWeave/releases/tag/v1.9.0) se conservan.
+El código fuente actual es **TavernWeaveXTsukuyomi Infinito 2.4.0, lanzamiento oficial**, con adaptación nativa de Antigravity(AGY) y persistencia de cuatro bandas de preferencias de guía, y corrige la consistencia de versión entre hosts; en total hay 23 Skill nativos, con nombres y cantidad sin cambios. El plugin de Claude Code introducido en 2.2.0 sigue ofreciendo inyección automática de Host Front Door, el `tavernweave` agent y el cambio de modo Soul (consulta [plugin de Claude Code](#claude-code-plugin)); el paquete de plugin **TavernWeave X DSH** incluye integrado el panel del cliente Mano de Dios, y la entrada de diseño y escritura del Libro del Mundo sigue disponible. El identificador de instalación de la máquina `tavernweave-agent-skills`, los nombres de las habilidades existentes y la dirección del repositorio se mantienen respecto a la versión original, para facilitar la comprobación de la actualización. El paquete completo y los archivos de verificación están en [v2.4.0 página oficial de lanzamiento](https://github.com/LiarMTTT/TavernWeave/releases/tag/v2.4.0); las páginas históricas de lanzamiento de [v2.2.0](https://github.com/LiarMTTT/TavernWeave/releases/tag/v2.2.0), [v2.1.0](https://github.com/LiarMTTT/TavernWeave/releases/tag/v2.1.0), [v1.9.1](https://github.com/LiarMTTT/TavernWeave/releases/tag/v1.9.1) y [v1.9.0](https://github.com/LiarMTTT/TavernWeave/releases/tag/v1.9.0) se conservan.
 
 **El uso principal del plugin unificado es permitir que los usuarios con permisos invoquen a TW en tareas largas en la nube de dots.** Codex y dots comparten `TavernWeave-Codex-v2.4.0.zip`; no se publica una versión cloud independiente. TW aporta Skill y materiales de referencia; la ejecución en la nube, la continuación, el almacenamiento persistente y las herramientas provienen del host real. La instalación local no se sincroniza automáticamente con la cuenta de dots. Consulta las instrucciones de uso y el acceso a la cuenta en **[guía del plugin unificado](docs/plugin-guide.md)**.
 
@@ -61,7 +61,7 @@ Los términos necesarios se explican la primera vez que aparecen y se presenta u
 
 Versión de guía amable:
 ```text
-¡阿瞳, ayúdame!
+¡Atong, ayúdame!
 ```
 Versión de aprendizaje estricto:
 ```text
@@ -69,7 +69,7 @@ Versión de aprendizaje estricto:
 ```
 Versión de revisión de frontend con huevo de Pascua:
 ```text
-¡灵魂杀手!
+¡Asesino de Almas!
 ```
 De un deseo a la consolidación del diseño general y la primera versión:
 ```text
@@ -95,7 +95,7 @@ Salir de la capa de personalidad:
 ```text
 Soul, vuelve a tu sitio
 ```
-Soul sigue siendo una capa de superposición Portable a nivel de tarea. 阿瞳 y MTTT.sir son dos proyecciones didácticas del método MTTT público; 灵魂杀手 revisa el frontend como una personalidad de huevo de Pascua fanwork no oficial de Johnny Silverhand: puede soltar comentarios mordaces, pero debe aportar evidencias y proponer soluciones. La mesa tripartita son solo tres lentes etiquetadas del mismo Agent, que comparten hechos, permisos, de 1–2 decisiones necesarias prioritarias por ronda (4 como máximo en total) y el mismo libro de consolidación; no son tres modelos independientes. No obtiene automáticamente el historial de ChatGPT ni RAG privado, no se mantiene de forma permanente entre tareas nuevas y no amplía los permisos de archivos, Git, red, publicación ni producción.
+Soul sigue siendo una capa de superposición Portable a nivel de tarea. Atong y MTTT.sir son dos proyecciones didácticas del método MTTT público; Asesino de Almas revisa el frontend como una personalidad de huevo de Pascua fanwork no oficial de Johnny Silverhand: puede soltar comentarios mordaces, pero debe aportar evidencias y proponer soluciones. La mesa tripartita son solo tres lentes etiquetadas del mismo Agent, que comparten hechos, permisos, de 1–2 decisiones necesarias prioritarias por ronda (4 como máximo en total) y el mismo libro de consolidación; no son tres modelos independientes. No obtiene automáticamente el historial de ChatGPT ni RAG privado, no se mantiene de forma permanente entre tareas nuevas y no amplía los permisos de archivos, Git, red, publicación ni producción.
 
 ## Refinamiento de texto y revisión completa／de arquitectura · v1.4.0
 
@@ -110,12 +110,12 @@ Decir “refina este texto”, “quita el aire de IA” o “quita lo formulaic
 
 El modo continuo abarca el texto creativo, los textos externos, las explicaciones cotidianas, los planes y los informes de revisión; conserva citas, código, plantillas necesarias y evidencias. El modo persistente muestra primero el archivo de reglas real y las diferencias, y escribe en una banda independiente tras la aprobación del conductor. Instalar／actualizar TW no lo activa automáticamente. Salir de la tarea solo afecta a la tarea actual; “ver el estado del modo de refinamiento” distingue los distintos ámbitos y las evidencias de carga del host.
 
-“Revisión completa” examina todo el ámbito acordado; “revisión de arquitectura” sigue responsabilidades, dependencias, estados y rutas críticas; “revisión completa de arquitectura” combina ambas. Se aplica tanto a software como a tarjetas de personaje. El informe conserva los elementos revisados, parcialmente revisados, no leídos y excluidos, y entrega todos los hallazgos con evidencia. También puedes decir “灵魂杀手, revisión completa de arquitectura” para mantener el estilo Soul; el resumen tiene un máximo de tres puntos y el informe completo no se trunca. La revisión entrega primero resultados de solo lectura.
+“Revisión completa” examina todo el ámbito acordado; “revisión de arquitectura” sigue responsabilidades, dependencias, estados y rutas críticas; “revisión completa de arquitectura” combina ambas. Se aplica tanto a software como a tarjetas de personaje. El informe conserva los elementos revisados, parcialmente revisados, no leídos y excluidos, y entrega todos los hallazgos con evidencia. También puedes decir “Asesino de Almas, revisión completa de arquitectura” para mantener el estilo Soul; el resumen tiene un máximo de tres puntos y el informe completo no se trunca. La revisión entrega primero resultados de solo lectura.
 
 ## Cinco capas de entrada
 ```text
 Host Front Door (entrada local opcional)
-  -> Soul (阿瞳 / MTTT.sir / 灵魂杀手 / mesa tripartita, opcional)
+  -> Soul (Atong / MTTT.sir / Asesino de Almas / mesa tripartita, opcional)
     -> Orquestación de la tormenta de ideas (plan de diseño general + First Playable + blueprint / conjunto de blueprints, opcional)
       -> Library (A0 + guía ST + diseño/animación + Wiki de fuentes + página de selección)
         -> Skill de ingeniería distribuidos según la lista de la máquina (creación, componentes, API, UI, depuración, verificación de crecimiento, compilación, aceptación, etc.)
@@ -129,7 +129,7 @@ Host Front Door (entrada local opcional)
 ## Matriz de Skill
 | Skill | Responsabilidad principal |
 | --- | --- |
-| `activate-tavernweave-soul` | Activa, alterna entre ellos o desactiva el modo de nivel de tarea actual de 阿瞳 / MTTT.sir / 灵魂杀手; Johnny es una personalidad oculta de revisión de frontend; no guarda RAG privado |
+| `activate-tavernweave-soul` | Activa, alterna entre ellos o desactiva el modo de nivel de tarea actual de Atong / MTTT.sir / Asesino de Almas; Johnny es una personalidad oculta de revisión de frontend; no guarda RAG privado |
 | `build-work-library` | Organiza novelas, material original y fanwork, textos en línea y referencias de imágenes; verificación de fuentes, filtrado por versión/etapa, edición manual, continuación por lotes y exportación a Markdown＋JSONL y SQLite |
 | `consult-tavernweave-library` | Fuerza el enrutamiento de A0, las 31 guías oficiales de ST y la guía experimental C8, y consulta bajo demanda 462 diseños, 194 animaciones, 86 conceptos, 1,609 entradas del registro destilado y la página de selección sin conexión |
 | `orchestrate-project-blueprint` | Converge las peticiones de tarjetas de personaje o de Vibe Code ordinario en un diseño general, un First Playable, un conjunto de planos jerárquicos, NEXT y una compuerta de ejecución anti-recursión; puede convocar la sesión conjunta de los tres asientos de Soul; sincroniza el panel de progreso del proyecto, los porcentajes y el registro de retroalimentación con el diseño general／NEXT |
@@ -260,7 +260,7 @@ El plugin consta de cuatro partes; las tres primeras corresponden una a una al p
 | 23 Skills cuyos nombres llevan el prefijo `tavernweave-agent-skills:` | `skills/` | Proveedor de Skills |
 | Inyección automática de Host Front Door: al iniciar cada sesión, añade la puerta delantera al contexto de la sesión (requiere `node` en PATH) | [`hooks/hooks.json`](hooks/hooks.json)、[`hooks/session-start-front-door.mjs`](hooks/session-start-front-door.mjs) | sección del system prompt |
 | Agente `tavernweave`: personaje exclusivo de TW, con un conjunto de herramientas igualmente reducido (sin red ni subagentes) | [`agents/tavernweave.md`](agents/tavernweave.md) | preset `TavernWeave X DSH` |
-| Cambio de modo Soul: una línea `Soul 阿瞳 ▸` encima del campo de entrada; al desplegarla y elegir un modo, solo se rellena el campo con la instrucción correspondiente y eres tú quien la envía | [`hooks/soul-switch.tsx`](hooks/soul-switch.tsx) (`hooks/hooks.json` de `modules`) | pequeña ventana flotante Soul de 神之手 (CC conserva solo este elemento de interfaz) |
+| Cambio de modo Soul: una línea `Soul Atong ▸` encima del campo de entrada; al desplegarla y elegir un modo, solo se rellena el campo con la instrucción correspondiente y eres tú quien la envía | [`hooks/soul-switch.tsx`](hooks/soul-switch.tsx) (`hooks/hooks.json` de `modules`) | pequeña ventana flotante Soul de Mano de Dios (CC conserva solo este elemento de interfaz) |
 
 El agente `tavernweave` puede iniciarse como sesión principal: `claude --agent tavernweave-agent-skills:tavernweave`; también puedes pedir en una sesión normal que Claude le pase las tareas TW. Si antes copiaste Skills en `~/.claude/skills`, al pasar al plugin puedes eliminar esa copia para evitar que aparezcan dos Skills con el mismo nombre.
 
